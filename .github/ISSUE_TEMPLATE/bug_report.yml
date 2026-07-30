@@ -1,0 +1,36 @@
+name: Bug report
+description: Report reproducible behavior in the SignWell C# SDK.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Please remove API keys, document contents, and other sensitive data before submitting.
+  - type: input
+    id: sdk-version
+    attributes:
+      label: SDK version
+      placeholder: 0.1.0-beta.1
+    validations:
+      required: true
+  - type: input
+    id: target-framework
+    attributes:
+      label: Target framework
+      placeholder: net8.0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Include the expected behavior and a minimal reproduction.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or stack trace
+      render: shell
+

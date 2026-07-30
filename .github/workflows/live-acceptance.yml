@@ -1,0 +1,42 @@
+name: Live acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      completed_document_id:
+        description: Completed test-mode document fixture ID
+        required: true
+      nom151_document_id:
+        description: Completed Mexican document fixture ID with NOM-151
+        required: true
+      template_ids:
+        description: Comma-separated test-mode template IDs
+        required: true
+      fixture_file_url:
+        description: HTTPS URL for a controlled PDF fixture
+        required: true
+      recipient_email:
+        description: Controlled test recipient email
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    environment: live-acceptance
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - name: Run test-mode acceptance and cleanup
+        env:
+          SIGNWELL_API_KEY: ${{ secrets.SIGNWELL_API_KEY }}
+          SIGNWELL_COMPLETED_DOCUMENT_ID: ${{ inputs.completed_document_id }}
+          SIGNWELL_NOM151_DOCUMENT_ID: ${{ inputs.nom151_document_id }}
+          SIGNWELL_TEMPLATE_IDS: ${{ inputs.template_ids }}
+          SIGNWELL_FIXTURE_FILE_URL: ${{ inputs.fixture_file_url }}
+          SIGNWELL_RECIPIENT_EMAIL: ${{ inputs.recipient_email }}
+        run: dotnet run --project samples/SignWell.Sdk.LiveAcceptance/SignWell.Sdk.LiveAcceptance.csproj -c Release

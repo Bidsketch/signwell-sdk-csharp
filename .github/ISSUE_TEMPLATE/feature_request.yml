@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest an improvement to the SignWell C# SDK.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Describe the problem and the outcome you need.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API or behavior
+      description: Include sample C# code when it helps explain the request.
+
