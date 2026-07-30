@@ -31,7 +31,7 @@ jobs:
         with:
           path: artifacts
           output-file: artifacts/SignWell.Sdk.spdx.json
-      - uses: actions/attest-build-provenance@v3
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: artifacts/SignWell.Sdk.*.nupkg
       - name: NuGet login
