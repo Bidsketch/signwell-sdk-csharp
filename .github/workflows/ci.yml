@@ -47,9 +47,18 @@ jobs:
         shell: bash
         run: dotnet pack src/SignWell.Sdk/SignWell.Sdk.csproj -c Release -o artifacts
       - name: Consume packed SDK
+        if: runner.os != 'Windows'
         shell: bash
         env:
           FRAMEWORK: ${{ matrix.framework }}
         run: |
           dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --source "$PWD/artifacts" --source https://api.nuget.org/v3/index.json
           dotnet build samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj -c Release --no-restore -p:TargetFramework="$FRAMEWORK"
+      - name: Consume packed SDK on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          FRAMEWORK: ${{ matrix.framework }}
+        run: |
+          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --source "$env:GITHUB_WORKSPACE/artifacts" --source https://api.nuget.org/v3/index.json
+          dotnet build samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj -c Release --no-restore -p:TargetFramework="$env:FRAMEWORK"
