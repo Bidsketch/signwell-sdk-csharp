@@ -10,7 +10,15 @@ updates:
           - "Microsoft.Extensions.*"
           - "System.Text.Json"
           - "System.Threading.Channels"
+      test-tooling:
+        patterns:
+          - "Microsoft.NET.Test.Sdk"
+          - "xunit*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
