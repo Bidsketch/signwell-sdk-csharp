@@ -60,5 +60,6 @@ jobs:
         env:
           FRAMEWORK: ${{ matrix.framework }}
         run: |
-          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --source "$env:GITHUB_WORKSPACE/artifacts" --source https://api.nuget.org/v3/index.json
+          dotnet nuget add source "$env:GITHUB_WORKSPACE/artifacts" --name signwell-local
+          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj
           dotnet build samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj -c Release --no-restore -p:TargetFramework="$env:FRAMEWORK"
