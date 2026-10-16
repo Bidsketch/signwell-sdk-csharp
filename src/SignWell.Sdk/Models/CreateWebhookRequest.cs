@@ -103,8 +103,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CreateWebhookRequest" />
     /// </summary>
-    public class CreateWebhookRequestJsonConverter : JsonConverter<CreateWebhookRequest>
+    public partial class CreateWebhookRequestJsonConverter : JsonConverter<CreateWebhookRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateWebhookRequestJsonConverter" /> class.
+        /// </summary>
+        public CreateWebhookRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CreateWebhookRequest" />
         /// </summary>
@@ -153,13 +163,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!callbackUrl.IsSet)
-                throw new ArgumentException("Property is required for class CreateWebhookRequest.", nameof(callbackUrl));
+                throw new JsonException("Property is required for class CreateWebhookRequest: callback_url.");
 
             if (callbackUrl.IsSet && callbackUrl.Value == null)
-                throw new ArgumentNullException(nameof(callbackUrl), "Property is not nullable for class CreateWebhookRequest.");
-
-            if (apiApplicationId.IsSet && apiApplicationId.Value == null)
-                throw new ArgumentNullException(nameof(apiApplicationId), "Property is not nullable for class CreateWebhookRequest.");
+                throw new JsonException("Property is not nullable for class CreateWebhookRequest: callback_url.");
 
             return new CreateWebhookRequest(callbackUrl.Value!, apiApplicationId);
         }
@@ -170,7 +177,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="createWebhookRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CreateWebhookRequest createWebhookRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -185,11 +191,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="createWebhookRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CreateWebhookRequest createWebhookRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (createWebhookRequest.CallbackUrl == null)
-                throw new ArgumentNullException(nameof(createWebhookRequest.CallbackUrl), "Property is required for class CreateWebhookRequest.");
+            if (createWebhookRequest.ApiApplicationIdOption.IsSet && createWebhookRequest.ApiApplicationId == null)
+                throw new JsonException("Cannot write null property CreateWebhookRequest.ApiApplicationId to non-nullable JSON property 'api_application_id'.");
 
             writer.WriteString("callback_url", createWebhookRequest.CallbackUrl);
 

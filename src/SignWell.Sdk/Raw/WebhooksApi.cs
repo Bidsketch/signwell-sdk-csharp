@@ -22,6 +22,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using SignWell.Sdk.Client;
+using SignWell.Sdk.Logging;
 using SignWell.Sdk.Models;
 
 namespace SignWell.Sdk.Raw
@@ -41,7 +42,7 @@ namespace SignWell.Sdk.Raw
         /// Create Webhook
         /// </summary>
         /// <remarks>
-        /// Register a callback URL that we will post document events to.
+        /// Register a callback URL that we will post document events to. Note: a &#x60;document_signed&#x60; event is not emitted solely because a pre-signed template signature/initials was copied as document content, and &#x60;event.related_signer&#x60; only identifies a real recipient signing action. Two additional event types cover SMS delivery outcomes: &#x60;document_sms_failed&#x60; fires when an SMS reaches a terminal failure (undelivered or failed), and &#x60;document_sms_opted_out&#x60; fires when a phone number is newly added to the SMS suppression list. Both carry &#x60;event.related_recipient&#x60; (id, name, email when present, &#x60;phone_number_masked&#x60;, and &#x60;delivery_method&#x60;) instead of &#x60;event.related_signer&#x60;, and each recipient in &#x60;data.object.recipients[]&#x60; whose delivery method includes SMS carries a nested &#x60;sms&#x60; object (&#x60;phone_number_masked&#x60;, &#x60;send_sms&#x60;, &#x60;send_sms_delay&#x60;, &#x60;delivery_status&#x60;, &#x60;message_type&#x60;, &#x60;failed&#x60;, &#x60;failed_details&#x60;). Email-only recipients keep their existing payload shape unchanged. Only webhooks registered on API-type hooks receive these two events.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createWebhookRequest"></param>
@@ -53,7 +54,7 @@ namespace SignWell.Sdk.Raw
         /// Create Webhook
         /// </summary>
         /// <remarks>
-        /// Register a callback URL that we will post document events to.
+        /// Register a callback URL that we will post document events to. Note: a &#x60;document_signed&#x60; event is not emitted solely because a pre-signed template signature/initials was copied as document content, and &#x60;event.related_signer&#x60; only identifies a real recipient signing action. Two additional event types cover SMS delivery outcomes: &#x60;document_sms_failed&#x60; fires when an SMS reaches a terminal failure (undelivered or failed), and &#x60;document_sms_opted_out&#x60; fires when a phone number is newly added to the SMS suppression list. Both carry &#x60;event.related_recipient&#x60; (id, name, email when present, &#x60;phone_number_masked&#x60;, and &#x60;delivery_method&#x60;) instead of &#x60;event.related_signer&#x60;, and each recipient in &#x60;data.object.recipients[]&#x60; whose delivery method includes SMS carries a nested &#x60;sms&#x60; object (&#x60;phone_number_masked&#x60;, &#x60;send_sms&#x60;, &#x60;send_sms_delay&#x60;, &#x60;delivery_status&#x60;, &#x60;message_type&#x60;, &#x60;failed&#x60;, &#x60;failed_details&#x60;). Email-only recipients keep their existing payload shape unchanged. Only webhooks registered on API-type hooks receive these two events.
         /// </remarks>
         /// <param name="createWebhookRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -245,11 +246,6 @@ namespace SignWell.Sdk.Raw
         private JsonSerializerOptions _jsonSerializerOptions;
 
         /// <summary>
-        /// The logger factory
-        /// </summary>
-        public ILoggerFactory LoggerFactory { get; }
-
-        /// <summary>
         /// The logger
         /// </summary>
         public ILogger<WebhooksApi> Logger { get; }
@@ -273,12 +269,11 @@ namespace SignWell.Sdk.Raw
         /// Initializes a new instance of the <see cref="WebhooksApi"/> class.
         /// </summary>
         /// <returns></returns>
-        public WebhooksApi(ILogger<WebhooksApi> logger, ILoggerFactory loggerFactory, HttpClient httpClient, JsonSerializerOptionsProvider jsonSerializerOptionsProvider, WebhooksApiEvents webhooksApiEvents,
+        public WebhooksApi(ILogger<WebhooksApi> logger, HttpClient httpClient, JsonSerializerOptionsProvider jsonSerializerOptionsProvider, WebhooksApiEvents webhooksApiEvents,
             TokenProvider<ApiKeyToken> apiKeyProvider)
         {
             _jsonSerializerOptions = jsonSerializerOptionsProvider.Options;
-            LoggerFactory = loggerFactory;
-            Logger = LoggerFactory.CreateLogger<WebhooksApi>();
+            Logger = logger;
             HttpClient = httpClient;
             Events = webhooksApiEvents;
             ApiKeyProvider = apiKeyProvider;
@@ -307,7 +302,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLog = false;
             AfterCreateWebhook(ref suppressDefaultLog, apiResponseLocalVar, createWebhookRequest);
             if (!suppressDefaultLog)
-                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+                Logger.LogInformation(RestLogEvents.ApiRequestCompleted, "{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
 
         /// <summary>
@@ -330,7 +325,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLogLocalVar = false;
             OnErrorCreateWebhook(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, createWebhookRequest);
             if (!suppressDefaultLogLocalVar)
-                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+                Logger.LogError(RestLogEvents.ApiRequestFailed, exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
 
         /// <summary>
@@ -344,7 +339,7 @@ namespace SignWell.Sdk.Raw
         partial void OnErrorCreateWebhook(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, CreateWebhookRequest createWebhookRequest);
 
         /// <summary>
-        /// Create Webhook Register a callback URL that we will post document events to.
+        /// Create Webhook Register a callback URL that we will post document events to. Note: a &#x60;document_signed&#x60; event is not emitted solely because a pre-signed template signature/initials was copied as document content, and &#x60;event.related_signer&#x60; only identifies a real recipient signing action. Two additional event types cover SMS delivery outcomes: &#x60;document_sms_failed&#x60; fires when an SMS reaches a terminal failure (undelivered or failed), and &#x60;document_sms_opted_out&#x60; fires when a phone number is newly added to the SMS suppression list. Both carry &#x60;event.related_recipient&#x60; (id, name, email when present, &#x60;phone_number_masked&#x60;, and &#x60;delivery_method&#x60;) instead of &#x60;event.related_signer&#x60;, and each recipient in &#x60;data.object.recipients[]&#x60; whose delivery method includes SMS carries a nested &#x60;sms&#x60; object (&#x60;phone_number_masked&#x60;, &#x60;send_sms&#x60;, &#x60;send_sms_delay&#x60;, &#x60;delivery_status&#x60;, &#x60;message_type&#x60;, &#x60;failed&#x60;, &#x60;failed_details&#x60;). Email-only recipients keep their existing payload shape unchanged. Only webhooks registered on API-type hooks receive these two events.
         /// </summary>
         /// <param name="createWebhookRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -362,7 +357,7 @@ namespace SignWell.Sdk.Raw
         }
 
         /// <summary>
-        /// Create Webhook Register a callback URL that we will post document events to.
+        /// Create Webhook Register a callback URL that we will post document events to. Note: a &#x60;document_signed&#x60; event is not emitted solely because a pre-signed template signature/initials was copied as document content, and &#x60;event.related_signer&#x60; only identifies a real recipient signing action. Two additional event types cover SMS delivery outcomes: &#x60;document_sms_failed&#x60; fires when an SMS reaches a terminal failure (undelivered or failed), and &#x60;document_sms_opted_out&#x60; fires when a phone number is newly added to the SMS suppression list. Both carry &#x60;event.related_recipient&#x60; (id, name, email when present, &#x60;phone_number_masked&#x60;, and &#x60;delivery_method&#x60;) instead of &#x60;event.related_signer&#x60;, and each recipient in &#x60;data.object.recipients[]&#x60; whose delivery method includes SMS carries a nested &#x60;sms&#x60; object (&#x60;phone_number_masked&#x60;, &#x60;send_sms&#x60;, &#x60;send_sms_delay&#x60;, &#x60;delivery_status&#x60;, &#x60;message_type&#x60;, &#x60;failed&#x60;, &#x60;failed_details&#x60;). Email-only recipients keep their existing payload shape unchanged. Only webhooks registered on API-type hooks receive these two events.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createWebhookRequest"></param>
@@ -387,8 +382,8 @@ namespace SignWell.Sdk.Raw
                         ? "/api/v1/hooks"
                         : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/api/v1/hooks");
 
-                    httpRequestMessageLocalVar.Content = (createWebhookRequest as object) is System.IO.Stream stream
-                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                    httpRequestMessageLocalVar.Content = (createWebhookRequest as object) is SignWell.Sdk.Client.FileParameter fileParameterLocalVar
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(fileParameterLocalVar.Content)
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(createWebhookRequest, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
@@ -421,13 +416,12 @@ namespace SignWell.Sdk.Raw
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<CreateWebhookApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<CreateWebhookApiResponse>();
                         CreateWebhookApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                apiResponseLocalVar = new CreateWebhookApiResponse(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new CreateWebhookApiResponse(Logger, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -461,7 +455,7 @@ namespace SignWell.Sdk.Raw
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<CreateWebhookApiResponse> Logger { get; }
+            public ILogger<WebhooksApi> Logger { get; }
 
             /// <summary>
             /// The <see cref="CreateWebhookApiResponse"/>
@@ -473,7 +467,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public CreateWebhookApiResponse(ILogger<CreateWebhookApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public CreateWebhookApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -489,7 +483,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public CreateWebhookApiResponse(ILogger<CreateWebhookApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public CreateWebhookApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -509,11 +503,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.WebhookResponse? Created()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.WebhookResponse? result = default;
+                OnCreated(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultCreated();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.WebhookResponse? DefaultCreated()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsCreated
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.WebhookResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnCreated(ref bool suppressDefault, ref SignWell.Sdk.Models.WebhookResponse? result);
 
             /// <summary>
             /// Returns true if the response is 201 Created and the deserialized response is not null
@@ -547,11 +553,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.ErrorResponse? BadRequest()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.ErrorResponse? result = default;
+                OnBadRequest(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultBadRequest();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.ErrorResponse? DefaultBadRequest()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsBadRequest
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.ErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnBadRequest(ref bool suppressDefault, ref SignWell.Sdk.Models.ErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 400 BadRequest and the deserialized response is not null
@@ -585,11 +603,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.RateLimitErrorResponse? TooManyRequests()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.RateLimitErrorResponse? result = default;
+                OnTooManyRequests(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultTooManyRequests();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.RateLimitErrorResponse? DefaultTooManyRequests()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsTooManyRequests
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.RateLimitErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnTooManyRequests(ref bool suppressDefault, ref SignWell.Sdk.Models.RateLimitErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 429 TooManyRequests and the deserialized response is not null
@@ -616,7 +646,7 @@ namespace SignWell.Sdk.Raw
                 bool suppressDefaultLog = false;
                 OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
                 if (!suppressDefaultLog)
-                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+                    Logger.LogError(RestLogEvents.ApiDeserializationFailed, exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
             }
 
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
@@ -634,7 +664,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLog = false;
             AfterDeleteWebhook(ref suppressDefaultLog, apiResponseLocalVar, id);
             if (!suppressDefaultLog)
-                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+                Logger.LogInformation(RestLogEvents.ApiRequestCompleted, "{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
 
         /// <summary>
@@ -657,7 +687,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLogLocalVar = false;
             OnErrorDeleteWebhook(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, id);
             if (!suppressDefaultLogLocalVar)
-                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+                Logger.LogError(RestLogEvents.ApiRequestFailed, exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
 
         /// <summary>
@@ -709,8 +739,8 @@ namespace SignWell.Sdk.Raw
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/api/v1/hooks/{id}"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/api/v1/hooks/{id}");
+                        ? "/api/v1/hooks/{id}/"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/api/v1/hooks/{id}/");
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bid%7D", Uri.EscapeDataString(id.ToString()));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
@@ -734,13 +764,12 @@ namespace SignWell.Sdk.Raw
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<DeleteWebhookApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<DeleteWebhookApiResponse>();
                         DeleteWebhookApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                apiResponseLocalVar = new DeleteWebhookApiResponse(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks/{id}", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new DeleteWebhookApiResponse(Logger, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks/{id}/", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -760,7 +789,7 @@ namespace SignWell.Sdk.Raw
             }
             catch(Exception e)
             {
-                OnErrorDeleteWebhookDefaultImplementation(e, "/api/v1/hooks/{id}", uriBuilderLocalVar.Path, id);
+                OnErrorDeleteWebhookDefaultImplementation(e, "/api/v1/hooks/{id}/", uriBuilderLocalVar.Path, id);
                 Events.ExecuteOnErrorDeleteWebhook(e);
                 throw;
             }
@@ -774,7 +803,7 @@ namespace SignWell.Sdk.Raw
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<DeleteWebhookApiResponse> Logger { get; }
+            public ILogger<WebhooksApi> Logger { get; }
 
             /// <summary>
             /// The <see cref="DeleteWebhookApiResponse"/>
@@ -786,7 +815,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public DeleteWebhookApiResponse(ILogger<DeleteWebhookApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public DeleteWebhookApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -802,7 +831,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public DeleteWebhookApiResponse(ILogger<DeleteWebhookApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public DeleteWebhookApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -828,11 +857,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.ErrorResponse? NotFound()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.ErrorResponse? result = default;
+                OnNotFound(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultNotFound();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.ErrorResponse? DefaultNotFound()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsNotFound
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.ErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnNotFound(ref bool suppressDefault, ref SignWell.Sdk.Models.ErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 404 NotFound and the deserialized response is not null
@@ -866,11 +907,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.RateLimitErrorResponse? TooManyRequests()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.RateLimitErrorResponse? result = default;
+                OnTooManyRequests(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultTooManyRequests();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.RateLimitErrorResponse? DefaultTooManyRequests()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsTooManyRequests
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.RateLimitErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnTooManyRequests(ref bool suppressDefault, ref SignWell.Sdk.Models.RateLimitErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 429 TooManyRequests and the deserialized response is not null
@@ -897,7 +950,7 @@ namespace SignWell.Sdk.Raw
                 bool suppressDefaultLog = false;
                 OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
                 if (!suppressDefaultLog)
-                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+                    Logger.LogError(RestLogEvents.ApiDeserializationFailed, exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
             }
 
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
@@ -912,7 +965,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLog = false;
             AfterListWebhooks(ref suppressDefaultLog, apiResponseLocalVar);
             if (!suppressDefaultLog)
-                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+                Logger.LogInformation(RestLogEvents.ApiRequestCompleted, "{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
 
         /// <summary>
@@ -933,7 +986,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLogLocalVar = false;
             OnErrorListWebhooks(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
             if (!suppressDefaultLogLocalVar)
-                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+                Logger.LogError(RestLogEvents.ApiRequestFailed, exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
 
         /// <summary>
@@ -1004,13 +1057,12 @@ namespace SignWell.Sdk.Raw
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<ListWebhooksApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<ListWebhooksApiResponse>();
                         ListWebhooksApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                apiResponseLocalVar = new ListWebhooksApiResponse(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new ListWebhooksApiResponse(Logger, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/hooks", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -1044,7 +1096,7 @@ namespace SignWell.Sdk.Raw
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<ListWebhooksApiResponse> Logger { get; }
+            public ILogger<WebhooksApi> Logger { get; }
 
             /// <summary>
             /// The <see cref="ListWebhooksApiResponse"/>
@@ -1056,7 +1108,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public ListWebhooksApiResponse(ILogger<ListWebhooksApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public ListWebhooksApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -1072,7 +1124,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public ListWebhooksApiResponse(ILogger<ListWebhooksApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public ListWebhooksApiResponse(ILogger<WebhooksApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -1092,11 +1144,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public List<WebhookResponse>? Ok()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                List<WebhookResponse>? result = default;
+                OnOk(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultOk();
+                return result;
+            }
+
+            private List<WebhookResponse>? DefaultOk()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsOk
                     ? System.Text.Json.JsonSerializer.Deserialize<List<WebhookResponse>>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnOk(ref bool suppressDefault, ref List<WebhookResponse>? result);
 
             /// <summary>
             /// Returns true if the response is 200 Ok and the deserialized response is not null
@@ -1130,11 +1194,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.RateLimitErrorResponse? TooManyRequests()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.RateLimitErrorResponse? result = default;
+                OnTooManyRequests(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultTooManyRequests();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.RateLimitErrorResponse? DefaultTooManyRequests()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsTooManyRequests
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.RateLimitErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnTooManyRequests(ref bool suppressDefault, ref SignWell.Sdk.Models.RateLimitErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 429 TooManyRequests and the deserialized response is not null
@@ -1161,7 +1237,7 @@ namespace SignWell.Sdk.Raw
                 bool suppressDefaultLog = false;
                 OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
                 if (!suppressDefaultLog)
-                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+                    Logger.LogError(RestLogEvents.ApiDeserializationFailed, exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
             }
 
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);

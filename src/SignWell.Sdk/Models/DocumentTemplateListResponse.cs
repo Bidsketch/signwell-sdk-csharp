@@ -143,8 +143,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentTemplateListResponse" />
     /// </summary>
-    public class DocumentTemplateListResponseJsonConverter : JsonConverter<DocumentTemplateListResponse>
+    public partial class DocumentTemplateListResponseJsonConverter : JsonConverter<DocumentTemplateListResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentTemplateListResponseJsonConverter" /> class.
+        /// </summary>
+        public DocumentTemplateListResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentTemplateListResponse" />
         /// </summary>
@@ -209,28 +219,28 @@ namespace SignWell.Sdk.Models
             }
 
             if (!templates.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateListResponse.", nameof(templates));
+                throw new JsonException("Property is required for class DocumentTemplateListResponse: templates.");
 
             if (!currentPage.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateListResponse.", nameof(currentPage));
+                throw new JsonException("Property is required for class DocumentTemplateListResponse: current_page.");
 
             if (!totalCount.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateListResponse.", nameof(totalCount));
+                throw new JsonException("Property is required for class DocumentTemplateListResponse: total_count.");
 
             if (!totalPages.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateListResponse.", nameof(totalPages));
+                throw new JsonException("Property is required for class DocumentTemplateListResponse: total_pages.");
 
             if (templates.IsSet && templates.Value == null)
-                throw new ArgumentNullException(nameof(templates), "Property is not nullable for class DocumentTemplateListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateListResponse: templates.");
 
             if (currentPage.IsSet && currentPage.Value == null)
-                throw new ArgumentNullException(nameof(currentPage), "Property is not nullable for class DocumentTemplateListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateListResponse: current_page.");
 
             if (totalCount.IsSet && totalCount.Value == null)
-                throw new ArgumentNullException(nameof(totalCount), "Property is not nullable for class DocumentTemplateListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateListResponse: total_count.");
 
             if (totalPages.IsSet && totalPages.Value == null)
-                throw new ArgumentNullException(nameof(totalPages), "Property is not nullable for class DocumentTemplateListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateListResponse: total_pages.");
 
             return new DocumentTemplateListResponse(templates.Value!, currentPage.Value!.Value!, totalCount.Value!.Value!, totalPages.Value!.Value!, nextPage, previousPage);
         }
@@ -241,7 +251,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentTemplateListResponse documentTemplateListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -256,12 +265,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentTemplateListResponse documentTemplateListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentTemplateListResponse.Templates == null)
-                throw new ArgumentNullException(nameof(documentTemplateListResponse.Templates), "Property is required for class DocumentTemplateListResponse.");
-
             writer.WritePropertyName("templates");
             JsonSerializer.Serialize(writer, documentTemplateListResponse.Templates, jsonSerializerOptions);
             writer.WriteNumber("current_page", documentTemplateListResponse.CurrentPage);

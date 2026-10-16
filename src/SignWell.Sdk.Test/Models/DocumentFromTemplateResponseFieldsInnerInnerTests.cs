@@ -181,6 +181,24 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
+        /// Test the property 'ValidationRegex'
+        /// </summary>
+        [Fact]
+        public void ValidationRegexTest()
+        {
+            // TODO unit test for the property 'ValidationRegex'
+        }
+
+        /// <summary>
+        /// Test the property 'ValidationRegexErrorMessage'
+        /// </summary>
+        [Fact]
+        public void ValidationRegexErrorMessageTest()
+        {
+            // TODO unit test for the property 'ValidationRegexErrorMessage'
+        }
+
+        /// <summary>
         /// Test the property 'Value'
         /// </summary>
         [Fact]

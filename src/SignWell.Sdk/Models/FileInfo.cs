@@ -34,24 +34,17 @@ namespace SignWell.Sdk.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="FileInfo" /> class.
         /// </summary>
-        /// <param name="name">File name</param>
         /// <param name="pagesNumber">Number of pages in the file</param>
+        /// <param name="name">File name</param>
         [JsonConstructor]
-        public FileInfo(string name, int pagesNumber)
+        public FileInfo(int pagesNumber, Option<string?> name = default)
         {
-            Name = name;
             PagesNumber = pagesNumber;
+            NameOption = name;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// File name
-        /// </summary>
-        /// <value>File name</value>
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
 
         /// <summary>
         /// Number of pages in the file
@@ -59,6 +52,20 @@ namespace SignWell.Sdk.Models
         /// <value>Number of pages in the file</value>
         [JsonPropertyName("pages_number")]
         public int PagesNumber { get; set; }
+
+        /// <summary>
+        /// Used to track the state of Name
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> NameOption { get; private set; }
+
+        /// <summary>
+        /// File name
+        /// </summary>
+        /// <value>File name</value>
+        [JsonPropertyName("name")]
+        public string? Name { get { return this.NameOption.Value; } set { this.NameOption = new Option<string?>(value); } }
 
         /// <summary>
         /// Gets or Sets additional properties
@@ -74,8 +81,8 @@ namespace SignWell.Sdk.Models
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class FileInfo {\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  PagesNumber: ").Append(PagesNumber).Append("\n");
+            sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -95,8 +102,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="FileInfo" />
     /// </summary>
-    public class FileInfoJsonConverter : JsonConverter<FileInfo>
+    public partial class FileInfoJsonConverter : JsonConverter<FileInfo>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileInfoJsonConverter" /> class.
+        /// </summary>
+        public FileInfoJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="FileInfo" />
         /// </summary>
@@ -114,8 +131,8 @@ namespace SignWell.Sdk.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> name = default;
             Option<int?> pagesNumber = default;
+            Option<string?> name = default;
 
             while (utf8JsonReader.Read())
             {
@@ -132,11 +149,11 @@ namespace SignWell.Sdk.Models
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "pages_number":
                             pagesNumber = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "name":
+                            name = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         default:
                             break;
@@ -144,19 +161,13 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (!name.IsSet)
-                throw new ArgumentException("Property is required for class FileInfo.", nameof(name));
-
             if (!pagesNumber.IsSet)
-                throw new ArgumentException("Property is required for class FileInfo.", nameof(pagesNumber));
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class FileInfo.");
+                throw new JsonException("Property is required for class FileInfo: pages_number.");
 
             if (pagesNumber.IsSet && pagesNumber.Value == null)
-                throw new ArgumentNullException(nameof(pagesNumber), "Property is not nullable for class FileInfo.");
+                throw new JsonException("Property is not nullable for class FileInfo: pages_number.");
 
-            return new FileInfo(name.Value!, pagesNumber.Value!.Value!);
+            return new FileInfo(pagesNumber.Value!.Value!, name);
         }
 
         /// <summary>
@@ -165,7 +176,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="fileInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, FileInfo fileInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -180,15 +190,15 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="fileInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, FileInfo fileInfo, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (fileInfo.Name == null)
-                throw new ArgumentNullException(nameof(fileInfo.Name), "Property is required for class FileInfo.");
-
-            writer.WriteString("name", fileInfo.Name);
-
             writer.WriteNumber("pages_number", fileInfo.PagesNumber);
+
+            if (fileInfo.NameOption.IsSet)
+                if (fileInfo.NameOption.Value != null)
+                    writer.WriteString("name", fileInfo.Name);
+                else
+                    writer.WriteNull("name");
         }
     }
 }

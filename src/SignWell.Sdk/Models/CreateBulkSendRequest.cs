@@ -34,8 +34,8 @@ namespace SignWell.Sdk.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateBulkSendRequest" /> class.
         /// </summary>
-        /// <param name="templateIds">Unique identifiers for a list of templates.</param>
-        /// <param name="bulkSendCsv">A RFC 4648 base64 string of the template CSV file to be validated.</param>
+        /// <param name="templateIds">Unique identifiers for a list of templates. A template that carries a pre-applied signature or initials field cannot be used while 21 CFR Part 11 is enabled, which requires every signature to be signed by the recipient: it returns a 422.</param>
+        /// <param name="bulkSendCsv">A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.</param>
         /// <param name="skipRowErrors">Whether to skip errors in the rows. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="apiApplicationId">Unique identifier for API Application settings to use. API Applications are optional and mainly used when isolating OAuth apps or for more control over embedded API settings</param>
         /// <param name="name">The name of the Bulk Send. Will be used as the document name for each of the documents.</param>
@@ -63,16 +63,16 @@ namespace SignWell.Sdk.Models
         partial void OnCreated();
 
         /// <summary>
-        /// Unique identifiers for a list of templates.
+        /// Unique identifiers for a list of templates. A template that carries a pre-applied signature or initials field cannot be used while 21 CFR Part 11 is enabled, which requires every signature to be signed by the recipient: it returns a 422.
         /// </summary>
-        /// <value>Unique identifiers for a list of templates.</value>
+        /// <value>Unique identifiers for a list of templates. A template that carries a pre-applied signature or initials field cannot be used while 21 CFR Part 11 is enabled, which requires every signature to be signed by the recipient: it returns a 422.</value>
         [JsonPropertyName("template_ids")]
         public List<Guid> TemplateIds { get; set; }
 
         /// <summary>
-        /// A RFC 4648 base64 string of the template CSV file to be validated.
+        /// A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.
         /// </summary>
-        /// <value>A RFC 4648 base64 string of the template CSV file to be validated.</value>
+        /// <value>A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.</value>
         /* <example>bmFtZSxlbWFpbApUZXN0LHRlc3RAZXhhbXBsZS5jb20K</example> */
         [JsonPropertyName("bulk_send_csv")]
         public string BulkSendCsv { get; set; }
@@ -232,8 +232,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CreateBulkSendRequest" />
     /// </summary>
-    public class CreateBulkSendRequestJsonConverter : JsonConverter<CreateBulkSendRequest>
+    public partial class CreateBulkSendRequestJsonConverter : JsonConverter<CreateBulkSendRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateBulkSendRequestJsonConverter" /> class.
+        /// </summary>
+        public CreateBulkSendRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CreateBulkSendRequest" />
         /// </summary>
@@ -314,40 +324,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!templateIds.IsSet)
-                throw new ArgumentException("Property is required for class CreateBulkSendRequest.", nameof(templateIds));
+                throw new JsonException("Property is required for class CreateBulkSendRequest: template_ids.");
 
             if (!bulkSendCsv.IsSet)
-                throw new ArgumentException("Property is required for class CreateBulkSendRequest.", nameof(bulkSendCsv));
+                throw new JsonException("Property is required for class CreateBulkSendRequest: bulk_send_csv.");
 
             if (templateIds.IsSet && templateIds.Value == null)
-                throw new ArgumentNullException(nameof(templateIds), "Property is not nullable for class CreateBulkSendRequest.");
+                throw new JsonException("Property is not nullable for class CreateBulkSendRequest: template_ids.");
 
             if (bulkSendCsv.IsSet && bulkSendCsv.Value == null)
-                throw new ArgumentNullException(nameof(bulkSendCsv), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (skipRowErrors.IsSet && skipRowErrors.Value == null)
-                throw new ArgumentNullException(nameof(skipRowErrors), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (apiApplicationId.IsSet && apiApplicationId.Value == null)
-                throw new ArgumentNullException(nameof(apiApplicationId), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (customRequesterName.IsSet && customRequesterName.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterName), "Property is not nullable for class CreateBulkSendRequest.");
-
-            if (customRequesterEmail.IsSet && customRequesterEmail.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterEmail), "Property is not nullable for class CreateBulkSendRequest.");
+                throw new JsonException("Property is not nullable for class CreateBulkSendRequest: bulk_send_csv.");
 
             return new CreateBulkSendRequest(templateIds.Value!, bulkSendCsv.Value!, skipRowErrors, apiApplicationId, name, subject, message, applySigningOrder, customRequesterName, customRequesterEmail);
         }
@@ -358,7 +344,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="createBulkSendRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CreateBulkSendRequest createBulkSendRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -373,29 +358,31 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="createBulkSendRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CreateBulkSendRequest createBulkSendRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (createBulkSendRequest.TemplateIds == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.TemplateIds), "Property is required for class CreateBulkSendRequest.");
+            if (createBulkSendRequest.SkipRowErrorsOption.IsSet && createBulkSendRequest.SkipRowErrors == null)
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.SkipRowErrors to non-nullable JSON property 'skip_row_errors'.");
 
-            if (createBulkSendRequest.BulkSendCsv == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.BulkSendCsv), "Property is required for class CreateBulkSendRequest.");
+            if (createBulkSendRequest.ApiApplicationIdOption.IsSet && createBulkSendRequest.ApiApplicationId == null)
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.ApiApplicationId to non-nullable JSON property 'api_application_id'.");
 
             if (createBulkSendRequest.NameOption.IsSet && createBulkSendRequest.Name == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.Name), "Property is required for class CreateBulkSendRequest.");
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.Name to non-nullable JSON property 'name'.");
 
             if (createBulkSendRequest.SubjectOption.IsSet && createBulkSendRequest.Subject == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.Subject), "Property is required for class CreateBulkSendRequest.");
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.Subject to non-nullable JSON property 'subject'.");
 
             if (createBulkSendRequest.MessageOption.IsSet && createBulkSendRequest.Message == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.Message), "Property is required for class CreateBulkSendRequest.");
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.Message to non-nullable JSON property 'message'.");
+
+            if (createBulkSendRequest.ApplySigningOrderOption.IsSet && createBulkSendRequest.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
 
             if (createBulkSendRequest.CustomRequesterNameOption.IsSet && createBulkSendRequest.CustomRequesterName == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.CustomRequesterName), "Property is required for class CreateBulkSendRequest.");
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.CustomRequesterName to non-nullable JSON property 'custom_requester_name'.");
 
             if (createBulkSendRequest.CustomRequesterEmailOption.IsSet && createBulkSendRequest.CustomRequesterEmail == null)
-                throw new ArgumentNullException(nameof(createBulkSendRequest.CustomRequesterEmail), "Property is required for class CreateBulkSendRequest.");
+                throw new JsonException("Cannot write null property CreateBulkSendRequest.CustomRequesterEmail to non-nullable JSON property 'custom_requester_email'.");
 
             writer.WritePropertyName("template_ids");
             JsonSerializer.Serialize(writer, createBulkSendRequest.TemplateIds, jsonSerializerOptions);

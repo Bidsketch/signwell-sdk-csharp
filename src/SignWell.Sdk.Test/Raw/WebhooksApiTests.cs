@@ -60,7 +60,7 @@ namespace SignWell.Sdk.Test.Raw
             CreateWebhookRequest createWebhookRequest = default!;
             var response = await _instance.CreateWebhookAsync(createWebhookRequest);
             var model = response.Created();
-            Assert.IsType<WebhookResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.WebhookResponse>(model);
         }
 
         /// <summary>

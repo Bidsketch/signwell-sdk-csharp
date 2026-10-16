@@ -4,8 +4,8 @@ All URIs are relative to *https://www.signwell.com*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
-| [**DeleteApiApplication**](ApiApplicationApi.md#deleteapiapplication) | **DELETE** /api/v1/api_applications/{id} | Delete API Application |
-| [**GetApiApplication**](ApiApplicationApi.md#getapiapplication) | **GET** /api/v1/api_applications/{id} | Get API Application |
+| [**DeleteApiApplication**](ApiApplicationApi.md#deleteapiapplication) | **DELETE** /api/v1/api_applications/{id}/ | Delete API Application |
+| [**GetApiApplication**](ApiApplicationApi.md#getapiapplication) | **GET** /api/v1/api_applications/{id}/ | Get API Application |
 
 <a id="deleteapiapplication"></a>
 # **DeleteApiApplication**

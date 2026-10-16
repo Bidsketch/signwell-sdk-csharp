@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SignWell.Sdk" Version="0.1.0-beta.1" />
+    <PackageReference Include="SignWell.Sdk" Version="0.2.0-beta.1" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" Condition="'$(TargetFramework)' == 'net48'" />
   </ItemGroup>
 </Project>

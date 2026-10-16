@@ -141,12 +141,52 @@ namespace SignWell.Sdk.Client
                     : "false";
             if (obj is CheckboxValidation checkboxValidation)
                 return CheckboxValidationValueConverter.ToJsonValue(checkboxValidation);
+            if (obj is ConditionalLogicDecisionInfo.DecisionTypeEnum conditionalLogicDecisionInfoDecisionTypeEnum)
+                return ConditionalLogicDecisionInfo.DecisionTypeEnumToJsonValue(conditionalLogicDecisionInfoDecisionTypeEnum);
+            if (obj is ConditionalRuleInfo.ActionTypeEnum conditionalRuleInfoActionTypeEnum)
+                return ConditionalRuleInfo.ActionTypeEnumToJsonValue(conditionalRuleInfoActionTypeEnum);
+            if (obj is ConditionalRuleInfoConditionsInner.ConditionTypeEnum conditionalRuleInfoConditionsInnerConditionTypeEnum)
+                return ConditionalRuleInfoConditionsInner.ConditionTypeEnumToJsonValue(conditionalRuleInfoConditionsInnerConditionTypeEnum);
+            if (obj is ConditionalRuleInfoConditionsInner.StatusEnum conditionalRuleInfoConditionsInnerStatusEnum)
+                return ConditionalRuleInfoConditionsInner.StatusEnumToJsonValue(conditionalRuleInfoConditionsInnerStatusEnum);
+            if (obj is ConditionalRuleInfoConditionsInner.JoinOperatorEnum conditionalRuleInfoConditionsInnerJoinOperatorEnum)
+                return ConditionalRuleInfoConditionsInner.JoinOperatorEnumToJsonValue(conditionalRuleInfoConditionsInnerJoinOperatorEnum);
+            if (obj is ConditionalRuleRequest.ActionTypeEnum conditionalRuleRequestActionTypeEnum)
+                return ConditionalRuleRequest.ActionTypeEnumToJsonValue(conditionalRuleRequestActionTypeEnum);
+            if (obj is ConditionalRuleRequestConditionsInner.ConditionTypeEnum conditionalRuleRequestConditionsInnerConditionTypeEnum)
+                return ConditionalRuleRequestConditionsInner.ConditionTypeEnumToJsonValue(conditionalRuleRequestConditionsInnerConditionTypeEnum);
+            if (obj is ConditionalRuleRequestConditionsInner.StatusEnum conditionalRuleRequestConditionsInnerStatusEnum)
+                return ConditionalRuleRequestConditionsInner.StatusEnumToJsonValue(conditionalRuleRequestConditionsInnerStatusEnum);
+            if (obj is ConditionalRuleRequestConditionsInner.JoinOperatorEnum conditionalRuleRequestConditionsInnerJoinOperatorEnum)
+                return ConditionalRuleRequestConditionsInner.JoinOperatorEnumToJsonValue(conditionalRuleRequestConditionsInnerJoinOperatorEnum);
             if (obj is DateFormat dateFormat)
                 return DateFormatValueConverter.ToJsonValue(dateFormat);
+            if (obj is DocumentFromTemplateRequest.ConditionalRulesModeEnum documentFromTemplateRequestConditionalRulesModeEnum)
+                return DocumentFromTemplateRequest.ConditionalRulesModeEnumToJsonValue(documentFromTemplateRequestConditionalRulesModeEnum);
+            if (obj is DocumentFromTemplateResponse.CfrPart11SigningModeEnum documentFromTemplateResponseCfrPart11SigningModeEnum)
+                return DocumentFromTemplateResponse.CfrPart11SigningModeEnumToJsonValue(documentFromTemplateResponseCfrPart11SigningModeEnum);
+            if (obj is DocumentFromTemplateResponseRecipientsInner.DeliveryMethodEnum documentFromTemplateResponseRecipientsInnerDeliveryMethodEnum)
+                return DocumentFromTemplateResponseRecipientsInner.DeliveryMethodEnumToJsonValue(documentFromTemplateResponseRecipientsInnerDeliveryMethodEnum);
+            if (obj is DocumentResponse.CfrPart11SigningModeEnum documentResponseCfrPart11SigningModeEnum)
+                return DocumentResponse.CfrPart11SigningModeEnumToJsonValue(documentResponseCfrPart11SigningModeEnum);
+            if (obj is DocumentResponseRecipientsInner.DeliveryMethodEnum documentResponseRecipientsInnerDeliveryMethodEnum)
+                return DocumentResponseRecipientsInner.DeliveryMethodEnumToJsonValue(documentResponseRecipientsInnerDeliveryMethodEnum);
+            if (obj is EmbeddedBrandingBranding.CompanyLogoEnum embeddedBrandingBrandingCompanyLogoEnum)
+                return EmbeddedBrandingBranding.CompanyLogoEnumToJsonValue(embeddedBrandingBrandingCompanyLogoEnum);
             if (obj is FieldType fieldType)
                 return FieldTypeValueConverter.ToJsonValue(fieldType);
             if (obj is FileFormat fileFormat)
                 return FileFormatValueConverter.ToJsonValue(fileFormat);
+            if (obj is PasscodeDelivery.MethodsEnum passcodeDeliveryMethodsEnum)
+                return PasscodeDelivery.MethodsEnumToJsonValue(passcodeDeliveryMethodsEnum);
+            if (obj is PlaceholdersInnerPasscodeDelivery.MethodsEnum placeholdersInnerPasscodeDeliveryMethodsEnum)
+                return PlaceholdersInnerPasscodeDelivery.MethodsEnumToJsonValue(placeholdersInnerPasscodeDeliveryMethodsEnum);
+            if (obj is RecipientsInner.DeliveryMethodEnum recipientsInnerDeliveryMethodEnum)
+                return RecipientsInner.DeliveryMethodEnumToJsonValue(recipientsInnerDeliveryMethodEnum);
+            if (obj is RecipientsInnerPasscodeDelivery.MethodsEnum recipientsInnerPasscodeDeliveryMethodsEnum)
+                return RecipientsInnerPasscodeDelivery.MethodsEnumToJsonValue(recipientsInnerPasscodeDeliveryMethodsEnum);
+            if (obj is TemplateRecipientsInner.DeliveryMethodEnum templateRecipientsInnerDeliveryMethodEnum)
+                return TemplateRecipientsInner.DeliveryMethodEnumToJsonValue(templateRecipientsInnerDeliveryMethodEnum);
             if (obj is TextValidation textValidation)
                 return TextValidationValueConverter.ToJsonValue(textValidation);
             if (obj is ICollection collection)
@@ -336,6 +376,35 @@ namespace SignWell.Sdk.Client
 
             throw new JsonException("The specified discriminator was not found.");
         }
+
+        /// <summary>
+        /// Determines if the provided header is a content header
+        /// </summary>
+        /// <param name="header">The header to check</param>
+        /// <returns>True if a content header; False otherwise</returns>
+        public static bool IsContentHeader(string header)
+        {
+            return ContentHeaders.Contains(header.ToLowerInvariant());
+        }
+
+        /// <summary>
+        /// The collection of content headers as per
+        /// https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpcontent.headers
+        /// </summary>
+        private static readonly string[] ContentHeaders = new String[]
+        {
+            "allow",
+            "content-encoding",
+            "content-disposition",
+            "content-language",
+            "content-length",
+            "content-location",
+            "content-md5",
+            "content-range",
+            "content-type",
+            "expires",
+            "last-modified"
+        };
 
         /// <summary>
         /// The base path of the API

@@ -112,8 +112,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AttachmentRequestInfo" />
     /// </summary>
-    public class AttachmentRequestInfoJsonConverter : JsonConverter<AttachmentRequestInfo>
+    public partial class AttachmentRequestInfoJsonConverter : JsonConverter<AttachmentRequestInfo>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AttachmentRequestInfoJsonConverter" /> class.
+        /// </summary>
+        public AttachmentRequestInfoJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AttachmentRequestInfo" />
         /// </summary>
@@ -166,19 +176,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class AttachmentRequestInfo.", nameof(name));
+                throw new JsonException("Property is required for class AttachmentRequestInfo: name.");
 
             if (!required.IsSet)
-                throw new ArgumentException("Property is required for class AttachmentRequestInfo.", nameof(required));
+                throw new JsonException("Property is required for class AttachmentRequestInfo: required.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class AttachmentRequestInfo.");
+                throw new JsonException("Property is not nullable for class AttachmentRequestInfo: name.");
 
             if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class AttachmentRequestInfo.");
-
-            if (url.IsSet && url.Value == null)
-                throw new ArgumentNullException(nameof(url), "Property is not nullable for class AttachmentRequestInfo.");
+                throw new JsonException("Property is not nullable for class AttachmentRequestInfo: required.");
 
             return new AttachmentRequestInfo(name.Value!, required.Value!.Value!, url);
         }
@@ -189,7 +196,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="attachmentRequestInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, AttachmentRequestInfo attachmentRequestInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -204,14 +210,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="attachmentRequestInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AttachmentRequestInfo attachmentRequestInfo, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (attachmentRequestInfo.Name == null)
-                throw new ArgumentNullException(nameof(attachmentRequestInfo.Name), "Property is required for class AttachmentRequestInfo.");
-
             if (attachmentRequestInfo.UrlOption.IsSet && attachmentRequestInfo.Url == null)
-                throw new ArgumentNullException(nameof(attachmentRequestInfo.Url), "Property is required for class AttachmentRequestInfo.");
+                throw new JsonException("Cannot write null property AttachmentRequestInfo.Url to non-nullable JSON property 'url'.");
 
             writer.WriteString("name", attachmentRequestInfo.Name);
 

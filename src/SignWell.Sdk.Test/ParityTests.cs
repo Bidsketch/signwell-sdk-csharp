@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,12 +26,26 @@ public sealed class ParityTests
     }
 
     [Fact]
+    public void DefaultUserAgentTracksThePackageVersion()
+    {
+        var informational = typeof(SignWellClientOptions).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+        Assert.NotNull(informational);
+        Assert.Equal($"signwell-sdk-csharp/{informational!.Split('+')[0]}", SignWellClientOptions.UserAgent);
+        Assert.DoesNotContain("+", SignWellClientOptions.UserAgent);
+    }
+
+    [Fact]
     public void DependencyInjectionExposesFacadeAndAllRawResources()
     {
         var services = new ServiceCollection();
         services.AddSignWell(o => o.ApiKey = "test-key");
         using var provider = services.BuildServiceProvider();
-        var client = provider.GetRequiredService<ISignWellClient>();
+        var client = provider.GetRequiredService<SignWellClient>();
+        Assert.False((bool)typeof(SignWellClient)
+            .GetField("_ownsProvider", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(client)!);
         Assert.NotNull(client.Documents.Raw);
         Assert.NotNull(provider.GetRequiredService<IDocumentApi>());
         Assert.NotNull(provider.GetRequiredService<ITemplateApi>());
@@ -53,6 +68,26 @@ public sealed class ParityTests
     [InlineData("0")]
     public void CheckboxNormalizationRejectsAmbiguousValues(string value) =>
         Assert.Throws<ArgumentException>(() => SignWellValues.NormalizeCheckbox(value));
+
+    [Fact]
+    public void CheckboxFieldConvertersNormalizeTheActualRequestBody()
+    {
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new FieldTypeJsonConverter());
+        options.Converters.Add(new AdditionalFieldsInnerInnerValueJsonConverter());
+        options.Converters.Add(new FieldsInnerInnerJsonConverter());
+
+        var checkbox = new FieldsInnerInner(10, 20, 1, "1", FieldType.Checkbox,
+            value: new AdditionalFieldsInnerInnerValue(true));
+        var text = new FieldsInnerInner(10, 20, 1, "1", FieldType.Text,
+            value: new AdditionalFieldsInnerInnerValue("true"));
+
+        Assert.Contains("\"value\":\"t\"", JsonSerializer.Serialize(checkbox, options));
+        Assert.Contains("\"value\":\"true\"", JsonSerializer.Serialize(text, options));
+        Assert.Throws<ArgumentException>(() => JsonSerializer.Serialize(
+            new FieldsInnerInner(10, 20, 1, "1", FieldType.Checkbox,
+                value: new AdditionalFieldsInnerInnerValue("yes")), options));
+    }
 
     [Fact]
     public void RendererAppliesNonceAndEscapesScriptContext()
@@ -131,7 +166,7 @@ public sealed class ParityTests
         var handler = new CaptureHandler(content);
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://www.signwell.com") };
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("X-Api-Key", "conflicting-default");
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "SignWell C# SDK/0.1.0-beta.1");
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", SignWellClientOptions.UserAgent);
         var transport = new ResponseModesClient(
             new SingleClientFactory(httpClient),
             new SignWellClientOptions { ApiKey = "real-key" },
@@ -141,7 +176,7 @@ public sealed class ParityTests
         Assert.False(content.WasSerialized);
         Assert.False(content.WasDisposed);
         Assert.Equal("real-key", handler.ApiKey);
-        Assert.Equal("SignWell C# SDK/0.1.0-beta.1", handler.UserAgent);
+        Assert.Equal(SignWellClientOptions.UserAgent, handler.UserAgent);
         stream.Dispose();
         Assert.True(content.WasDisposed);
         Assert.True(content.Stream.WasDisposed);

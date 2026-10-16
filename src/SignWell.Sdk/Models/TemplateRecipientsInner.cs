@@ -35,30 +35,149 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="TemplateRecipientsInner" /> class.
         /// </summary>
         /// <param name="id">A unique identifier that you will give to each recipient. We recommend numbering sequentially from 1 to X. IDs are required for associating recipients to fields and more.</param>
-        /// <param name="email">Email address for the recipient.</param>
-        /// <param name="name">Name of the recipient.</param>
+        /// <param name="name">Name of the recipient. Required on 21 CFR Part 11 documents: a recipient without a name returns a 422.</param>
+        /// <param name="email">Email address for the recipient. Required unless &#x60;delivery_method&#x60; is &#x60;sms&#x60;.</param>
         /// <param name="placeholderName">The name of the placeholder you want this recipient assigned to.</param>
-        /// <param name="passcode">If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document.</param>
+        /// <param name="passcode">If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.</param>
+        /// <param name="passcodeDelivery">passcodeDelivery</param>
         /// <param name="subject">Email subject for the signature request that the recipient will see. Overrides the general subject for the template.</param>
         /// <param name="message">Email message for the signature request that the recipient will see. Overrides the general message for the template.</param>
         /// <param name="sendEmail">Applies on when &#x60;embedded_signing&#x60; is &#x60;true&#x60;. By default, recipients are not notified through email to sign when doing embedded signing. Setting this to &#x60;true&#x60;  will send a notification email to the recipient. Default is &#x60;false&#x60;. (default to false)</param>
         /// <param name="sendEmailDelay">If &#x60;send_email&#x60; is &#x60;true&#x60; recipients will receive a new document notification immediately. In the case of embedded signing, you can delay this notification to only send if the document is not completed within a few minutes. The email notification will not go out if the document is completed before the delay time is over. Valid values are in minutes ranging from &#x60;0&#x60; to &#x60;60&#x60;. Defaults to &#x60;0&#x60;. (default to 0)</param>
+        /// <param name="deliveryMethod">How the recipient is notified and receives the signing link: &#x60;email&#x60; (default), &#x60;sms&#x60;, or &#x60;email_and_sms&#x60;. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled. &#x60;email&#x60; requires &#x60;email&#x60;, &#x60;sms&#x60; requires &#x60;phone_number&#x60;, and &#x60;email_and_sms&#x60; requires both. SMS content always uses fixed system templates; &#x60;subject&#x60; and &#x60;message&#x60; apply to email notifications only. A 21 CFR Part 11 document records one verified channel per recipient: &#x60;email&#x60; and &#x60;sms&#x60; are both accepted, while &#x60;email_and_sms&#x60; returns a 422. (default to DeliveryMethodEnum.Email)</param>
+        /// <param name="phoneNumber">Recipient phone number in E.164 format (for example &#x60;+14155551234&#x60;). Required when &#x60;delivery_method&#x60; is &#x60;sms&#x60; or &#x60;email_and_sms&#x60;. Only phone numbers from the country codes currently enabled for SMS are accepted.</param>
+        /// <param name="sendSms">Applies only when &#x60;embedded_signing&#x60; is &#x60;true&#x60; and the recipient&#39;s &#x60;delivery_method&#x60; includes SMS. By default, recipients are not notified through SMS when doing embedded signing. Setting this to &#x60;true&#x60; will send the SMS notification to the recipient. Default is &#x60;false&#x60;. (default to false)</param>
+        /// <param name="sendSmsDelay">If &#x60;send_sms&#x60; is &#x60;true&#x60; the recipient will receive the SMS notification immediately. In the case of embedded signing, you can delay this notification to only send if the document is not completed within a few minutes. The SMS will not go out if the document is completed before the delay time is over. Valid values are in minutes ranging from &#x60;0&#x60; to &#x60;60&#x60;. Defaults to &#x60;0&#x60;. (default to 0)</param>
         [JsonConstructor]
-        public TemplateRecipientsInner(string id, string email, Option<string?> name = default, Option<string?> placeholderName = default, Option<string?> passcode = default, Option<string?> subject = default, Option<string?> message = default, Option<bool?> sendEmail = default, Option<int?> sendEmailDelay = default)
+        public TemplateRecipientsInner(string id, Option<string?> name = default, Option<string?> email = default, Option<string?> placeholderName = default, Option<string?> passcode = default, Option<RecipientsInnerPasscodeDelivery?> passcodeDelivery = default, Option<string?> subject = default, Option<string?> message = default, Option<bool?> sendEmail = default, Option<int?> sendEmailDelay = default, Option<DeliveryMethodEnum?> deliveryMethod = default, Option<string?> phoneNumber = default, Option<bool?> sendSms = default, Option<int?> sendSmsDelay = default)
         {
             Id = id;
-            Email = email;
             NameOption = name;
+            EmailOption = email;
             PlaceholderNameOption = placeholderName;
             PasscodeOption = passcode;
+            PasscodeDeliveryOption = passcodeDelivery;
             SubjectOption = subject;
             MessageOption = message;
             SendEmailOption = sendEmail;
             SendEmailDelayOption = sendEmailDelay;
+            DeliveryMethodOption = deliveryMethod;
+            PhoneNumberOption = phoneNumber;
+            SendSmsOption = sendSms;
+            SendSmsDelayOption = sendSmsDelay;
             OnCreated();
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// How the recipient is notified and receives the signing link: &#x60;email&#x60; (default), &#x60;sms&#x60;, or &#x60;email_and_sms&#x60;. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled. &#x60;email&#x60; requires &#x60;email&#x60;, &#x60;sms&#x60; requires &#x60;phone_number&#x60;, and &#x60;email_and_sms&#x60; requires both. SMS content always uses fixed system templates; &#x60;subject&#x60; and &#x60;message&#x60; apply to email notifications only. A 21 CFR Part 11 document records one verified channel per recipient: &#x60;email&#x60; and &#x60;sms&#x60; are both accepted, while &#x60;email_and_sms&#x60; returns a 422.
+        /// </summary>
+        /// <value>How the recipient is notified and receives the signing link: &#x60;email&#x60; (default), &#x60;sms&#x60;, or &#x60;email_and_sms&#x60;. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled. &#x60;email&#x60; requires &#x60;email&#x60;, &#x60;sms&#x60; requires &#x60;phone_number&#x60;, and &#x60;email_and_sms&#x60; requires both. SMS content always uses fixed system templates; &#x60;subject&#x60; and &#x60;message&#x60; apply to email notifications only. A 21 CFR Part 11 document records one verified channel per recipient: &#x60;email&#x60; and &#x60;sms&#x60; are both accepted, while &#x60;email_and_sms&#x60; returns a 422.</value>
+        public enum DeliveryMethodEnum
+        {
+            /// <summary>
+            /// Enum Email for value: email
+            /// </summary>
+            Email = 1,
+
+            /// <summary>
+            /// Enum Sms for value: sms
+            /// </summary>
+            Sms = 2,
+
+            /// <summary>
+            /// Enum EmailAndSms for value: email_and_sms
+            /// </summary>
+            EmailAndSms = 3,
+
+            /// <summary>
+            /// Enum UnknownDefaultOpenApi for value: unknown_default_open_api
+            /// </summary>
+            UnknownDefaultOpenApi = 4
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DeliveryMethodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static DeliveryMethodEnum DeliveryMethodEnumFromString(string value)
+        {
+            if (value.Equals("email"))
+                return DeliveryMethodEnum.Email;
+
+            if (value.Equals("sms"))
+                return DeliveryMethodEnum.Sms;
+
+            if (value.Equals("email_and_sms"))
+                return DeliveryMethodEnum.EmailAndSms;
+
+            if (value.Equals("unknown_default_open_api"))
+                return DeliveryMethodEnum.UnknownDefaultOpenApi;
+
+            return DeliveryMethodEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DeliveryMethodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DeliveryMethodEnum? DeliveryMethodEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("email"))
+                return DeliveryMethodEnum.Email;
+
+            if (value.Equals("sms"))
+                return DeliveryMethodEnum.Sms;
+
+            if (value.Equals("email_and_sms"))
+                return DeliveryMethodEnum.EmailAndSms;
+
+            if (value.Equals("unknown_default_open_api"))
+                return DeliveryMethodEnum.UnknownDefaultOpenApi;
+
+            return DeliveryMethodEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DeliveryMethodEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string DeliveryMethodEnumToJsonValue(DeliveryMethodEnum? value)
+        {
+            if (value == DeliveryMethodEnum.Email)
+                return "email";
+
+            if (value == DeliveryMethodEnum.Sms)
+                return "sms";
+
+            if (value == DeliveryMethodEnum.EmailAndSms)
+                return "email_and_sms";
+
+            if (value == DeliveryMethodEnum.UnknownDefaultOpenApi)
+                return "unknown_default_open_api";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of DeliveryMethod
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DeliveryMethodEnum?> DeliveryMethodOption { get; private set; }
+
+        /// <summary>
+        /// How the recipient is notified and receives the signing link: &#x60;email&#x60; (default), &#x60;sms&#x60;, or &#x60;email_and_sms&#x60;. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled. &#x60;email&#x60; requires &#x60;email&#x60;, &#x60;sms&#x60; requires &#x60;phone_number&#x60;, and &#x60;email_and_sms&#x60; requires both. SMS content always uses fixed system templates; &#x60;subject&#x60; and &#x60;message&#x60; apply to email notifications only. A 21 CFR Part 11 document records one verified channel per recipient: &#x60;email&#x60; and &#x60;sms&#x60; are both accepted, while &#x60;email_and_sms&#x60; returns a 422.
+        /// </summary>
+        /// <value>How the recipient is notified and receives the signing link: &#x60;email&#x60; (default), &#x60;sms&#x60;, or &#x60;email_and_sms&#x60;. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled. &#x60;email&#x60; requires &#x60;email&#x60;, &#x60;sms&#x60; requires &#x60;phone_number&#x60;, and &#x60;email_and_sms&#x60; requires both. SMS content always uses fixed system templates; &#x60;subject&#x60; and &#x60;message&#x60; apply to email notifications only. A 21 CFR Part 11 document records one verified channel per recipient: &#x60;email&#x60; and &#x60;sms&#x60; are both accepted, while &#x60;email_and_sms&#x60; returns a 422.</value>
+        [JsonPropertyName("delivery_method")]
+        public DeliveryMethodEnum? DeliveryMethod { get { return this.DeliveryMethodOption.Value; } set { this.DeliveryMethodOption = new Option<DeliveryMethodEnum?>(value); } }
 
         /// <summary>
         /// A unique identifier that you will give to each recipient. We recommend numbering sequentially from 1 to X. IDs are required for associating recipients to fields and more.
@@ -68,14 +187,6 @@ namespace SignWell.Sdk.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Email address for the recipient.
-        /// </summary>
-        /// <value>Email address for the recipient.</value>
-        /* <example>signer@example.com</example> */
-        [JsonPropertyName("email")]
-        public string Email { get; set; }
-
-        /// <summary>
         /// Used to track the state of Name
         /// </summary>
         [JsonIgnore]
@@ -83,11 +194,26 @@ namespace SignWell.Sdk.Models
         public Option<string?> NameOption { get; private set; }
 
         /// <summary>
-        /// Name of the recipient.
+        /// Name of the recipient. Required on 21 CFR Part 11 documents: a recipient without a name returns a 422.
         /// </summary>
-        /// <value>Name of the recipient.</value>
+        /// <value>Name of the recipient. Required on 21 CFR Part 11 documents: a recipient without a name returns a 422.</value>
         [JsonPropertyName("name")]
         public string? Name { get { return this.NameOption.Value; } set { this.NameOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of Email
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> EmailOption { get; private set; }
+
+        /// <summary>
+        /// Email address for the recipient. Required unless &#x60;delivery_method&#x60; is &#x60;sms&#x60;.
+        /// </summary>
+        /// <value>Email address for the recipient. Required unless &#x60;delivery_method&#x60; is &#x60;sms&#x60;.</value>
+        /* <example>signer@example.com</example> */
+        [JsonPropertyName("email")]
+        public string? Email { get { return this.EmailOption.Value; } set { this.EmailOption = new Option<string?>(value); } }
 
         /// <summary>
         /// Used to track the state of PlaceholderName
@@ -111,11 +237,24 @@ namespace SignWell.Sdk.Models
         public Option<string?> PasscodeOption { get; private set; }
 
         /// <summary>
-        /// If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document.
+        /// If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.
         /// </summary>
-        /// <value>If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document.</value>
+        /// <value>If set, signers assigned with a passcode will be required to enter the passcode before they’re able to view and complete the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.</value>
         [JsonPropertyName("passcode")]
         public string? Passcode { get { return this.PasscodeOption.Value; } set { this.PasscodeOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of PasscodeDelivery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<RecipientsInnerPasscodeDelivery?> PasscodeDeliveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PasscodeDelivery
+        /// </summary>
+        [JsonPropertyName("passcode_delivery")]
+        public RecipientsInnerPasscodeDelivery? PasscodeDelivery { get { return this.PasscodeDeliveryOption.Value; } set { this.PasscodeDeliveryOption = new Option<RecipientsInnerPasscodeDelivery?>(value); } }
 
         /// <summary>
         /// Used to track the state of Subject
@@ -174,6 +313,49 @@ namespace SignWell.Sdk.Models
         public int? SendEmailDelay { get { return this.SendEmailDelayOption.Value; } set { this.SendEmailDelayOption = new Option<int?>(value); } }
 
         /// <summary>
+        /// Used to track the state of PhoneNumber
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> PhoneNumberOption { get; private set; }
+
+        /// <summary>
+        /// Recipient phone number in E.164 format (for example &#x60;+14155551234&#x60;). Required when &#x60;delivery_method&#x60; is &#x60;sms&#x60; or &#x60;email_and_sms&#x60;. Only phone numbers from the country codes currently enabled for SMS are accepted.
+        /// </summary>
+        /// <value>Recipient phone number in E.164 format (for example &#x60;+14155551234&#x60;). Required when &#x60;delivery_method&#x60; is &#x60;sms&#x60; or &#x60;email_and_sms&#x60;. Only phone numbers from the country codes currently enabled for SMS are accepted.</value>
+        /* <example>+14155551234</example> */
+        [JsonPropertyName("phone_number")]
+        public string? PhoneNumber { get { return this.PhoneNumberOption.Value; } set { this.PhoneNumberOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of SendSms
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> SendSmsOption { get; private set; }
+
+        /// <summary>
+        /// Applies only when &#x60;embedded_signing&#x60; is &#x60;true&#x60; and the recipient&#39;s &#x60;delivery_method&#x60; includes SMS. By default, recipients are not notified through SMS when doing embedded signing. Setting this to &#x60;true&#x60; will send the SMS notification to the recipient. Default is &#x60;false&#x60;.
+        /// </summary>
+        /// <value>Applies only when &#x60;embedded_signing&#x60; is &#x60;true&#x60; and the recipient&#39;s &#x60;delivery_method&#x60; includes SMS. By default, recipients are not notified through SMS when doing embedded signing. Setting this to &#x60;true&#x60; will send the SMS notification to the recipient. Default is &#x60;false&#x60;.</value>
+        [JsonPropertyName("send_sms")]
+        public bool? SendSms { get { return this.SendSmsOption.Value; } set { this.SendSmsOption = new Option<bool?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of SendSmsDelay
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> SendSmsDelayOption { get; private set; }
+
+        /// <summary>
+        /// If &#x60;send_sms&#x60; is &#x60;true&#x60; the recipient will receive the SMS notification immediately. In the case of embedded signing, you can delay this notification to only send if the document is not completed within a few minutes. The SMS will not go out if the document is completed before the delay time is over. Valid values are in minutes ranging from &#x60;0&#x60; to &#x60;60&#x60;. Defaults to &#x60;0&#x60;.
+        /// </summary>
+        /// <value>If &#x60;send_sms&#x60; is &#x60;true&#x60; the recipient will receive the SMS notification immediately. In the case of embedded signing, you can delay this notification to only send if the document is not completed within a few minutes. The SMS will not go out if the document is completed before the delay time is over. Valid values are in minutes ranging from &#x60;0&#x60; to &#x60;60&#x60;. Defaults to &#x60;0&#x60;.</value>
+        [JsonPropertyName("send_sms_delay")]
+        public int? SendSmsDelay { get { return this.SendSmsDelayOption.Value; } set { this.SendSmsDelayOption = new Option<int?>(value); } }
+
+        /// <summary>
         /// Gets or Sets additional properties
         /// </summary>
         [JsonExtensionData]
@@ -188,14 +370,19 @@ namespace SignWell.Sdk.Models
             StringBuilder sb = new StringBuilder();
             sb.Append("class TemplateRecipientsInner {\n");
             sb.Append("  Id: ").Append(Id).Append("\n");
-            sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  PlaceholderName: ").Append(PlaceholderName).Append("\n");
             sb.Append("  Passcode: ").Append(Passcode).Append("\n");
+            sb.Append("  PasscodeDelivery: ").Append(PasscodeDelivery).Append("\n");
             sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("  SendEmail: ").Append(SendEmail).Append("\n");
             sb.Append("  SendEmailDelay: ").Append(SendEmailDelay).Append("\n");
+            sb.Append("  DeliveryMethod: ").Append(DeliveryMethod).Append("\n");
+            sb.Append("  PhoneNumber: ").Append(PhoneNumber).Append("\n");
+            sb.Append("  SendSms: ").Append(SendSms).Append("\n");
+            sb.Append("  SendSmsDelay: ").Append(SendSmsDelay).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -215,8 +402,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateRecipientsInner" />
     /// </summary>
-    public class TemplateRecipientsInnerJsonConverter : JsonConverter<TemplateRecipientsInner>
+    public partial class TemplateRecipientsInnerJsonConverter : JsonConverter<TemplateRecipientsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateRecipientsInnerJsonConverter" /> class.
+        /// </summary>
+        public TemplateRecipientsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateRecipientsInner" />
         /// </summary>
@@ -235,14 +432,19 @@ namespace SignWell.Sdk.Models
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> id = default;
-            Option<string?> email = default;
             Option<string?> name = default;
+            Option<string?> email = default;
             Option<string?> placeholderName = default;
             Option<string?> passcode = default;
+            Option<RecipientsInnerPasscodeDelivery?> passcodeDelivery = default;
             Option<string?> subject = default;
             Option<string?> message = default;
             Option<bool?> sendEmail = default;
             Option<int?> sendEmailDelay = default;
+            Option<TemplateRecipientsInner.DeliveryMethodEnum?> deliveryMethod = default;
+            Option<string?> phoneNumber = default;
+            Option<bool?> sendSms = default;
+            Option<int?> sendSmsDelay = default;
 
             while (utf8JsonReader.Read())
             {
@@ -262,17 +464,20 @@ namespace SignWell.Sdk.Models
                         case "id":
                             id = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "email":
-                            email = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "email":
+                            email = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "placeholder_name":
                             placeholderName = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "passcode":
                             passcode = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "passcode_delivery":
+                            passcodeDelivery = new Option<RecipientsInnerPasscodeDelivery?>(JsonSerializer.Deserialize<RecipientsInnerPasscodeDelivery>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "subject":
                             subject = new Option<string?>(utf8JsonReader.GetString()!);
@@ -286,6 +491,25 @@ namespace SignWell.Sdk.Models
                         case "send_email_delay":
                             sendEmailDelay = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
+                        case "delivery_method":
+                            string? deliveryMethodRawValue = utf8JsonReader.GetString();
+                            if (deliveryMethodRawValue != null)
+                            {
+                                TemplateRecipientsInner.DeliveryMethodEnum? deliveryMethodValue = TemplateRecipientsInner.DeliveryMethodEnumFromStringOrDefault(deliveryMethodRawValue);
+                                if (deliveryMethodValue == null)
+                                    throw new JsonException();
+                                deliveryMethod = new Option<TemplateRecipientsInner.DeliveryMethodEnum?>(deliveryMethodValue);
+                            }
+                            break;
+                        case "phone_number":
+                            phoneNumber = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "send_sms":
+                            sendSms = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "send_sms_delay":
+                            sendSmsDelay = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
                         default:
                             break;
                     }
@@ -293,39 +517,12 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class TemplateRecipientsInner.", nameof(id));
-
-            if (!email.IsSet)
-                throw new ArgumentException("Property is required for class TemplateRecipientsInner.", nameof(email));
+                throw new JsonException("Property is required for class TemplateRecipientsInner: id.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class TemplateRecipientsInner.");
+                throw new JsonException("Property is not nullable for class TemplateRecipientsInner: id.");
 
-            if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (placeholderName.IsSet && placeholderName.Value == null)
-                throw new ArgumentNullException(nameof(placeholderName), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (passcode.IsSet && passcode.Value == null)
-                throw new ArgumentNullException(nameof(passcode), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (sendEmail.IsSet && sendEmail.Value == null)
-                throw new ArgumentNullException(nameof(sendEmail), "Property is not nullable for class TemplateRecipientsInner.");
-
-            if (sendEmailDelay.IsSet && sendEmailDelay.Value == null)
-                throw new ArgumentNullException(nameof(sendEmailDelay), "Property is not nullable for class TemplateRecipientsInner.");
-
-            return new TemplateRecipientsInner(id.Value!, email.Value!, name, placeholderName, passcode, subject, message, sendEmail, sendEmailDelay);
+            return new TemplateRecipientsInner(id.Value!, name, email, placeholderName, passcode, passcodeDelivery, subject, message, sendEmail, sendEmailDelay, deliveryMethod, phoneNumber, sendSms, sendSmsDelay);
         }
 
         /// <summary>
@@ -334,7 +531,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, TemplateRecipientsInner templateRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -349,36 +545,54 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateRecipientsInner templateRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (templateRecipientsInner.Id == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Id), "Property is required for class TemplateRecipientsInner.");
-
-            if (templateRecipientsInner.Email == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Email), "Property is required for class TemplateRecipientsInner.");
-
             if (templateRecipientsInner.NameOption.IsSet && templateRecipientsInner.Name == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Name), "Property is required for class TemplateRecipientsInner.");
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.Name to non-nullable JSON property 'name'.");
+
+            if (templateRecipientsInner.EmailOption.IsSet && templateRecipientsInner.Email == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.Email to non-nullable JSON property 'email'.");
 
             if (templateRecipientsInner.PlaceholderNameOption.IsSet && templateRecipientsInner.PlaceholderName == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.PlaceholderName), "Property is required for class TemplateRecipientsInner.");
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.PlaceholderName to non-nullable JSON property 'placeholder_name'.");
 
             if (templateRecipientsInner.PasscodeOption.IsSet && templateRecipientsInner.Passcode == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Passcode), "Property is required for class TemplateRecipientsInner.");
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.Passcode to non-nullable JSON property 'passcode'.");
+
+            if (templateRecipientsInner.PasscodeDeliveryOption.IsSet && templateRecipientsInner.PasscodeDelivery == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.PasscodeDelivery to non-nullable JSON property 'passcode_delivery'.");
 
             if (templateRecipientsInner.SubjectOption.IsSet && templateRecipientsInner.Subject == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Subject), "Property is required for class TemplateRecipientsInner.");
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.Subject to non-nullable JSON property 'subject'.");
 
             if (templateRecipientsInner.MessageOption.IsSet && templateRecipientsInner.Message == null)
-                throw new ArgumentNullException(nameof(templateRecipientsInner.Message), "Property is required for class TemplateRecipientsInner.");
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.Message to non-nullable JSON property 'message'.");
+
+            if (templateRecipientsInner.SendEmailOption.IsSet && templateRecipientsInner.SendEmail == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.SendEmail to non-nullable JSON property 'send_email'.");
+
+            if (templateRecipientsInner.SendEmailDelayOption.IsSet && templateRecipientsInner.SendEmailDelay == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.SendEmailDelay to non-nullable JSON property 'send_email_delay'.");
+
+            if (templateRecipientsInner.DeliveryMethodOption.IsSet && templateRecipientsInner.DeliveryMethod == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.DeliveryMethod to non-nullable JSON property 'delivery_method'.");
+
+            if (templateRecipientsInner.PhoneNumberOption.IsSet && templateRecipientsInner.PhoneNumber == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.PhoneNumber to non-nullable JSON property 'phone_number'.");
+
+            if (templateRecipientsInner.SendSmsOption.IsSet && templateRecipientsInner.SendSms == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.SendSms to non-nullable JSON property 'send_sms'.");
+
+            if (templateRecipientsInner.SendSmsDelayOption.IsSet && templateRecipientsInner.SendSmsDelay == null)
+                throw new JsonException("Cannot write null property TemplateRecipientsInner.SendSmsDelay to non-nullable JSON property 'send_sms_delay'.");
 
             writer.WriteString("id", templateRecipientsInner.Id);
 
-            writer.WriteString("email", templateRecipientsInner.Email);
-
             if (templateRecipientsInner.NameOption.IsSet)
                 writer.WriteString("name", templateRecipientsInner.Name);
+
+            if (templateRecipientsInner.EmailOption.IsSet)
+                writer.WriteString("email", templateRecipientsInner.Email);
 
             if (templateRecipientsInner.PlaceholderNameOption.IsSet)
                 writer.WriteString("placeholder_name", templateRecipientsInner.PlaceholderName);
@@ -386,6 +600,11 @@ namespace SignWell.Sdk.Models
             if (templateRecipientsInner.PasscodeOption.IsSet)
                 writer.WriteString("passcode", templateRecipientsInner.Passcode);
 
+            if (templateRecipientsInner.PasscodeDeliveryOption.IsSet)
+            {
+                writer.WritePropertyName("passcode_delivery");
+                JsonSerializer.Serialize(writer, templateRecipientsInner.PasscodeDelivery, jsonSerializerOptions);
+            }
             if (templateRecipientsInner.SubjectOption.IsSet)
                 writer.WriteString("subject", templateRecipientsInner.Subject);
 
@@ -397,6 +616,25 @@ namespace SignWell.Sdk.Models
 
             if (templateRecipientsInner.SendEmailDelayOption.IsSet)
                 writer.WriteNumber("send_email_delay", templateRecipientsInner.SendEmailDelayOption.Value!.Value);
+
+            if (templateRecipientsInner.DeliveryMethodOption.IsSet)
+            {
+                if (templateRecipientsInner.DeliveryMethodOption.Value.HasValue)
+                {
+                    var deliveryMethodRawValue = TemplateRecipientsInner.DeliveryMethodEnumToJsonValue(templateRecipientsInner.DeliveryMethodOption.Value.Value);
+                    writer.WriteString("delivery_method", deliveryMethodRawValue);
+                }
+                else
+                    writer.WriteNull("delivery_method");
+            }
+            if (templateRecipientsInner.PhoneNumberOption.IsSet)
+                writer.WriteString("phone_number", templateRecipientsInner.PhoneNumber);
+
+            if (templateRecipientsInner.SendSmsOption.IsSet)
+                writer.WriteBoolean("send_sms", templateRecipientsInner.SendSmsOption.Value!.Value);
+
+            if (templateRecipientsInner.SendSmsDelayOption.IsSet)
+                writer.WriteNumber("send_sms_delay", templateRecipientsInner.SendSmsDelayOption.Value!.Value);
         }
     }
 }

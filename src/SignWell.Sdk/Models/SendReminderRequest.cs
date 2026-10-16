@@ -34,7 +34,7 @@ namespace SignWell.Sdk.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="SendReminderRequest" /> class.
         /// </summary>
-        /// <param name="recipients">Optional list if recipients within the document to send a reminder email to. If none are specified, all recipients that have not signed yet will receive a reminder email.</param>
+        /// <param name="recipients">Optional list of recipients within the document to remind. If none are specified, all recipients that have not signed yet are reminded. Each recipient is reminded through their own delivery method: email-only recipients get a reminder email, SMS-only recipients get a reminder text, and email_and_sms recipients get both. If the workspace has insufficient SMS credit, only the SMS reminder is skipped and the sender is notified once; the email reminder (if applicable) still goes out.</param>
         [JsonConstructor]
         public SendReminderRequest(Option<List<ReminderRecipientsInner>?> recipients = default)
         {
@@ -52,9 +52,9 @@ namespace SignWell.Sdk.Models
         public Option<List<ReminderRecipientsInner>?> RecipientsOption { get; private set; }
 
         /// <summary>
-        /// Optional list if recipients within the document to send a reminder email to. If none are specified, all recipients that have not signed yet will receive a reminder email.
+        /// Optional list of recipients within the document to remind. If none are specified, all recipients that have not signed yet are reminded. Each recipient is reminded through their own delivery method: email-only recipients get a reminder email, SMS-only recipients get a reminder text, and email_and_sms recipients get both. If the workspace has insufficient SMS credit, only the SMS reminder is skipped and the sender is notified once; the email reminder (if applicable) still goes out.
         /// </summary>
-        /// <value>Optional list if recipients within the document to send a reminder email to. If none are specified, all recipients that have not signed yet will receive a reminder email.</value>
+        /// <value>Optional list of recipients within the document to remind. If none are specified, all recipients that have not signed yet are reminded. Each recipient is reminded through their own delivery method: email-only recipients get a reminder email, SMS-only recipients get a reminder text, and email_and_sms recipients get both. If the workspace has insufficient SMS credit, only the SMS reminder is skipped and the sender is notified once; the email reminder (if applicable) still goes out.</value>
         [JsonPropertyName("recipients")]
         public List<ReminderRecipientsInner>? Recipients { get { return this.RecipientsOption.Value; } set { this.RecipientsOption = new Option<List<ReminderRecipientsInner>?>(value); } }
 
@@ -92,8 +92,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="SendReminderRequest" />
     /// </summary>
-    public class SendReminderRequestJsonConverter : JsonConverter<SendReminderRequest>
+    public partial class SendReminderRequestJsonConverter : JsonConverter<SendReminderRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SendReminderRequestJsonConverter" /> class.
+        /// </summary>
+        public SendReminderRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="SendReminderRequest" />
         /// </summary>
@@ -137,9 +147,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (recipients.IsSet && recipients.Value == null)
-                throw new ArgumentNullException(nameof(recipients), "Property is not nullable for class SendReminderRequest.");
-
             return new SendReminderRequest(recipients);
         }
 
@@ -149,7 +156,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="sendReminderRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, SendReminderRequest sendReminderRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -164,11 +170,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="sendReminderRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, SendReminderRequest sendReminderRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             if (sendReminderRequest.RecipientsOption.IsSet && sendReminderRequest.Recipients == null)
-                throw new ArgumentNullException(nameof(sendReminderRequest.Recipients), "Property is required for class SendReminderRequest.");
+                throw new JsonException("Cannot write null property SendReminderRequest.Recipients to non-nullable JSON property 'recipients'.");
 
             if (sendReminderRequest.RecipientsOption.IsSet)
             {

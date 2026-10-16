@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="Nom151UrlResponse" />
     /// </summary>
-    public class Nom151UrlResponseJsonConverter : JsonConverter<Nom151UrlResponse>
+    public partial class Nom151UrlResponseJsonConverter : JsonConverter<Nom151UrlResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Nom151UrlResponseJsonConverter" /> class.
+        /// </summary>
+        public Nom151UrlResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="Nom151UrlResponse" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!fileUrl.IsSet)
-                throw new ArgumentException("Property is required for class Nom151UrlResponse.", nameof(fileUrl));
+                throw new JsonException("Property is required for class Nom151UrlResponse: file_url.");
 
             if (fileUrl.IsSet && fileUrl.Value == null)
-                throw new ArgumentNullException(nameof(fileUrl), "Property is not nullable for class Nom151UrlResponse.");
+                throw new JsonException("Property is not nullable for class Nom151UrlResponse: file_url.");
 
             return new Nom151UrlResponse(fileUrl.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151UrlResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, Nom151UrlResponse nom151UrlResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151UrlResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, Nom151UrlResponse nom151UrlResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (nom151UrlResponse.FileUrl == null)
-                throw new ArgumentNullException(nameof(nom151UrlResponse.FileUrl), "Property is required for class Nom151UrlResponse.");
-
             writer.WriteString("file_url", nom151UrlResponse.FileUrl);
         }
     }

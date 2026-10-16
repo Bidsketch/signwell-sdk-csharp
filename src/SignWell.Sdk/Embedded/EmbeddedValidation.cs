@@ -9,6 +9,19 @@ public static class SignWellValues
 {
     public static string NormalizeCheckbox(object value)
     {
+        value = value switch
+        {
+            AdditionalFieldsInnerInnerValue { String: not null } union => union.String,
+            AdditionalFieldsInnerInnerValue { Bool: not null } union => union.Bool.Value,
+            AdditionalFieldsInnerInnerValue { Decimal: not null } union => union.Decimal.Value,
+            DocumentResponseFieldsInnerInnerValue { String: not null } union => union.String,
+            DocumentResponseFieldsInnerInnerValue { Bool: not null } union => union.Bool.Value,
+            DocumentResponseFieldsInnerInnerValue { Decimal: not null } union => union.Decimal.Value,
+            TemplateFieldValuesInnerValue { String: not null } union => union.String,
+            TemplateFieldValuesInnerValue { Bool: not null } union => union.Bool.Value,
+            TemplateFieldValuesInnerValue { Decimal: not null } union => union.Decimal.Value,
+            _ => value
+        };
         if (value is bool boolean)
             return boolean ? "t" : "f";
         if (value is string text)
@@ -49,9 +62,9 @@ internal static class EmbeddedModelFactory
             RequireIdentity(r.Name, r.Email);
             return new RecipientsInner(
                 r.Id ?? (i + 1).ToString(CultureInfo.InvariantCulture),
-                r.Email,
+                email: r.Email,
                 name: r.Name,
-                passcode: SignWellValues.NormalizePasscode(r.Passcode));
+                passcode: Optional(SignWellValues.NormalizePasscode(r.Passcode)));
         }).ToList();
     }
 
@@ -64,10 +77,10 @@ internal static class EmbeddedModelFactory
             RequireIdentity(r.Name, r.Email);
             return new TemplateRecipientsInner(
                 r.Id ?? (i + 1).ToString(CultureInfo.InvariantCulture),
-                r.Email,
+                email: r.Email,
                 name: r.Name,
-                placeholderName: r.PlaceholderName,
-                passcode: SignWellValues.NormalizePasscode(r.Passcode));
+                placeholderName: Optional(r.PlaceholderName),
+                passcode: Optional(SignWellValues.NormalizePasscode(r.Passcode)));
         }).ToList();
     }
 
@@ -83,7 +96,7 @@ internal static class EmbeddedModelFactory
                 throw new ArgumentException("Every field must identify a recipient.");
             return new FieldsInnerInner(
                 field.X, field.Y, field.Page, recipientId!, field.Type,
-                required: field.Required, label: field.Label);
+                required: field.Required, label: Optional(field.Label));
         }).ToList()).ToList();
     }
 
@@ -139,4 +152,7 @@ internal static class EmbeddedModelFactory
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Recipient name is required.");
         if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Recipient email is required.");
     }
+
+    private static Option<string?> Optional(string? value) =>
+        value is null ? default : new Option<string?>(value);
 }

@@ -139,8 +139,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="PaginationMeta" />
     /// </summary>
-    public class PaginationMetaJsonConverter : JsonConverter<PaginationMeta>
+    public partial class PaginationMetaJsonConverter : JsonConverter<PaginationMeta>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PaginationMetaJsonConverter" /> class.
+        /// </summary>
+        public PaginationMetaJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="PaginationMeta" />
         /// </summary>
@@ -201,22 +211,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!currentPage.IsSet)
-                throw new ArgumentException("Property is required for class PaginationMeta.", nameof(currentPage));
+                throw new JsonException("Property is required for class PaginationMeta: current_page.");
 
             if (!totalCount.IsSet)
-                throw new ArgumentException("Property is required for class PaginationMeta.", nameof(totalCount));
+                throw new JsonException("Property is required for class PaginationMeta: total_count.");
 
             if (!totalPages.IsSet)
-                throw new ArgumentException("Property is required for class PaginationMeta.", nameof(totalPages));
+                throw new JsonException("Property is required for class PaginationMeta: total_pages.");
 
             if (currentPage.IsSet && currentPage.Value == null)
-                throw new ArgumentNullException(nameof(currentPage), "Property is not nullable for class PaginationMeta.");
+                throw new JsonException("Property is not nullable for class PaginationMeta: current_page.");
 
             if (totalCount.IsSet && totalCount.Value == null)
-                throw new ArgumentNullException(nameof(totalCount), "Property is not nullable for class PaginationMeta.");
+                throw new JsonException("Property is not nullable for class PaginationMeta: total_count.");
 
             if (totalPages.IsSet && totalPages.Value == null)
-                throw new ArgumentNullException(nameof(totalPages), "Property is not nullable for class PaginationMeta.");
+                throw new JsonException("Property is not nullable for class PaginationMeta: total_pages.");
 
             return new PaginationMeta(currentPage.Value!.Value!, totalCount.Value!.Value!, totalPages.Value!.Value!, nextPage, previousPage);
         }
@@ -227,7 +237,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="paginationMeta"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, PaginationMeta paginationMeta, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -242,7 +251,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="paginationMeta"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, PaginationMeta paginationMeta, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteNumber("current_page", paginationMeta.CurrentPage);

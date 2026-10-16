@@ -73,6 +73,24 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
+        /// Test the property 'CfrPart11'
+        /// </summary>
+        [Fact]
+        public void CfrPart11Test()
+        {
+            // TODO unit test for the property 'CfrPart11'
+        }
+
+        /// <summary>
+        /// Test the property 'CfrPart11SigningMode'
+        /// </summary>
+        [Fact]
+        public void CfrPart11SigningModeTest()
+        {
+            // TODO unit test for the property 'CfrPart11SigningMode'
+        }
+
+        /// <summary>
         /// Test the property 'ApiApplicationId'
         /// </summary>
         [Fact]
@@ -196,6 +214,15 @@ namespace SignWell.Sdk.Test.Model
         public void ArchivedTest()
         {
             // TODO unit test for the property 'Archived'
+        }
+
+        /// <summary>
+        /// Test the property 'Embedded'
+        /// </summary>
+        [Fact]
+        public void EmbeddedTest()
+        {
+            // TODO unit test for the property 'Embedded'
         }
 
         /// <summary>
@@ -385,6 +412,24 @@ namespace SignWell.Sdk.Test.Model
         public void CheckboxGroupsTest()
         {
             // TODO unit test for the property 'CheckboxGroups'
+        }
+
+        /// <summary>
+        /// Test the property 'ConditionalRules'
+        /// </summary>
+        [Fact]
+        public void ConditionalRulesTest()
+        {
+            // TODO unit test for the property 'ConditionalRules'
+        }
+
+        /// <summary>
+        /// Test the property 'ConditionalLogicDecisions'
+        /// </summary>
+        [Fact]
+        public void ConditionalLogicDecisionsTest()
+        {
+            // TODO unit test for the property 'ConditionalLogicDecisions'
         }
     }
 }

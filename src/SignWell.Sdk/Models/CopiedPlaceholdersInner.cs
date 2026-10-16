@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="CopiedPlaceholdersInner" /> class.
         /// </summary>
         /// <param name="name">Name of the placeholder.</param>
-        /// <param name="preassignedRecipientName">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.</param>
+        /// <param name="preassignedRecipientName">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.</param>
         /// <param name="preassignedRecipientEmail">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the email.</param>
         [JsonConstructor]
         public CopiedPlaceholdersInner(string name, Option<string?> preassignedRecipientName = default, Option<string?> preassignedRecipientEmail = default)
@@ -63,9 +63,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> PreassignedRecipientNameOption { get; private set; }
 
         /// <summary>
-        /// In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.
+        /// In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.
         /// </summary>
-        /// <value>In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.</value>
+        /// <value>In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.</value>
         [JsonPropertyName("preassigned_recipient_name")]
         public string? PreassignedRecipientName { get { return this.PreassignedRecipientNameOption.Value; } set { this.PreassignedRecipientNameOption = new Option<string?>(value); } }
 
@@ -119,8 +119,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CopiedPlaceholdersInner" />
     /// </summary>
-    public class CopiedPlaceholdersInnerJsonConverter : JsonConverter<CopiedPlaceholdersInner>
+    public partial class CopiedPlaceholdersInnerJsonConverter : JsonConverter<CopiedPlaceholdersInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopiedPlaceholdersInnerJsonConverter" /> class.
+        /// </summary>
+        public CopiedPlaceholdersInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CopiedPlaceholdersInner" />
         /// </summary>
@@ -173,16 +183,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class CopiedPlaceholdersInner.", nameof(name));
+                throw new JsonException("Property is required for class CopiedPlaceholdersInner: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class CopiedPlaceholdersInner.");
-
-            if (preassignedRecipientName.IsSet && preassignedRecipientName.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientName), "Property is not nullable for class CopiedPlaceholdersInner.");
-
-            if (preassignedRecipientEmail.IsSet && preassignedRecipientEmail.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientEmail), "Property is not nullable for class CopiedPlaceholdersInner.");
+                throw new JsonException("Property is not nullable for class CopiedPlaceholdersInner: name.");
 
             return new CopiedPlaceholdersInner(name.Value!, preassignedRecipientName, preassignedRecipientEmail);
         }
@@ -193,7 +197,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedPlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CopiedPlaceholdersInner copiedPlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -208,17 +211,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedPlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CopiedPlaceholdersInner copiedPlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (copiedPlaceholdersInner.Name == null)
-                throw new ArgumentNullException(nameof(copiedPlaceholdersInner.Name), "Property is required for class CopiedPlaceholdersInner.");
-
             if (copiedPlaceholdersInner.PreassignedRecipientNameOption.IsSet && copiedPlaceholdersInner.PreassignedRecipientName == null)
-                throw new ArgumentNullException(nameof(copiedPlaceholdersInner.PreassignedRecipientName), "Property is required for class CopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property CopiedPlaceholdersInner.PreassignedRecipientName to non-nullable JSON property 'preassigned_recipient_name'.");
 
             if (copiedPlaceholdersInner.PreassignedRecipientEmailOption.IsSet && copiedPlaceholdersInner.PreassignedRecipientEmail == null)
-                throw new ArgumentNullException(nameof(copiedPlaceholdersInner.PreassignedRecipientEmail), "Property is required for class CopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property CopiedPlaceholdersInner.PreassignedRecipientEmail to non-nullable JSON property 'preassigned_recipient_email'.");
 
             writer.WriteString("name", copiedPlaceholdersInner.Name);
 

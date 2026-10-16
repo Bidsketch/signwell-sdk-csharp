@@ -93,8 +93,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendResponseTemplatesInner" />
     /// </summary>
-    public class BulkSendResponseTemplatesInnerJsonConverter : JsonConverter<BulkSendResponseTemplatesInner>
+    public partial class BulkSendResponseTemplatesInnerJsonConverter : JsonConverter<BulkSendResponseTemplatesInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendResponseTemplatesInnerJsonConverter" /> class.
+        /// </summary>
+        public BulkSendResponseTemplatesInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="BulkSendResponseTemplatesInner" />
         /// </summary>
@@ -143,16 +153,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponseTemplatesInner.", nameof(id));
+                throw new JsonException("Property is required for class BulkSendResponseTemplatesInner: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponseTemplatesInner.", nameof(name));
+                throw new JsonException("Property is required for class BulkSendResponseTemplatesInner: name.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class BulkSendResponseTemplatesInner.");
+                throw new JsonException("Property is not nullable for class BulkSendResponseTemplatesInner: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class BulkSendResponseTemplatesInner.");
+                throw new JsonException("Property is not nullable for class BulkSendResponseTemplatesInner: name.");
 
             return new BulkSendResponseTemplatesInner(id.Value!.Value!, name.Value!);
         }
@@ -163,7 +173,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendResponseTemplatesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendResponseTemplatesInner bulkSendResponseTemplatesInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -178,12 +187,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendResponseTemplatesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendResponseTemplatesInner bulkSendResponseTemplatesInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendResponseTemplatesInner.Name == null)
-                throw new ArgumentNullException(nameof(bulkSendResponseTemplatesInner.Name), "Property is required for class BulkSendResponseTemplatesInner.");
-
             writer.WriteString("id", bulkSendResponseTemplatesInner.Id);
 
             writer.WriteString("name", bulkSendResponseTemplatesInner.Name);

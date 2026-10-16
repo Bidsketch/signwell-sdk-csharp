@@ -8,7 +8,7 @@ on:
         required: true
       nom151_document_id:
         description: Completed Mexican document fixture ID with NOM-151
-        required: true
+        required: false
       template_ids:
         description: Comma-separated test-mode template IDs
         required: true
@@ -18,6 +18,9 @@ on:
       recipient_email:
         description: Controlled test recipient email
         required: true
+      template_placeholder_name:
+        description: Placeholder shared by the selected templates, if required
+        required: false
 
 permissions:
   contents: read
@@ -35,8 +38,9 @@ jobs:
         env:
           SIGNWELL_API_KEY: ${{ secrets.SIGNWELL_API_KEY }}
           SIGNWELL_COMPLETED_DOCUMENT_ID: ${{ inputs.completed_document_id }}
-          SIGNWELL_NOM151_DOCUMENT_ID: ${{ inputs.nom151_document_id }}
+          SIGNWELL_NOM151_DOCUMENT_ID: ${{ inputs.nom151_document_id || inputs.completed_document_id }}
           SIGNWELL_TEMPLATE_IDS: ${{ inputs.template_ids }}
           SIGNWELL_FIXTURE_FILE_URL: ${{ inputs.fixture_file_url }}
           SIGNWELL_RECIPIENT_EMAIL: ${{ inputs.recipient_email }}
+          SIGNWELL_TEMPLATE_PLACEHOLDER_NAME: ${{ inputs.template_placeholder_name }}
         run: dotnet run --project samples/SignWell.Sdk.LiveAcceptance/SignWell.Sdk.LiveAcceptance.csproj -c Release

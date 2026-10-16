@@ -70,6 +70,14 @@ public sealed class DocumentsResource
             return response.Ok() ?? throw new SignWellException("SignWell returned an empty document response.");
         }, cancellationToken);
 
+    public Task<DocumentResponse> UpdateAuthenticationAsync(Guid id, UpdateAuthenticationRequest request, CancellationToken cancellationToken = default) =>
+        SdkCall.ExecuteAsync(async () =>
+        {
+            var response = await Raw.UpdateAuthenticationAsync(id, request, cancellationToken).ConfigureAwait(false);
+            ErrorMapper.ThrowIfError(response);
+            return response.Ok() ?? throw new SignWellException("SignWell returned an empty document response.");
+        }, cancellationToken);
+
     public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
         SdkCall.ExecuteAsync(async () =>
         {
@@ -154,14 +162,14 @@ public sealed class DocumentsResource
 
     public Task<OwnedResponseStream> GetCompletedPdfStreamAsync(
         Guid id,
-        bool auditPage = false,
+        bool auditPage = true,
         FileFormat? fileFormat = null,
         CancellationToken cancellationToken = default) =>
         ResponseModes.GetCompletedPdfStreamAsync(id, auditPage, fileFormat, cancellationToken);
 
     public Task<CompletedPdfUrlResponse> GetCompletedPdfUrlAsync(
         Guid id,
-        bool auditPage = false,
+        bool auditPage = true,
         FileFormat? fileFormat = null,
         CancellationToken cancellationToken = default) =>
         ResponseModes.GetCompletedPdfUrlAsync(id, auditPage, fileFormat, cancellationToken);

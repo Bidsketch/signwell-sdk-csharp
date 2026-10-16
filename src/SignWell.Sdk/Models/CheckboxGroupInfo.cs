@@ -206,8 +206,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CheckboxGroupInfo" />
     /// </summary>
-    public class CheckboxGroupInfoJsonConverter : JsonConverter<CheckboxGroupInfo>
+    public partial class CheckboxGroupInfoJsonConverter : JsonConverter<CheckboxGroupInfo>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CheckboxGroupInfoJsonConverter" /> class.
+        /// </summary>
+        public CheckboxGroupInfoJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CheckboxGroupInfo" />
         /// </summary>
@@ -266,9 +276,7 @@ namespace SignWell.Sdk.Models
                             recipientId = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         case "validation":
-                            string? validationRawValue = utf8JsonReader.GetString();
-                            if (validationRawValue != null)
-                                validation = new Option<CheckboxValidation?>(CheckboxValidationValueConverter.FromStringOrDefault(validationRawValue));
+                            validation = new Option<CheckboxValidation?>(JsonSerializer.Deserialize<CheckboxValidation?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "min_value":
                             minValue = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
@@ -286,34 +294,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupInfo.", nameof(id));
+                throw new JsonException("Property is required for class CheckboxGroupInfo: id.");
 
             if (!checkboxIds.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupInfo.", nameof(checkboxIds));
+                throw new JsonException("Property is required for class CheckboxGroupInfo: checkbox_ids.");
 
             if (!required.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupInfo.", nameof(required));
+                throw new JsonException("Property is required for class CheckboxGroupInfo: required.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class CheckboxGroupInfo.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupInfo: id.");
 
             if (checkboxIds.IsSet && checkboxIds.Value == null)
-                throw new ArgumentNullException(nameof(checkboxIds), "Property is not nullable for class CheckboxGroupInfo.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupInfo: checkbox_ids.");
 
             if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class CheckboxGroupInfo.");
-
-            if (validation.IsSet && validation.Value == null)
-                throw new ArgumentNullException(nameof(validation), "Property is not nullable for class CheckboxGroupInfo.");
-
-            if (minValue.IsSet && minValue.Value == null)
-                throw new ArgumentNullException(nameof(minValue), "Property is not nullable for class CheckboxGroupInfo.");
-
-            if (maxValue.IsSet && maxValue.Value == null)
-                throw new ArgumentNullException(nameof(maxValue), "Property is not nullable for class CheckboxGroupInfo.");
-
-            if (exactValue.IsSet && exactValue.Value == null)
-                throw new ArgumentNullException(nameof(exactValue), "Property is not nullable for class CheckboxGroupInfo.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupInfo: required.");
 
             return new CheckboxGroupInfo(id.Value!.Value!, checkboxIds.Value!, required.Value!.Value!, groupName, recipientId, validation, minValue, maxValue, exactValue);
         }
@@ -324,7 +320,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="checkboxGroupInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CheckboxGroupInfo checkboxGroupInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -339,11 +334,19 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="checkboxGroupInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CheckboxGroupInfo checkboxGroupInfo, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (checkboxGroupInfo.CheckboxIds == null)
-                throw new ArgumentNullException(nameof(checkboxGroupInfo.CheckboxIds), "Property is required for class CheckboxGroupInfo.");
+            if (checkboxGroupInfo.ValidationOption.IsSet && checkboxGroupInfo.Validation == null)
+                throw new JsonException("Cannot write null property CheckboxGroupInfo.Validation to non-nullable JSON property 'validation'.");
+
+            if (checkboxGroupInfo.MinValueOption.IsSet && checkboxGroupInfo.MinValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupInfo.MinValue to non-nullable JSON property 'min_value'.");
+
+            if (checkboxGroupInfo.MaxValueOption.IsSet && checkboxGroupInfo.MaxValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupInfo.MaxValue to non-nullable JSON property 'max_value'.");
+
+            if (checkboxGroupInfo.ExactValueOption.IsSet && checkboxGroupInfo.ExactValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupInfo.ExactValue to non-nullable JSON property 'exact_value'.");
 
             writer.WriteString("id", checkboxGroupInfo.Id);
 

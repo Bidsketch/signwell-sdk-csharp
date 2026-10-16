@@ -36,6 +36,8 @@ namespace SignWell.Sdk.Models
         /// </summary>
         /// <param name="testMode">testMode</param>
         /// <param name="id">id</param>
+        /// <param name="cfrPart11">Whether 21 CFR Part 11 controls apply to this document. Read-only: the value is taken from the workspace setting when the document is created and never changes afterwards.</param>
+        /// <param name="cfrPart11SigningMode">The signing mode of a 21 CFR Part 11 document: streamlined (one final authentication) or per_signature (authentication at every signature and initials field). Null when Part 11 does not apply.</param>
         /// <param name="apiApplicationId">apiApplicationId</param>
         /// <param name="requesterEmailAddress">requesterEmailAddress</param>
         /// <param name="customRequesterName">customRequesterName</param>
@@ -50,6 +52,7 @@ namespace SignWell.Sdk.Models
         /// <param name="status">Possible values: Draft, Created, Sending, Sent, Pending, Viewed, Completed, Manually completed, Declined, Canceled, Bounced, Blocked, Error, Expired</param>
         /// <param name="reminders">reminders</param>
         /// <param name="archived">archived</param>
+        /// <param name="embedded">embedded</param>
         /// <param name="embeddedSigning">embeddedSigning</param>
         /// <param name="embeddedEditUrl">embeddedEditUrl</param>
         /// <param name="embeddedPreviewUrl">embeddedPreviewUrl</param>
@@ -71,11 +74,15 @@ namespace SignWell.Sdk.Models
         /// <param name="allowReassign">allowReassign</param>
         /// <param name="labels">labels</param>
         /// <param name="checkboxGroups">checkboxGroups</param>
+        /// <param name="conditionalRules">conditionalRules</param>
+        /// <param name="conditionalLogicDecisions">conditionalLogicDecisions</param>
         [JsonConstructor]
-        public DocumentResponse(bool testMode, Guid id, Option<Guid?> apiApplicationId = default, Option<string?> requesterEmailAddress = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<Dictionary<string, string>?> metadata = default, Option<DateTimeOffset?> createdAt = default, Option<DateTimeOffset?> updatedAt = default, Option<List<DocumentResponseRecipientsInner>?> recipients = default, Option<string?> status = default, Option<bool?> reminders = default, Option<bool?> archived = default, Option<bool?> embeddedSigning = default, Option<string?> embeddedEditUrl = default, Option<string?> embeddedPreviewUrl = default, Option<bool?> applySigningOrder = default, Option<string?> redirectUrl = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<int?> expiresIn = default, Option<string?> declineMessage = default, Option<string?> errorMessage = default, Option<Guid?> templateId = default, Option<List<Guid>?> templateIds = default, Option<bool?> embeddedSigningNotifications = default, Option<List<DocumentResponseAttachmentRequestsInner>?> attachmentRequests = default, Option<List<FileInfo>?> files = default, Option<List<CopiedContactInfo>?> copiedContacts = default, Option<List<List<DocumentResponseFieldsInnerInner>>?> fields = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<List<LabelInfo>?> labels = default, Option<List<CheckboxGroupInfo>?> checkboxGroups = default)
+        public DocumentResponse(bool testMode, Guid id, Option<bool?> cfrPart11 = default, Option<CfrPart11SigningModeEnum?> cfrPart11SigningMode = default, Option<Guid?> apiApplicationId = default, Option<string?> requesterEmailAddress = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<Dictionary<string, string>?> metadata = default, Option<DateTimeOffset?> createdAt = default, Option<DateTimeOffset?> updatedAt = default, Option<List<DocumentResponseRecipientsInner>?> recipients = default, Option<string?> status = default, Option<bool?> reminders = default, Option<bool?> archived = default, Option<EmbeddedBranding?> embedded = default, Option<bool?> embeddedSigning = default, Option<string?> embeddedEditUrl = default, Option<string?> embeddedPreviewUrl = default, Option<bool?> applySigningOrder = default, Option<string?> redirectUrl = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<int?> expiresIn = default, Option<string?> declineMessage = default, Option<string?> errorMessage = default, Option<Guid?> templateId = default, Option<List<Guid>?> templateIds = default, Option<bool?> embeddedSigningNotifications = default, Option<List<DocumentResponseAttachmentRequestsInner>?> attachmentRequests = default, Option<List<FileInfo>?> files = default, Option<List<CopiedContactInfo>?> copiedContacts = default, Option<List<List<DocumentResponseFieldsInnerInner>>?> fields = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<List<LabelInfo>?> labels = default, Option<List<CheckboxGroupInfo>?> checkboxGroups = default, Option<List<ConditionalRuleInfo>?> conditionalRules = default, Option<List<ConditionalLogicDecisionInfo>?> conditionalLogicDecisions = default)
         {
             TestMode = testMode;
             Id = id;
+            CfrPart11Option = cfrPart11;
+            CfrPart11SigningModeOption = cfrPart11SigningMode;
             ApiApplicationIdOption = apiApplicationId;
             RequesterEmailAddressOption = requesterEmailAddress;
             CustomRequesterNameOption = customRequesterName;
@@ -90,6 +97,7 @@ namespace SignWell.Sdk.Models
             StatusOption = status;
             RemindersOption = reminders;
             ArchivedOption = archived;
+            EmbeddedOption = embedded;
             EmbeddedSigningOption = embeddedSigning;
             EmbeddedEditUrlOption = embeddedEditUrl;
             EmbeddedPreviewUrlOption = embeddedPreviewUrl;
@@ -111,10 +119,110 @@ namespace SignWell.Sdk.Models
             AllowReassignOption = allowReassign;
             LabelsOption = labels;
             CheckboxGroupsOption = checkboxGroups;
+            ConditionalRulesOption = conditionalRules;
+            ConditionalLogicDecisionsOption = conditionalLogicDecisions;
             OnCreated();
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// The signing mode of a 21 CFR Part 11 document: streamlined (one final authentication) or per_signature (authentication at every signature and initials field). Null when Part 11 does not apply.
+        /// </summary>
+        /// <value>The signing mode of a 21 CFR Part 11 document: streamlined (one final authentication) or per_signature (authentication at every signature and initials field). Null when Part 11 does not apply.</value>
+        public enum CfrPart11SigningModeEnum
+        {
+            /// <summary>
+            /// Enum Streamlined for value: streamlined
+            /// </summary>
+            Streamlined = 1,
+
+            /// <summary>
+            /// Enum PerSignature for value: per_signature
+            /// </summary>
+            PerSignature = 2,
+
+            /// <summary>
+            /// Enum UnknownDefaultOpenApi for value: unknown_default_open_api
+            /// </summary>
+            UnknownDefaultOpenApi = 3
+        }
+
+        /// <summary>
+        /// Returns a <see cref="CfrPart11SigningModeEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static CfrPart11SigningModeEnum CfrPart11SigningModeEnumFromString(string value)
+        {
+            if (value.Equals("streamlined"))
+                return CfrPart11SigningModeEnum.Streamlined;
+
+            if (value.Equals("per_signature"))
+                return CfrPart11SigningModeEnum.PerSignature;
+
+            if (value.Equals("unknown_default_open_api"))
+                return CfrPart11SigningModeEnum.UnknownDefaultOpenApi;
+
+            return CfrPart11SigningModeEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="CfrPart11SigningModeEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static CfrPart11SigningModeEnum? CfrPart11SigningModeEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("streamlined"))
+                return CfrPart11SigningModeEnum.Streamlined;
+
+            if (value.Equals("per_signature"))
+                return CfrPart11SigningModeEnum.PerSignature;
+
+            if (value.Equals("unknown_default_open_api"))
+                return CfrPart11SigningModeEnum.UnknownDefaultOpenApi;
+
+            return CfrPart11SigningModeEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="CfrPart11SigningModeEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string? CfrPart11SigningModeEnumToJsonValue(CfrPart11SigningModeEnum? value)
+        {
+            if (value == null)
+                return null;
+
+            if (value == CfrPart11SigningModeEnum.Streamlined)
+                return "streamlined";
+
+            if (value == CfrPart11SigningModeEnum.PerSignature)
+                return "per_signature";
+
+            if (value == CfrPart11SigningModeEnum.UnknownDefaultOpenApi)
+                return "unknown_default_open_api";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of CfrPart11SigningMode
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<CfrPart11SigningModeEnum?> CfrPart11SigningModeOption { get; private set; }
+
+        /// <summary>
+        /// The signing mode of a 21 CFR Part 11 document: streamlined (one final authentication) or per_signature (authentication at every signature and initials field). Null when Part 11 does not apply.
+        /// </summary>
+        /// <value>The signing mode of a 21 CFR Part 11 document: streamlined (one final authentication) or per_signature (authentication at every signature and initials field). Null when Part 11 does not apply.</value>
+        [JsonPropertyName("cfr_part11_signing_mode")]
+        public CfrPart11SigningModeEnum? CfrPart11SigningMode { get { return this.CfrPart11SigningModeOption.Value; } set { this.CfrPart11SigningModeOption = new Option<CfrPart11SigningModeEnum?>(value); } }
 
         /// <summary>
         /// Gets or Sets TestMode
@@ -127,6 +235,20 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Used to track the state of CfrPart11
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> CfrPart11Option { get; private set; }
+
+        /// <summary>
+        /// Whether 21 CFR Part 11 controls apply to this document. Read-only: the value is taken from the workspace setting when the document is created and never changes afterwards.
+        /// </summary>
+        /// <value>Whether 21 CFR Part 11 controls apply to this document. Read-only: the value is taken from the workspace setting when the document is created and never changes afterwards.</value>
+        [JsonPropertyName("cfr_part11")]
+        public bool? CfrPart11 { get { return this.CfrPart11Option.Value; } set { this.CfrPart11Option = new Option<bool?>(value); } }
 
         /// <summary>
         /// Used to track the state of ApiApplicationId
@@ -310,6 +432,19 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonPropertyName("archived")]
         public bool? Archived { get { return this.ArchivedOption.Value; } set { this.ArchivedOption = new Option<bool?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of Embedded
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<EmbeddedBranding?> EmbeddedOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Embedded
+        /// </summary>
+        [JsonPropertyName("embedded")]
+        public EmbeddedBranding? Embedded { get { return this.EmbeddedOption.Value; } set { this.EmbeddedOption = new Option<EmbeddedBranding?>(value); } }
 
         /// <summary>
         /// Used to track the state of EmbeddedSigning
@@ -585,6 +720,32 @@ namespace SignWell.Sdk.Models
         public List<CheckboxGroupInfo>? CheckboxGroups { get { return this.CheckboxGroupsOption.Value; } set { this.CheckboxGroupsOption = new Option<List<CheckboxGroupInfo>?>(value); } }
 
         /// <summary>
+        /// Used to track the state of ConditionalRules
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalRuleInfo>?> ConditionalRulesOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ConditionalRules
+        /// </summary>
+        [JsonPropertyName("conditional_rules")]
+        public List<ConditionalRuleInfo>? ConditionalRules { get { return this.ConditionalRulesOption.Value; } set { this.ConditionalRulesOption = new Option<List<ConditionalRuleInfo>?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ConditionalLogicDecisions
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalLogicDecisionInfo>?> ConditionalLogicDecisionsOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ConditionalLogicDecisions
+        /// </summary>
+        [JsonPropertyName("conditional_logic_decisions")]
+        public List<ConditionalLogicDecisionInfo>? ConditionalLogicDecisions { get { return this.ConditionalLogicDecisionsOption.Value; } set { this.ConditionalLogicDecisionsOption = new Option<List<ConditionalLogicDecisionInfo>?>(value); } }
+
+        /// <summary>
         /// Gets or Sets additional properties
         /// </summary>
         [JsonExtensionData]
@@ -600,6 +761,8 @@ namespace SignWell.Sdk.Models
             sb.Append("class DocumentResponse {\n");
             sb.Append("  TestMode: ").Append(TestMode).Append("\n");
             sb.Append("  Id: ").Append(Id).Append("\n");
+            sb.Append("  CfrPart11: ").Append(CfrPart11).Append("\n");
+            sb.Append("  CfrPart11SigningMode: ").Append(CfrPart11SigningMode).Append("\n");
             sb.Append("  ApiApplicationId: ").Append(ApiApplicationId).Append("\n");
             sb.Append("  RequesterEmailAddress: ").Append(RequesterEmailAddress).Append("\n");
             sb.Append("  CustomRequesterName: ").Append(CustomRequesterName).Append("\n");
@@ -614,6 +777,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  Reminders: ").Append(Reminders).Append("\n");
             sb.Append("  Archived: ").Append(Archived).Append("\n");
+            sb.Append("  Embedded: ").Append(Embedded).Append("\n");
             sb.Append("  EmbeddedSigning: ").Append(EmbeddedSigning).Append("\n");
             sb.Append("  EmbeddedEditUrl: ").Append(EmbeddedEditUrl).Append("\n");
             sb.Append("  EmbeddedPreviewUrl: ").Append(EmbeddedPreviewUrl).Append("\n");
@@ -635,6 +799,8 @@ namespace SignWell.Sdk.Models
             sb.Append("  AllowReassign: ").Append(AllowReassign).Append("\n");
             sb.Append("  Labels: ").Append(Labels).Append("\n");
             sb.Append("  CheckboxGroups: ").Append(CheckboxGroups).Append("\n");
+            sb.Append("  ConditionalRules: ").Append(ConditionalRules).Append("\n");
+            sb.Append("  ConditionalLogicDecisions: ").Append(ConditionalLogicDecisions).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -654,17 +820,27 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponse" />
     /// </summary>
-    public class DocumentResponseJsonConverter : JsonConverter<DocumentResponse>
+    public partial class DocumentResponseJsonConverter : JsonConverter<DocumentResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// The format to use to serialize CreatedAt
         /// </summary>
-        public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string CreatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// The format to use to serialize UpdatedAt
         /// </summary>
-        public static string UpdatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string UpdatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponse" />
@@ -685,6 +861,8 @@ namespace SignWell.Sdk.Models
 
             Option<bool?> testMode = default;
             Option<Guid?> id = default;
+            Option<bool?> cfrPart11 = default;
+            Option<DocumentResponse.CfrPart11SigningModeEnum?> cfrPart11SigningMode = default;
             Option<Guid?> apiApplicationId = default;
             Option<string?> requesterEmailAddress = default;
             Option<string?> customRequesterName = default;
@@ -699,6 +877,7 @@ namespace SignWell.Sdk.Models
             Option<string?> status = default;
             Option<bool?> reminders = default;
             Option<bool?> archived = default;
+            Option<EmbeddedBranding?> embedded = default;
             Option<bool?> embeddedSigning = default;
             Option<string?> embeddedEditUrl = default;
             Option<string?> embeddedPreviewUrl = default;
@@ -720,6 +899,8 @@ namespace SignWell.Sdk.Models
             Option<bool?> allowReassign = default;
             Option<List<LabelInfo>?> labels = default;
             Option<List<CheckboxGroupInfo>?> checkboxGroups = default;
+            Option<List<ConditionalRuleInfo>?> conditionalRules = default;
+            Option<List<ConditionalLogicDecisionInfo>?> conditionalLogicDecisions = default;
 
             while (utf8JsonReader.Read())
             {
@@ -741,6 +922,21 @@ namespace SignWell.Sdk.Models
                             break;
                         case "id":
                             id = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
+                            break;
+                        case "cfr_part11":
+                            cfrPart11 = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "cfr_part11_signing_mode":
+                            string? cfrPart11SigningModeRawValue = utf8JsonReader.GetString();
+                            if (cfrPart11SigningModeRawValue == null)
+                                cfrPart11SigningMode = new Option<DocumentResponse.CfrPart11SigningModeEnum?>(null);
+                            else
+                            {
+                                DocumentResponse.CfrPart11SigningModeEnum? cfrPart11SigningModeValue = DocumentResponse.CfrPart11SigningModeEnumFromStringOrDefault(cfrPart11SigningModeRawValue);
+                                if (cfrPart11SigningModeValue == null)
+                                    throw new JsonException();
+                                cfrPart11SigningMode = new Option<DocumentResponse.CfrPart11SigningModeEnum?>(cfrPart11SigningModeValue);
+                            }
                             break;
                         case "api_application_id":
                             apiApplicationId = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
@@ -783,6 +979,9 @@ namespace SignWell.Sdk.Models
                             break;
                         case "archived":
                             archived = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "embedded":
+                            embedded = new Option<EmbeddedBranding?>(JsonSerializer.Deserialize<EmbeddedBranding>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "embedded_signing":
                             embeddedSigning = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -847,6 +1046,12 @@ namespace SignWell.Sdk.Models
                         case "checkbox_groups":
                             checkboxGroups = new Option<List<CheckboxGroupInfo>?>(JsonSerializer.Deserialize<List<CheckboxGroupInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
+                        case "conditional_rules":
+                            conditionalRules = new Option<List<ConditionalRuleInfo>?>(JsonSerializer.Deserialize<List<ConditionalRuleInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "conditional_logic_decisions":
+                            conditionalLogicDecisions = new Option<List<ConditionalLogicDecisionInfo>?>(JsonSerializer.Deserialize<List<ConditionalLogicDecisionInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -854,84 +1059,18 @@ namespace SignWell.Sdk.Models
             }
 
             if (!testMode.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponse.", nameof(testMode));
+                throw new JsonException("Property is required for class DocumentResponse: test_mode.");
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponse.", nameof(id));
+                throw new JsonException("Property is required for class DocumentResponse: id.");
 
             if (testMode.IsSet && testMode.Value == null)
-                throw new ArgumentNullException(nameof(testMode), "Property is not nullable for class DocumentResponse.");
+                throw new JsonException("Property is not nullable for class DocumentResponse: test_mode.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class DocumentResponse.");
+                throw new JsonException("Property is not nullable for class DocumentResponse: id.");
 
-            if (requesterEmailAddress.IsSet && requesterEmailAddress.Value == null)
-                throw new ArgumentNullException(nameof(requesterEmailAddress), "Property is not nullable for class DocumentResponse.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentResponse.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class DocumentResponse.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class DocumentResponse.");
-
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class DocumentResponse.");
-
-            if (updatedAt.IsSet && updatedAt.Value == null)
-                throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class DocumentResponse.");
-
-            if (recipients.IsSet && recipients.Value == null)
-                throw new ArgumentNullException(nameof(recipients), "Property is not nullable for class DocumentResponse.");
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class DocumentResponse.");
-
-            if (reminders.IsSet && reminders.Value == null)
-                throw new ArgumentNullException(nameof(reminders), "Property is not nullable for class DocumentResponse.");
-
-            if (archived.IsSet && archived.Value == null)
-                throw new ArgumentNullException(nameof(archived), "Property is not nullable for class DocumentResponse.");
-
-            if (embeddedSigning.IsSet && embeddedSigning.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigning), "Property is not nullable for class DocumentResponse.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class DocumentResponse.");
-
-            if (language.IsSet && language.Value == null)
-                throw new ArgumentNullException(nameof(language), "Property is not nullable for class DocumentResponse.");
-
-            if (expiresIn.IsSet && expiresIn.Value == null)
-                throw new ArgumentNullException(nameof(expiresIn), "Property is not nullable for class DocumentResponse.");
-
-            if (templateIds.IsSet && templateIds.Value == null)
-                throw new ArgumentNullException(nameof(templateIds), "Property is not nullable for class DocumentResponse.");
-
-            if (embeddedSigningNotifications.IsSet && embeddedSigningNotifications.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigningNotifications), "Property is not nullable for class DocumentResponse.");
-
-            if (attachmentRequests.IsSet && attachmentRequests.Value == null)
-                throw new ArgumentNullException(nameof(attachmentRequests), "Property is not nullable for class DocumentResponse.");
-
-            if (files.IsSet && files.Value == null)
-                throw new ArgumentNullException(nameof(files), "Property is not nullable for class DocumentResponse.");
-
-            if (copiedContacts.IsSet && copiedContacts.Value == null)
-                throw new ArgumentNullException(nameof(copiedContacts), "Property is not nullable for class DocumentResponse.");
-
-            if (fields.IsSet && fields.Value == null)
-                throw new ArgumentNullException(nameof(fields), "Property is not nullable for class DocumentResponse.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class DocumentResponse.");
-
-            if (checkboxGroups.IsSet && checkboxGroups.Value == null)
-                throw new ArgumentNullException(nameof(checkboxGroups), "Property is not nullable for class DocumentResponse.");
-
-            return new DocumentResponse(testMode.Value!.Value!, id.Value!.Value!, apiApplicationId, requesterEmailAddress, customRequesterName, customRequesterEmail, name, subject, message, metadata, createdAt, updatedAt, recipients, status, reminders, archived, embeddedSigning, embeddedEditUrl, embeddedPreviewUrl, applySigningOrder, redirectUrl, declineRedirectUrl, language, expiresIn, declineMessage, errorMessage, templateId, templateIds, embeddedSigningNotifications, attachmentRequests, files, copiedContacts, fields, allowDecline, allowReassign, labels, checkboxGroups);
+            return new DocumentResponse(testMode.Value!.Value!, id.Value!.Value!, cfrPart11, cfrPart11SigningMode, apiApplicationId, requesterEmailAddress, customRequesterName, customRequesterEmail, name, subject, message, metadata, createdAt, updatedAt, recipients, status, reminders, archived, embedded, embeddedSigning, embeddedEditUrl, embeddedPreviewUrl, applySigningOrder, redirectUrl, declineRedirectUrl, language, expiresIn, declineMessage, errorMessage, templateId, templateIds, embeddedSigningNotifications, attachmentRequests, files, copiedContacts, fields, allowDecline, allowReassign, labels, checkboxGroups, conditionalRules, conditionalLogicDecisions);
         }
 
         /// <summary>
@@ -940,7 +1079,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponse documentResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -955,54 +1093,100 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponse documentResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (documentResponse.CfrPart11Option.IsSet && documentResponse.CfrPart11 == null)
+                throw new JsonException("Cannot write null property DocumentResponse.CfrPart11 to non-nullable JSON property 'cfr_part11'.");
+
             if (documentResponse.RequesterEmailAddressOption.IsSet && documentResponse.RequesterEmailAddress == null)
-                throw new ArgumentNullException(nameof(documentResponse.RequesterEmailAddress), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.RequesterEmailAddress to non-nullable JSON property 'requester_email_address'.");
 
             if (documentResponse.NameOption.IsSet && documentResponse.Name == null)
-                throw new ArgumentNullException(nameof(documentResponse.Name), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Name to non-nullable JSON property 'name'.");
 
             if (documentResponse.SubjectOption.IsSet && documentResponse.Subject == null)
-                throw new ArgumentNullException(nameof(documentResponse.Subject), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Subject to non-nullable JSON property 'subject'.");
 
             if (documentResponse.MessageOption.IsSet && documentResponse.Message == null)
-                throw new ArgumentNullException(nameof(documentResponse.Message), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Message to non-nullable JSON property 'message'.");
+
+            if (documentResponse.CreatedAtOption.IsSet && documentResponse.CreatedAt == null)
+                throw new JsonException("Cannot write null property DocumentResponse.CreatedAt to non-nullable JSON property 'created_at'.");
+
+            if (documentResponse.UpdatedAtOption.IsSet && documentResponse.UpdatedAt == null)
+                throw new JsonException("Cannot write null property DocumentResponse.UpdatedAt to non-nullable JSON property 'updated_at'.");
 
             if (documentResponse.RecipientsOption.IsSet && documentResponse.Recipients == null)
-                throw new ArgumentNullException(nameof(documentResponse.Recipients), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Recipients to non-nullable JSON property 'recipients'.");
 
             if (documentResponse.StatusOption.IsSet && documentResponse.Status == null)
-                throw new ArgumentNullException(nameof(documentResponse.Status), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Status to non-nullable JSON property 'status'.");
+
+            if (documentResponse.RemindersOption.IsSet && documentResponse.Reminders == null)
+                throw new JsonException("Cannot write null property DocumentResponse.Reminders to non-nullable JSON property 'reminders'.");
+
+            if (documentResponse.ArchivedOption.IsSet && documentResponse.Archived == null)
+                throw new JsonException("Cannot write null property DocumentResponse.Archived to non-nullable JSON property 'archived'.");
+
+            if (documentResponse.EmbeddedSigningOption.IsSet && documentResponse.EmbeddedSigning == null)
+                throw new JsonException("Cannot write null property DocumentResponse.EmbeddedSigning to non-nullable JSON property 'embedded_signing'.");
+
+            if (documentResponse.ApplySigningOrderOption.IsSet && documentResponse.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentResponse.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
 
             if (documentResponse.LanguageOption.IsSet && documentResponse.Language == null)
-                throw new ArgumentNullException(nameof(documentResponse.Language), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Language to non-nullable JSON property 'language'.");
+
+            if (documentResponse.ExpiresInOption.IsSet && documentResponse.ExpiresIn == null)
+                throw new JsonException("Cannot write null property DocumentResponse.ExpiresIn to non-nullable JSON property 'expires_in'.");
 
             if (documentResponse.TemplateIdsOption.IsSet && documentResponse.TemplateIds == null)
-                throw new ArgumentNullException(nameof(documentResponse.TemplateIds), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.TemplateIds to non-nullable JSON property 'template_ids'.");
+
+            if (documentResponse.EmbeddedSigningNotificationsOption.IsSet && documentResponse.EmbeddedSigningNotifications == null)
+                throw new JsonException("Cannot write null property DocumentResponse.EmbeddedSigningNotifications to non-nullable JSON property 'embedded_signing_notifications'.");
 
             if (documentResponse.AttachmentRequestsOption.IsSet && documentResponse.AttachmentRequests == null)
-                throw new ArgumentNullException(nameof(documentResponse.AttachmentRequests), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.AttachmentRequests to non-nullable JSON property 'attachment_requests'.");
 
             if (documentResponse.FilesOption.IsSet && documentResponse.Files == null)
-                throw new ArgumentNullException(nameof(documentResponse.Files), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Files to non-nullable JSON property 'files'.");
 
             if (documentResponse.CopiedContactsOption.IsSet && documentResponse.CopiedContacts == null)
-                throw new ArgumentNullException(nameof(documentResponse.CopiedContacts), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.CopiedContacts to non-nullable JSON property 'copied_contacts'.");
 
             if (documentResponse.FieldsOption.IsSet && documentResponse.Fields == null)
-                throw new ArgumentNullException(nameof(documentResponse.Fields), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Fields to non-nullable JSON property 'fields'.");
 
             if (documentResponse.LabelsOption.IsSet && documentResponse.Labels == null)
-                throw new ArgumentNullException(nameof(documentResponse.Labels), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.Labels to non-nullable JSON property 'labels'.");
 
             if (documentResponse.CheckboxGroupsOption.IsSet && documentResponse.CheckboxGroups == null)
-                throw new ArgumentNullException(nameof(documentResponse.CheckboxGroups), "Property is required for class DocumentResponse.");
+                throw new JsonException("Cannot write null property DocumentResponse.CheckboxGroups to non-nullable JSON property 'checkbox_groups'.");
+
+            if (documentResponse.ConditionalRulesOption.IsSet && documentResponse.ConditionalRules == null)
+                throw new JsonException("Cannot write null property DocumentResponse.ConditionalRules to non-nullable JSON property 'conditional_rules'.");
+
+            if (documentResponse.ConditionalLogicDecisionsOption.IsSet && documentResponse.ConditionalLogicDecisions == null)
+                throw new JsonException("Cannot write null property DocumentResponse.ConditionalLogicDecisions to non-nullable JSON property 'conditional_logic_decisions'.");
 
             writer.WriteBoolean("test_mode", documentResponse.TestMode);
 
             writer.WriteString("id", documentResponse.Id);
+
+            if (documentResponse.CfrPart11Option.IsSet)
+                writer.WriteBoolean("cfr_part11", documentResponse.CfrPart11Option.Value!.Value);
+
+            if (documentResponse.CfrPart11SigningModeOption.IsSet)
+            {
+                if (documentResponse.CfrPart11SigningModeOption.Value.HasValue)
+                {
+                    var cfrPart11SigningModeRawValue = DocumentResponse.CfrPart11SigningModeEnumToJsonValue(documentResponse.CfrPart11SigningModeOption.Value.Value);
+                    writer.WriteString("cfr_part11_signing_mode", cfrPart11SigningModeRawValue);
+                }
+                else
+                    writer.WriteNull("cfr_part11_signing_mode");
+            }
 
             if (documentResponse.ApiApplicationIdOption.IsSet)
                 if (documentResponse.ApiApplicationIdOption.Value != null)
@@ -1062,6 +1246,14 @@ namespace SignWell.Sdk.Models
             if (documentResponse.ArchivedOption.IsSet)
                 writer.WriteBoolean("archived", documentResponse.ArchivedOption.Value!.Value);
 
+            if (documentResponse.EmbeddedOption.IsSet)
+                if (documentResponse.EmbeddedOption.Value != null)
+                {
+                    writer.WritePropertyName("embedded");
+                    JsonSerializer.Serialize(writer, documentResponse.Embedded, jsonSerializerOptions);
+                }
+                else
+                    writer.WriteNull("embedded");
             if (documentResponse.EmbeddedSigningOption.IsSet)
                 writer.WriteBoolean("embedded_signing", documentResponse.EmbeddedSigningOption.Value!.Value);
 
@@ -1165,6 +1357,16 @@ namespace SignWell.Sdk.Models
             {
                 writer.WritePropertyName("checkbox_groups");
                 JsonSerializer.Serialize(writer, documentResponse.CheckboxGroups, jsonSerializerOptions);
+            }
+            if (documentResponse.ConditionalRulesOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_rules");
+                JsonSerializer.Serialize(writer, documentResponse.ConditionalRules, jsonSerializerOptions);
+            }
+            if (documentResponse.ConditionalLogicDecisionsOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_logic_decisions");
+                JsonSerializer.Serialize(writer, documentResponse.ConditionalLogicDecisions, jsonSerializerOptions);
             }
         }
     }

@@ -35,13 +35,15 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="DocumentResponseRecipientsInner" /> class.
         /// </summary>
         /// <param name="name">name</param>
-        /// <param name="email">email</param>
         /// <param name="id">id</param>
+        /// <param name="email">email</param>
         /// <param name="body">body</param>
         /// <param name="message">message</param>
         /// <param name="subject">subject</param>
         /// <param name="sendEmail">sendEmail</param>
         /// <param name="sendEmailDelay">sendEmailDelay</param>
+        /// <param name="deliveryMethod">How the recipient is notified: email (default), sms, or email_and_sms.</param>
+        /// <param name="sms">sms</param>
         /// <param name="signingOrder">signingOrder</param>
         /// <param name="signingUrl">signingUrl</param>
         /// <param name="embeddedSigningUrl">embeddedSigningUrl</param>
@@ -49,18 +51,21 @@ namespace SignWell.Sdk.Models
         /// <param name="bouncedDetails">bouncedDetails</param>
         /// <param name="attachmentRequests">attachmentRequests</param>
         /// <param name="passcode">passcode</param>
+        /// <param name="passcodeDelivery">passcodeDelivery</param>
         /// <param name="status">status</param>
         [JsonConstructor]
-        public DocumentResponseRecipientsInner(string name, string email, Option<string?> id = default, Option<string?> body = default, Option<string?> message = default, Option<string?> subject = default, Option<bool?> sendEmail = default, Option<int?> sendEmailDelay = default, Option<int?> signingOrder = default, Option<string?> signingUrl = default, Option<string?> embeddedSigningUrl = default, Option<bool?> bounced = default, Option<string?> bouncedDetails = default, Option<List<AttachmentRequestInfo>?> attachmentRequests = default, Option<string?> passcode = default, Option<string?> status = default)
+        public DocumentResponseRecipientsInner(string name, Option<string?> id = default, Option<string?> email = default, Option<string?> body = default, Option<string?> message = default, Option<string?> subject = default, Option<bool?> sendEmail = default, Option<int?> sendEmailDelay = default, Option<DeliveryMethodEnum?> deliveryMethod = default, Option<DocumentResponseRecipientsInnerSms?> sms = default, Option<int?> signingOrder = default, Option<string?> signingUrl = default, Option<string?> embeddedSigningUrl = default, Option<bool?> bounced = default, Option<string?> bouncedDetails = default, Option<List<AttachmentRequestInfo>?> attachmentRequests = default, Option<string?> passcode = default, Option<DocumentResponseRecipientsInnerPasscodeDelivery?> passcodeDelivery = default, Option<string?> status = default)
         {
             Name = name;
-            Email = email;
             IdOption = id;
+            EmailOption = email;
             BodyOption = body;
             MessageOption = message;
             SubjectOption = subject;
             SendEmailOption = sendEmail;
             SendEmailDelayOption = sendEmailDelay;
+            DeliveryMethodOption = deliveryMethod;
+            SmsOption = sms;
             SigningOrderOption = signingOrder;
             SigningUrlOption = signingUrl;
             EmbeddedSigningUrlOption = embeddedSigningUrl;
@@ -68,6 +73,7 @@ namespace SignWell.Sdk.Models
             BouncedDetailsOption = bouncedDetails;
             AttachmentRequestsOption = attachmentRequests;
             PasscodeOption = passcode;
+            PasscodeDeliveryOption = passcodeDelivery;
             StatusOption = status;
             OnCreated();
         }
@@ -75,16 +81,119 @@ namespace SignWell.Sdk.Models
         partial void OnCreated();
 
         /// <summary>
+        /// How the recipient is notified: email (default), sms, or email_and_sms.
+        /// </summary>
+        /// <value>How the recipient is notified: email (default), sms, or email_and_sms.</value>
+        public enum DeliveryMethodEnum
+        {
+            /// <summary>
+            /// Enum Email for value: email
+            /// </summary>
+            Email = 1,
+
+            /// <summary>
+            /// Enum Sms for value: sms
+            /// </summary>
+            Sms = 2,
+
+            /// <summary>
+            /// Enum EmailAndSms for value: email_and_sms
+            /// </summary>
+            EmailAndSms = 3,
+
+            /// <summary>
+            /// Enum UnknownDefaultOpenApi for value: unknown_default_open_api
+            /// </summary>
+            UnknownDefaultOpenApi = 4
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DeliveryMethodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static DeliveryMethodEnum DeliveryMethodEnumFromString(string value)
+        {
+            if (value.Equals("email"))
+                return DeliveryMethodEnum.Email;
+
+            if (value.Equals("sms"))
+                return DeliveryMethodEnum.Sms;
+
+            if (value.Equals("email_and_sms"))
+                return DeliveryMethodEnum.EmailAndSms;
+
+            if (value.Equals("unknown_default_open_api"))
+                return DeliveryMethodEnum.UnknownDefaultOpenApi;
+
+            return DeliveryMethodEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DeliveryMethodEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DeliveryMethodEnum? DeliveryMethodEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("email"))
+                return DeliveryMethodEnum.Email;
+
+            if (value.Equals("sms"))
+                return DeliveryMethodEnum.Sms;
+
+            if (value.Equals("email_and_sms"))
+                return DeliveryMethodEnum.EmailAndSms;
+
+            if (value.Equals("unknown_default_open_api"))
+                return DeliveryMethodEnum.UnknownDefaultOpenApi;
+
+            return DeliveryMethodEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DeliveryMethodEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string DeliveryMethodEnumToJsonValue(DeliveryMethodEnum? value)
+        {
+            if (value == DeliveryMethodEnum.Email)
+                return "email";
+
+            if (value == DeliveryMethodEnum.Sms)
+                return "sms";
+
+            if (value == DeliveryMethodEnum.EmailAndSms)
+                return "email_and_sms";
+
+            if (value == DeliveryMethodEnum.UnknownDefaultOpenApi)
+                return "unknown_default_open_api";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of DeliveryMethod
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DeliveryMethodEnum?> DeliveryMethodOption { get; private set; }
+
+        /// <summary>
+        /// How the recipient is notified: email (default), sms, or email_and_sms.
+        /// </summary>
+        /// <value>How the recipient is notified: email (default), sms, or email_and_sms.</value>
+        [JsonPropertyName("delivery_method")]
+        public DeliveryMethodEnum? DeliveryMethod { get { return this.DeliveryMethodOption.Value; } set { this.DeliveryMethodOption = new Option<DeliveryMethodEnum?>(value); } }
+
+        /// <summary>
         /// Gets or Sets Name
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Email
-        /// </summary>
-        [JsonPropertyName("email")]
-        public string Email { get; set; }
 
         /// <summary>
         /// Used to track the state of Id
@@ -98,6 +207,19 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonPropertyName("id")]
         public string? Id { get { return this.IdOption.Value; } set { this.IdOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of Email
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> EmailOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Email
+        /// </summary>
+        [JsonPropertyName("email")]
+        public string? Email { get { return this.EmailOption.Value; } set { this.EmailOption = new Option<string?>(value); } }
 
         /// <summary>
         /// Used to track the state of Body
@@ -163,6 +285,19 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonPropertyName("send_email_delay")]
         public int? SendEmailDelay { get { return this.SendEmailDelayOption.Value; } set { this.SendEmailDelayOption = new Option<int?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of Sms
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DocumentResponseRecipientsInnerSms?> SmsOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Sms
+        /// </summary>
+        [JsonPropertyName("sms")]
+        public DocumentResponseRecipientsInnerSms? Sms { get { return this.SmsOption.Value; } set { this.SmsOption = new Option<DocumentResponseRecipientsInnerSms?>(value); } }
 
         /// <summary>
         /// Used to track the state of SigningOrder
@@ -256,6 +391,19 @@ namespace SignWell.Sdk.Models
         public string? Passcode { get { return this.PasscodeOption.Value; } set { this.PasscodeOption = new Option<string?>(value); } }
 
         /// <summary>
+        /// Used to track the state of PasscodeDelivery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DocumentResponseRecipientsInnerPasscodeDelivery?> PasscodeDeliveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PasscodeDelivery
+        /// </summary>
+        [JsonPropertyName("passcode_delivery")]
+        public DocumentResponseRecipientsInnerPasscodeDelivery? PasscodeDelivery { get { return this.PasscodeDeliveryOption.Value; } set { this.PasscodeDeliveryOption = new Option<DocumentResponseRecipientsInnerPasscodeDelivery?>(value); } }
+
+        /// <summary>
         /// Used to track the state of Status
         /// </summary>
         [JsonIgnore]
@@ -283,13 +431,15 @@ namespace SignWell.Sdk.Models
             StringBuilder sb = new StringBuilder();
             sb.Append("class DocumentResponseRecipientsInner {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Id: ").Append(Id).Append("\n");
+            sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  Body: ").Append(Body).Append("\n");
             sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  SendEmail: ").Append(SendEmail).Append("\n");
             sb.Append("  SendEmailDelay: ").Append(SendEmailDelay).Append("\n");
+            sb.Append("  DeliveryMethod: ").Append(DeliveryMethod).Append("\n");
+            sb.Append("  Sms: ").Append(Sms).Append("\n");
             sb.Append("  SigningOrder: ").Append(SigningOrder).Append("\n");
             sb.Append("  SigningUrl: ").Append(SigningUrl).Append("\n");
             sb.Append("  EmbeddedSigningUrl: ").Append(EmbeddedSigningUrl).Append("\n");
@@ -297,6 +447,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  BouncedDetails: ").Append(BouncedDetails).Append("\n");
             sb.Append("  AttachmentRequests: ").Append(AttachmentRequests).Append("\n");
             sb.Append("  Passcode: ").Append(Passcode).Append("\n");
+            sb.Append("  PasscodeDelivery: ").Append(PasscodeDelivery).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
@@ -317,8 +468,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseRecipientsInner" />
     /// </summary>
-    public class DocumentResponseRecipientsInnerJsonConverter : JsonConverter<DocumentResponseRecipientsInner>
+    public partial class DocumentResponseRecipientsInnerJsonConverter : JsonConverter<DocumentResponseRecipientsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseRecipientsInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseRecipientsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseRecipientsInner" />
         /// </summary>
@@ -337,13 +498,15 @@ namespace SignWell.Sdk.Models
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> name = default;
-            Option<string?> email = default;
             Option<string?> id = default;
+            Option<string?> email = default;
             Option<string?> body = default;
             Option<string?> message = default;
             Option<string?> subject = default;
             Option<bool?> sendEmail = default;
             Option<int?> sendEmailDelay = default;
+            Option<DocumentResponseRecipientsInner.DeliveryMethodEnum?> deliveryMethod = default;
+            Option<DocumentResponseRecipientsInnerSms?> sms = default;
             Option<int?> signingOrder = default;
             Option<string?> signingUrl = default;
             Option<string?> embeddedSigningUrl = default;
@@ -351,6 +514,7 @@ namespace SignWell.Sdk.Models
             Option<string?> bouncedDetails = default;
             Option<List<AttachmentRequestInfo>?> attachmentRequests = default;
             Option<string?> passcode = default;
+            Option<DocumentResponseRecipientsInnerPasscodeDelivery?> passcodeDelivery = default;
             Option<string?> status = default;
 
             while (utf8JsonReader.Read())
@@ -371,11 +535,11 @@ namespace SignWell.Sdk.Models
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "email":
-                            email = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "id":
                             id = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "email":
+                            email = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         case "body":
                             body = new Option<string?>(utf8JsonReader.GetString()!);
@@ -391,6 +555,19 @@ namespace SignWell.Sdk.Models
                             break;
                         case "send_email_delay":
                             sendEmailDelay = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "delivery_method":
+                            string? deliveryMethodRawValue = utf8JsonReader.GetString();
+                            if (deliveryMethodRawValue != null)
+                            {
+                                DocumentResponseRecipientsInner.DeliveryMethodEnum? deliveryMethodValue = DocumentResponseRecipientsInner.DeliveryMethodEnumFromStringOrDefault(deliveryMethodRawValue);
+                                if (deliveryMethodValue == null)
+                                    throw new JsonException();
+                                deliveryMethod = new Option<DocumentResponseRecipientsInner.DeliveryMethodEnum?>(deliveryMethodValue);
+                            }
+                            break;
+                        case "sms":
+                            sms = new Option<DocumentResponseRecipientsInnerSms?>(JsonSerializer.Deserialize<DocumentResponseRecipientsInnerSms>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "signing_order":
                             signingOrder = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
@@ -413,6 +590,9 @@ namespace SignWell.Sdk.Models
                         case "passcode":
                             passcode = new Option<string?>(utf8JsonReader.GetString());
                             break;
+                        case "passcode_delivery":
+                            passcodeDelivery = new Option<DocumentResponseRecipientsInnerPasscodeDelivery?>(JsonSerializer.Deserialize<DocumentResponseRecipientsInnerPasscodeDelivery>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         case "status":
                             status = new Option<string?>(utf8JsonReader.GetString());
                             break;
@@ -423,30 +603,12 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseRecipientsInner.", nameof(name));
-
-            if (!email.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseRecipientsInner.", nameof(email));
+                throw new JsonException("Property is required for class DocumentResponseRecipientsInner: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentResponseRecipientsInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseRecipientsInner: name.");
 
-            if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class DocumentResponseRecipientsInner.");
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class DocumentResponseRecipientsInner.");
-
-            if (body.IsSet && body.Value == null)
-                throw new ArgumentNullException(nameof(body), "Property is not nullable for class DocumentResponseRecipientsInner.");
-
-            if (signingOrder.IsSet && signingOrder.Value == null)
-                throw new ArgumentNullException(nameof(signingOrder), "Property is not nullable for class DocumentResponseRecipientsInner.");
-
-            if (attachmentRequests.IsSet && attachmentRequests.Value == null)
-                throw new ArgumentNullException(nameof(attachmentRequests), "Property is not nullable for class DocumentResponseRecipientsInner.");
-
-            return new DocumentResponseRecipientsInner(name.Value!, email.Value!, id, body, message, subject, sendEmail, sendEmailDelay, signingOrder, signingUrl, embeddedSigningUrl, bounced, bouncedDetails, attachmentRequests, passcode, status);
+            return new DocumentResponseRecipientsInner(name.Value!, id, email, body, message, subject, sendEmail, sendEmailDelay, deliveryMethod, sms, signingOrder, signingUrl, embeddedSigningUrl, bounced, bouncedDetails, attachmentRequests, passcode, passcodeDelivery, status);
         }
 
         /// <summary>
@@ -455,7 +617,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponseRecipientsInner documentResponseRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -470,30 +631,39 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseRecipientsInner documentResponseRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentResponseRecipientsInner.Name == null)
-                throw new ArgumentNullException(nameof(documentResponseRecipientsInner.Name), "Property is required for class DocumentResponseRecipientsInner.");
-
-            if (documentResponseRecipientsInner.Email == null)
-                throw new ArgumentNullException(nameof(documentResponseRecipientsInner.Email), "Property is required for class DocumentResponseRecipientsInner.");
-
             if (documentResponseRecipientsInner.IdOption.IsSet && documentResponseRecipientsInner.Id == null)
-                throw new ArgumentNullException(nameof(documentResponseRecipientsInner.Id), "Property is required for class DocumentResponseRecipientsInner.");
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.Id to non-nullable JSON property 'id'.");
 
             if (documentResponseRecipientsInner.BodyOption.IsSet && documentResponseRecipientsInner.Body == null)
-                throw new ArgumentNullException(nameof(documentResponseRecipientsInner.Body), "Property is required for class DocumentResponseRecipientsInner.");
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.Body to non-nullable JSON property 'body'.");
+
+            if (documentResponseRecipientsInner.DeliveryMethodOption.IsSet && documentResponseRecipientsInner.DeliveryMethod == null)
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.DeliveryMethod to non-nullable JSON property 'delivery_method'.");
+
+            if (documentResponseRecipientsInner.SmsOption.IsSet && documentResponseRecipientsInner.Sms == null)
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.Sms to non-nullable JSON property 'sms'.");
+
+            if (documentResponseRecipientsInner.SigningOrderOption.IsSet && documentResponseRecipientsInner.SigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.SigningOrder to non-nullable JSON property 'signing_order'.");
 
             if (documentResponseRecipientsInner.AttachmentRequestsOption.IsSet && documentResponseRecipientsInner.AttachmentRequests == null)
-                throw new ArgumentNullException(nameof(documentResponseRecipientsInner.AttachmentRequests), "Property is required for class DocumentResponseRecipientsInner.");
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.AttachmentRequests to non-nullable JSON property 'attachment_requests'.");
+
+            if (documentResponseRecipientsInner.PasscodeDeliveryOption.IsSet && documentResponseRecipientsInner.PasscodeDelivery == null)
+                throw new JsonException("Cannot write null property DocumentResponseRecipientsInner.PasscodeDelivery to non-nullable JSON property 'passcode_delivery'.");
 
             writer.WriteString("name", documentResponseRecipientsInner.Name);
 
-            writer.WriteString("email", documentResponseRecipientsInner.Email);
-
             if (documentResponseRecipientsInner.IdOption.IsSet)
                 writer.WriteString("id", documentResponseRecipientsInner.Id);
+
+            if (documentResponseRecipientsInner.EmailOption.IsSet)
+                if (documentResponseRecipientsInner.EmailOption.Value != null)
+                    writer.WriteString("email", documentResponseRecipientsInner.Email);
+                else
+                    writer.WriteNull("email");
 
             if (documentResponseRecipientsInner.BodyOption.IsSet)
                 writer.WriteString("body", documentResponseRecipientsInner.Body);
@@ -522,6 +692,21 @@ namespace SignWell.Sdk.Models
                 else
                     writer.WriteNull("send_email_delay");
 
+            if (documentResponseRecipientsInner.DeliveryMethodOption.IsSet)
+            {
+                if (documentResponseRecipientsInner.DeliveryMethodOption.Value.HasValue)
+                {
+                    var deliveryMethodRawValue = DocumentResponseRecipientsInner.DeliveryMethodEnumToJsonValue(documentResponseRecipientsInner.DeliveryMethodOption.Value.Value);
+                    writer.WriteString("delivery_method", deliveryMethodRawValue);
+                }
+                else
+                    writer.WriteNull("delivery_method");
+            }
+            if (documentResponseRecipientsInner.SmsOption.IsSet)
+            {
+                writer.WritePropertyName("sms");
+                JsonSerializer.Serialize(writer, documentResponseRecipientsInner.Sms, jsonSerializerOptions);
+            }
             if (documentResponseRecipientsInner.SigningOrderOption.IsSet)
                 writer.WriteNumber("signing_order", documentResponseRecipientsInner.SigningOrderOption.Value!.Value);
 
@@ -560,6 +745,11 @@ namespace SignWell.Sdk.Models
                 else
                     writer.WriteNull("passcode");
 
+            if (documentResponseRecipientsInner.PasscodeDeliveryOption.IsSet)
+            {
+                writer.WritePropertyName("passcode_delivery");
+                JsonSerializer.Serialize(writer, documentResponseRecipientsInner.PasscodeDelivery, jsonSerializerOptions);
+            }
             if (documentResponseRecipientsInner.StatusOption.IsSet)
                 if (documentResponseRecipientsInner.StatusOption.Value != null)
                     writer.WriteString("status", documentResponseRecipientsInner.Status);

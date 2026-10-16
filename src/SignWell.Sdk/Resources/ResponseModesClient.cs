@@ -61,16 +61,16 @@ public sealed class ResponseModesClient
     }
 
     public Task<OwnedResponseStream> GetCompletedPdfStreamAsync(
-        Guid id, bool auditPage = false, FileFormat? fileFormat = null, CancellationToken cancellationToken = default) =>
+        Guid id, bool auditPage = true, FileFormat? fileFormat = null, CancellationToken cancellationToken = default) =>
         SendStreamAsync(
-            $"/api/v1/documents/{id:D}/completed_pdf?url_only=false&audit_page={Lower(auditPage)}{FileFormatQuery(fileFormat)}",
+            $"/api/v1/documents/{id:D}/completed_pdf/?url_only=false&audit_page={Lower(auditPage)}{FileFormatQuery(fileFormat)}",
             "PDF or ZIP content",
             cancellationToken);
 
     public Task<CompletedPdfUrlResponse> GetCompletedPdfUrlAsync(
-        Guid id, bool auditPage = false, FileFormat? fileFormat = null, CancellationToken cancellationToken = default) =>
+        Guid id, bool auditPage = true, FileFormat? fileFormat = null, CancellationToken cancellationToken = default) =>
         SendJsonAsync<CompletedPdfUrlResponse>(
-            $"/api/v1/documents/{id:D}/completed_pdf?url_only=true&audit_page={Lower(auditPage)}{FileFormatQuery(fileFormat)}",
+            $"/api/v1/documents/{id:D}/completed_pdf/?url_only=true&audit_page={Lower(auditPage)}{FileFormatQuery(fileFormat)}",
             cancellationToken);
 
     public Task<OwnedResponseStream> GetBulkSendCsvStreamAsync(
@@ -82,13 +82,13 @@ public sealed class ResponseModesClient
         SendJsonAsync<BulkSendCsvTemplateResponse>(BulkCsvPath(templateIds, true), cancellationToken);
 
     public Task<OwnedResponseStream> GetNom151StreamAsync(Guid id, CancellationToken cancellationToken = default) =>
-        SendStreamAsync($"/api/v1/documents/{id:D}/nom151_certificate?url_only=false&object_only=false", "ZIP content", cancellationToken);
+        SendStreamAsync($"/api/v1/documents/{id:D}/nom151_certificate/?url_only=false&object_only=false", "ZIP content", cancellationToken);
 
     public Task<Nom151UrlResponse> GetNom151UrlAsync(Guid id, CancellationToken cancellationToken = default) =>
-        SendJsonAsync<Nom151UrlResponse>($"/api/v1/documents/{id:D}/nom151_certificate?url_only=true&object_only=false", cancellationToken);
+        SendJsonAsync<Nom151UrlResponse>($"/api/v1/documents/{id:D}/nom151_certificate/?url_only=true&object_only=false", cancellationToken);
 
     public Task<Nom151CertificateResponse> GetNom151ObjectAsync(Guid id, CancellationToken cancellationToken = default) =>
-        SendJsonAsync<Nom151CertificateResponse>($"/api/v1/documents/{id:D}/nom151_certificate?url_only=false&object_only=true", cancellationToken);
+        SendJsonAsync<Nom151CertificateResponse>($"/api/v1/documents/{id:D}/nom151_certificate/?url_only=false&object_only=true", cancellationToken);
 
     private async Task<OwnedResponseStream> SendStreamAsync(string path, string expected, CancellationToken cancellationToken)
     {
@@ -126,7 +126,7 @@ public sealed class ResponseModesClient
     {
         var client = _factory.CreateClient(HttpClientName);
         client.DefaultRequestHeaders.Remove("X-Api-Key");
-        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        using var request = new HttpRequestMessage(HttpMethod.Get, Prefix(path));
         request.Headers.TryAddWithoutValidation("X-Api-Key", _options.ApiKey);
         try
         {
@@ -142,12 +142,18 @@ public sealed class ResponseModesClient
         }
     }
 
+    private string Prefix(string path)
+    {
+        var prefix = _options.BaseUri.AbsolutePath.TrimEnd('/');
+        return prefix.Length == 0 ? path : prefix + path;
+    }
+
     private static string BulkCsvPath(IReadOnlyCollection<Guid> ids, bool base64)
     {
         if (ids is null || ids.Count == 0)
             throw new ArgumentException("At least one template ID is required.", nameof(ids));
-        var values = string.Join(",", ids.Select(id => Uri.EscapeDataString(id.ToString("D"))));
-        return $"/api/v1/bulk_sends/csv_template?template_ids={values}&base64={Lower(base64)}";
+        var values = string.Join("&", ids.Select(id => $"template_ids%5B%5D={Uri.EscapeDataString(id.ToString("D"))}"));
+        return $"/api/v1/bulk_sends/csv_template/?{values}&base64={Lower(base64)}";
     }
 
     private static string Lower(bool value) => value ? "true" : "false";

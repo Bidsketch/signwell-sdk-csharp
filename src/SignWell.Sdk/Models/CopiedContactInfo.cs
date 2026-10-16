@@ -119,8 +119,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CopiedContactInfo" />
     /// </summary>
-    public class CopiedContactInfoJsonConverter : JsonConverter<CopiedContactInfo>
+    public partial class CopiedContactInfoJsonConverter : JsonConverter<CopiedContactInfo>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopiedContactInfoJsonConverter" /> class.
+        /// </summary>
+        public CopiedContactInfoJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CopiedContactInfo" />
         /// </summary>
@@ -173,16 +183,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class CopiedContactInfo.", nameof(email));
+                throw new JsonException("Property is required for class CopiedContactInfo: email.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class CopiedContactInfo.");
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class CopiedContactInfo.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class CopiedContactInfo.");
+                throw new JsonException("Property is not nullable for class CopiedContactInfo: email.");
 
             return new CopiedContactInfo(email.Value!, id, name);
         }
@@ -193,7 +197,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedContactInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CopiedContactInfo copiedContactInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -208,14 +211,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedContactInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CopiedContactInfo copiedContactInfo, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (copiedContactInfo.Email == null)
-                throw new ArgumentNullException(nameof(copiedContactInfo.Email), "Property is required for class CopiedContactInfo.");
+            if (copiedContactInfo.IdOption.IsSet && copiedContactInfo.Id == null)
+                throw new JsonException("Cannot write null property CopiedContactInfo.Id to non-nullable JSON property 'id'.");
 
             if (copiedContactInfo.NameOption.IsSet && copiedContactInfo.Name == null)
-                throw new ArgumentNullException(nameof(copiedContactInfo.Name), "Property is required for class CopiedContactInfo.");
+                throw new JsonException("Cannot write null property CopiedContactInfo.Name to non-nullable JSON property 'name'.");
 
             writer.WriteString("email", copiedContactInfo.Email);
 

@@ -60,7 +60,7 @@ namespace SignWell.Sdk.Test.Raw
             CreateBulkSendRequest createBulkSendRequest = default!;
             var response = await _instance.CreateBulkSendAsync(createBulkSendRequest);
             var model = response.Created();
-            Assert.IsType<BulkSendCreateResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.BulkSendCreateResponse>(model);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SignWell.Sdk.Test.Raw
             Guid id = default!;
             var response = await _instance.GetBulkSendAsync(id);
             var model = response.Ok();
-            Assert.IsType<BulkSendResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.BulkSendResponse>(model);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<int> page = default!;
             var response = await _instance.GetBulkSendDocumentsAsync(id, limit, page);
             var model = response.Ok();
-            Assert.IsType<BulkSendDocumentsResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.BulkSendDocumentsResponse>(model);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<Guid> apiApplicationId = default!;
             var response = await _instance.ListBulkSendsAsync(userEmail, limit, page, apiApplicationId);
             var model = response.Ok();
-            Assert.IsType<BulkSendListResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.BulkSendListResponse>(model);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SignWell.Sdk.Test.Raw
             BulkSendCsvRequest bulkSendCsvRequest = default!;
             var response = await _instance.ValidateBulkSendCsvAsync(bulkSendCsvRequest);
             var model = response.Ok();
-            Assert.IsType<BulkSendValidateCsvResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.BulkSendValidateCsvResponse>(model);
         }
     }
 }

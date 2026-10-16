@@ -88,9 +88,14 @@ namespace SignWell.Sdk.Models
         UsBankAccountNumber = 11,
 
         /// <summary>
+        /// Enum Custom for value: custom
+        /// </summary>
+        Custom = 12,
+
+        /// <summary>
         /// Enum UnknownDefaultOpenApi for value: unknown_default_open_api
         /// </summary>
-        UnknownDefaultOpenApi = 12
+        UnknownDefaultOpenApi = 13
     }
 
     /// <summary>
@@ -138,10 +143,13 @@ namespace SignWell.Sdk.Models
             if (value.Equals("us_bank_account_number"))
                 return TextValidation.UsBankAccountNumber;
 
+            if (value.Equals("custom"))
+                return TextValidation.Custom;
+
             if (value.Equals("unknown_default_open_api"))
                 return TextValidation.UnknownDefaultOpenApi;
 
-            throw new NotImplementedException($"Could not convert value to type TextValidation: '{value}'");
+            return TextValidation.UnknownDefaultOpenApi;
         }
 
         /// <summary>
@@ -183,6 +191,9 @@ namespace SignWell.Sdk.Models
 
             if (value.Equals("us_bank_account_number"))
                 return TextValidation.UsBankAccountNumber;
+
+            if (value.Equals("custom"))
+                return TextValidation.Custom;
 
             if (value.Equals("unknown_default_open_api"))
                 return TextValidation.UnknownDefaultOpenApi;
@@ -230,6 +241,9 @@ namespace SignWell.Sdk.Models
 
             if (value == TextValidation.UsBankAccountNumber)
                 return "us_bank_account_number";
+
+            if (value == TextValidation.Custom)
+                return "custom";
 
             if (value == TextValidation.UnknownDefaultOpenApi)
                 return "unknown_default_open_api";
@@ -291,6 +305,9 @@ namespace SignWell.Sdk.Models
         /// <returns></returns>
         public override TextValidation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+
             string? rawValue = reader.GetString();
 
             TextValidation? result = rawValue == null
@@ -311,7 +328,10 @@ namespace SignWell.Sdk.Models
         /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, TextValidation? textValidation, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(textValidation.HasValue ? TextValidationValueConverter.ToJsonValue(textValidation.Value).ToString() : "null");
+            if (textValidation.HasValue)
+                writer.WriteStringValue(TextValidationValueConverter.ToJsonValue(textValidation.Value).ToString());
+            else
+                writer.WriteNullValue();
         }
     }
 }

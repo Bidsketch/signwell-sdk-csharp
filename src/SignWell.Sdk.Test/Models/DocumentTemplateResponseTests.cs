@@ -323,5 +323,14 @@ namespace SignWell.Sdk.Test.Model
         {
             // TODO unit test for the property 'CheckboxGroups'
         }
+
+        /// <summary>
+        /// Test the property 'ConditionalRules'
+        /// </summary>
+        [Fact]
+        public void ConditionalRulesTest()
+        {
+            // TODO unit test for the property 'ConditionalRules'
+        }
     }
 }

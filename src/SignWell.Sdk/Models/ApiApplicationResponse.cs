@@ -173,17 +173,27 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ApiApplicationResponse" />
     /// </summary>
-    public class ApiApplicationResponseJsonConverter : JsonConverter<ApiApplicationResponse>
+    public partial class ApiApplicationResponseJsonConverter : JsonConverter<ApiApplicationResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiApplicationResponseJsonConverter" /> class.
+        /// </summary>
+        public ApiApplicationResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// The format to use to serialize CreatedAt
         /// </summary>
-        public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string CreatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// The format to use to serialize UpdatedAt
         /// </summary>
-        public static string UpdatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string UpdatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// Deserializes json to <see cref="ApiApplicationResponse" />
@@ -253,28 +263,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class ApiApplicationResponse.", nameof(id));
+                throw new JsonException("Property is required for class ApiApplicationResponse: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class ApiApplicationResponse.", nameof(name));
+                throw new JsonException("Property is required for class ApiApplicationResponse: name.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class ApiApplicationResponse.");
+                throw new JsonException("Property is not nullable for class ApiApplicationResponse: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class ApiApplicationResponse.");
-
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class ApiApplicationResponse.");
-
-            if (updatedAt.IsSet && updatedAt.Value == null)
-                throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class ApiApplicationResponse.");
-
-            if (owner.IsSet && owner.Value == null)
-                throw new ArgumentNullException(nameof(owner), "Property is not nullable for class ApiApplicationResponse.");
-
-            if (preferences.IsSet && preferences.Value == null)
-                throw new ArgumentNullException(nameof(preferences), "Property is not nullable for class ApiApplicationResponse.");
+                throw new JsonException("Property is not nullable for class ApiApplicationResponse: name.");
 
             return new ApiApplicationResponse(id.Value!.Value!, name.Value!, callbackUrls, createdAt, updatedAt, owner, preferences);
         }
@@ -285,7 +283,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ApiApplicationResponse apiApplicationResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -300,17 +297,19 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ApiApplicationResponse apiApplicationResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (apiApplicationResponse.Name == null)
-                throw new ArgumentNullException(nameof(apiApplicationResponse.Name), "Property is required for class ApiApplicationResponse.");
+            if (apiApplicationResponse.CreatedAtOption.IsSet && apiApplicationResponse.CreatedAt == null)
+                throw new JsonException("Cannot write null property ApiApplicationResponse.CreatedAt to non-nullable JSON property 'created_at'.");
+
+            if (apiApplicationResponse.UpdatedAtOption.IsSet && apiApplicationResponse.UpdatedAt == null)
+                throw new JsonException("Cannot write null property ApiApplicationResponse.UpdatedAt to non-nullable JSON property 'updated_at'.");
 
             if (apiApplicationResponse.OwnerOption.IsSet && apiApplicationResponse.Owner == null)
-                throw new ArgumentNullException(nameof(apiApplicationResponse.Owner), "Property is required for class ApiApplicationResponse.");
+                throw new JsonException("Cannot write null property ApiApplicationResponse.Owner to non-nullable JSON property 'owner'.");
 
             if (apiApplicationResponse.PreferencesOption.IsSet && apiApplicationResponse.Preferences == null)
-                throw new ArgumentNullException(nameof(apiApplicationResponse.Preferences), "Property is required for class ApiApplicationResponse.");
+                throw new JsonException("Cannot write null property ApiApplicationResponse.Preferences to non-nullable JSON property 'preferences'.");
 
             writer.WriteString("id", apiApplicationResponse.Id);
 

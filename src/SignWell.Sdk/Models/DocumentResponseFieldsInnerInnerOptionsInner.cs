@@ -123,8 +123,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseFieldsInnerInnerOptionsInner" />
     /// </summary>
-    public class DocumentResponseFieldsInnerInnerOptionsInnerJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerOptionsInner>
+    public partial class DocumentResponseFieldsInnerInnerOptionsInnerJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerOptionsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerOptionsInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseFieldsInnerInnerOptionsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseFieldsInnerInnerOptionsInner" />
         /// </summary>
@@ -176,15 +186,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentResponseFieldsInnerInnerOptionsInner.");
-
-            if (apiId.IsSet && apiId.Value == null)
-                throw new ArgumentNullException(nameof(apiId), "Property is not nullable for class DocumentResponseFieldsInnerInnerOptionsInner.");
-
-            if (isOther.IsSet && isOther.Value == null)
-                throw new ArgumentNullException(nameof(isOther), "Property is not nullable for class DocumentResponseFieldsInnerInnerOptionsInner.");
-
             return new DocumentResponseFieldsInnerInnerOptionsInner(name, apiId, isOther);
         }
 
@@ -194,7 +195,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerOptionsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerOptionsInner documentResponseFieldsInnerInnerOptionsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -209,14 +209,16 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerOptionsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerOptionsInner documentResponseFieldsInnerInnerOptionsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             if (documentResponseFieldsInnerInnerOptionsInner.NameOption.IsSet && documentResponseFieldsInnerInnerOptionsInner.Name == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInnerOptionsInner.Name), "Property is required for class DocumentResponseFieldsInnerInnerOptionsInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInnerOptionsInner.Name to non-nullable JSON property 'name'.");
 
             if (documentResponseFieldsInnerInnerOptionsInner.ApiIdOption.IsSet && documentResponseFieldsInnerInnerOptionsInner.ApiId == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInnerOptionsInner.ApiId), "Property is required for class DocumentResponseFieldsInnerInnerOptionsInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInnerOptionsInner.ApiId to non-nullable JSON property 'api_id'.");
+
+            if (documentResponseFieldsInnerInnerOptionsInner.IsOtherOption.IsSet && documentResponseFieldsInnerInnerOptionsInner.IsOther == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInnerOptionsInner.IsOther to non-nullable JSON property 'is_other'.");
 
             if (documentResponseFieldsInnerInnerOptionsInner.NameOption.IsSet)
                 writer.WriteString("name", documentResponseFieldsInnerInnerOptionsInner.Name);

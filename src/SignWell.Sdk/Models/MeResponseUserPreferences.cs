@@ -123,8 +123,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="MeResponseUserPreferences" />
     /// </summary>
-    public class MeResponseUserPreferencesJsonConverter : JsonConverter<MeResponseUserPreferences>
+    public partial class MeResponseUserPreferencesJsonConverter : JsonConverter<MeResponseUserPreferences>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeResponseUserPreferencesJsonConverter" /> class.
+        /// </summary>
+        public MeResponseUserPreferencesJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="MeResponseUserPreferences" />
         /// </summary>
@@ -176,15 +186,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (salesDocument.IsSet && salesDocument.Value == null)
-                throw new ArgumentNullException(nameof(salesDocument), "Property is not nullable for class MeResponseUserPreferences.");
-
-            if (varTimeZone.IsSet && varTimeZone.Value == null)
-                throw new ArgumentNullException(nameof(varTimeZone), "Property is not nullable for class MeResponseUserPreferences.");
-
-            if (smartFields.IsSet && smartFields.Value == null)
-                throw new ArgumentNullException(nameof(smartFields), "Property is not nullable for class MeResponseUserPreferences.");
-
             return new MeResponseUserPreferences(salesDocument, varTimeZone, smartFields);
         }
 
@@ -194,7 +195,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseUserPreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, MeResponseUserPreferences meResponseUserPreferences, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -209,11 +209,16 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseUserPreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, MeResponseUserPreferences meResponseUserPreferences, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (meResponseUserPreferences.SalesDocumentOption.IsSet && meResponseUserPreferences.SalesDocument == null)
+                throw new JsonException("Cannot write null property MeResponseUserPreferences.SalesDocument to non-nullable JSON property 'sales_document'.");
+
             if (meResponseUserPreferences.VarTimeZoneOption.IsSet && meResponseUserPreferences.VarTimeZone == null)
-                throw new ArgumentNullException(nameof(meResponseUserPreferences.VarTimeZone), "Property is required for class MeResponseUserPreferences.");
+                throw new JsonException("Cannot write null property MeResponseUserPreferences.VarTimeZone to non-nullable JSON property 'time_zone'.");
+
+            if (meResponseUserPreferences.SmartFieldsOption.IsSet && meResponseUserPreferences.SmartFields == null)
+                throw new JsonException("Cannot write null property MeResponseUserPreferences.SmartFields to non-nullable JSON property 'smart_fields'.");
 
             if (meResponseUserPreferences.SalesDocumentOption.IsSet)
                 writer.WriteBoolean("sales_document", meResponseUserPreferences.SalesDocumentOption.Value!.Value);

@@ -119,8 +119,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AdditionalFilesInner" />
     /// </summary>
-    public class AdditionalFilesInnerJsonConverter : JsonConverter<AdditionalFilesInner>
+    public partial class AdditionalFilesInnerJsonConverter : JsonConverter<AdditionalFilesInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdditionalFilesInnerJsonConverter" /> class.
+        /// </summary>
+        public AdditionalFilesInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AdditionalFilesInner" />
         /// </summary>
@@ -173,16 +183,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class AdditionalFilesInner.", nameof(name));
+                throw new JsonException("Property is required for class AdditionalFilesInner: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class AdditionalFilesInner.");
-
-            if (fileUrl.IsSet && fileUrl.Value == null)
-                throw new ArgumentNullException(nameof(fileUrl), "Property is not nullable for class AdditionalFilesInner.");
-
-            if (fileBase64.IsSet && fileBase64.Value == null)
-                throw new ArgumentNullException(nameof(fileBase64), "Property is not nullable for class AdditionalFilesInner.");
+                throw new JsonException("Property is not nullable for class AdditionalFilesInner: name.");
 
             return new AdditionalFilesInner(name.Value!, fileUrl, fileBase64);
         }
@@ -193,7 +197,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="additionalFilesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, AdditionalFilesInner additionalFilesInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -208,17 +211,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="additionalFilesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AdditionalFilesInner additionalFilesInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (additionalFilesInner.Name == null)
-                throw new ArgumentNullException(nameof(additionalFilesInner.Name), "Property is required for class AdditionalFilesInner.");
-
             if (additionalFilesInner.FileUrlOption.IsSet && additionalFilesInner.FileUrl == null)
-                throw new ArgumentNullException(nameof(additionalFilesInner.FileUrl), "Property is required for class AdditionalFilesInner.");
+                throw new JsonException("Cannot write null property AdditionalFilesInner.FileUrl to non-nullable JSON property 'file_url'.");
 
             if (additionalFilesInner.FileBase64Option.IsSet && additionalFilesInner.FileBase64 == null)
-                throw new ArgumentNullException(nameof(additionalFilesInner.FileBase64), "Property is required for class AdditionalFilesInner.");
+                throw new JsonException("Cannot write null property AdditionalFilesInner.FileBase64 to non-nullable JSON property 'file_base64'.");
 
             writer.WriteString("name", additionalFilesInner.Name);
 

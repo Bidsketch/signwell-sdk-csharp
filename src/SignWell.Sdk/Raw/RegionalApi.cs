@@ -22,6 +22,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using SignWell.Sdk.Client;
+using SignWell.Sdk.Logging;
 using SignWell.Sdk.Models;
 
 namespace SignWell.Sdk.Raw
@@ -129,11 +130,6 @@ namespace SignWell.Sdk.Raw
         private JsonSerializerOptions _jsonSerializerOptions;
 
         /// <summary>
-        /// The logger factory
-        /// </summary>
-        public ILoggerFactory LoggerFactory { get; }
-
-        /// <summary>
         /// The logger
         /// </summary>
         public ILogger<RegionalApi> Logger { get; }
@@ -157,12 +153,11 @@ namespace SignWell.Sdk.Raw
         /// Initializes a new instance of the <see cref="RegionalApi"/> class.
         /// </summary>
         /// <returns></returns>
-        public RegionalApi(ILogger<RegionalApi> logger, ILoggerFactory loggerFactory, HttpClient httpClient, JsonSerializerOptionsProvider jsonSerializerOptionsProvider, RegionalApiEvents regionalApiEvents,
+        public RegionalApi(ILogger<RegionalApi> logger, HttpClient httpClient, JsonSerializerOptionsProvider jsonSerializerOptionsProvider, RegionalApiEvents regionalApiEvents,
             TokenProvider<ApiKeyToken> apiKeyProvider)
         {
             _jsonSerializerOptions = jsonSerializerOptionsProvider.Options;
-            LoggerFactory = loggerFactory;
-            Logger = LoggerFactory.CreateLogger<RegionalApi>();
+            Logger = logger;
             HttpClient = httpClient;
             Events = regionalApiEvents;
             ApiKeyProvider = apiKeyProvider;
@@ -182,7 +177,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLog = false;
             AfterGetNom151Certificate(ref suppressDefaultLog, apiResponseLocalVar, id, urlOnly, objectOnly);
             if (!suppressDefaultLog)
-                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+                Logger.LogInformation(RestLogEvents.ApiRequestCompleted, "{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
 
         /// <summary>
@@ -209,7 +204,7 @@ namespace SignWell.Sdk.Raw
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetNom151Certificate(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, id, urlOnly, objectOnly);
             if (!suppressDefaultLogLocalVar)
-                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+                Logger.LogError(RestLogEvents.ApiRequestFailed, exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
 
         /// <summary>
@@ -267,8 +262,8 @@ namespace SignWell.Sdk.Raw
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/api/v1/documents/{id}/nom151_certificate"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/api/v1/documents/{id}/nom151_certificate");
+                        ? "/api/v1/documents/{id}/nom151_certificate/"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/api/v1/documents/{id}/nom151_certificate/");
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bid%7D", Uri.EscapeDataString(id.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
@@ -302,13 +297,12 @@ namespace SignWell.Sdk.Raw
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<GetNom151CertificateApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetNom151CertificateApiResponse>();
                         GetNom151CertificateApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                apiResponseLocalVar = new GetNom151CertificateApiResponse(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/documents/{id}/nom151_certificate", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new GetNom151CertificateApiResponse(Logger, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/api/v1/documents/{id}/nom151_certificate/", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -328,7 +322,7 @@ namespace SignWell.Sdk.Raw
             }
             catch(Exception e)
             {
-                OnErrorGetNom151CertificateDefaultImplementation(e, "/api/v1/documents/{id}/nom151_certificate", uriBuilderLocalVar.Path, id, urlOnly, objectOnly);
+                OnErrorGetNom151CertificateDefaultImplementation(e, "/api/v1/documents/{id}/nom151_certificate/", uriBuilderLocalVar.Path, id, urlOnly, objectOnly);
                 Events.ExecuteOnErrorGetNom151Certificate(e);
                 throw;
             }
@@ -342,7 +336,7 @@ namespace SignWell.Sdk.Raw
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<GetNom151CertificateApiResponse> Logger { get; }
+            public ILogger<RegionalApi> Logger { get; }
 
             /// <summary>
             /// The <see cref="GetNom151CertificateApiResponse"/>
@@ -354,7 +348,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public GetNom151CertificateApiResponse(ILogger<GetNom151CertificateApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public GetNom151CertificateApiResponse(ILogger<RegionalApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -370,7 +364,7 @@ namespace SignWell.Sdk.Raw
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public GetNom151CertificateApiResponse(ILogger<GetNom151CertificateApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public GetNom151CertificateApiResponse(ILogger<RegionalApi> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -390,11 +384,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.Nom151UrlResponse? Ok()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.Nom151UrlResponse? result = default;
+                OnOk(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultOk();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.Nom151UrlResponse? DefaultOk()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsOk
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.Nom151UrlResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnOk(ref bool suppressDefault, ref SignWell.Sdk.Models.Nom151UrlResponse? result);
 
             /// <summary>
             /// Returns true if the response is 200 Ok and the deserialized response is not null
@@ -428,11 +434,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.ErrorResponse? NotFound()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.ErrorResponse? result = default;
+                OnNotFound(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultNotFound();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.ErrorResponse? DefaultNotFound()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsNotFound
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.ErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnNotFound(ref bool suppressDefault, ref SignWell.Sdk.Models.ErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 404 NotFound and the deserialized response is not null
@@ -466,11 +484,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.ValidationErrorResponse? UnprocessableContent()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.ValidationErrorResponse? result = default;
+                OnUnprocessableContent(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultUnprocessableContent();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.ValidationErrorResponse? DefaultUnprocessableContent()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsUnprocessableContent
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.ValidationErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnUnprocessableContent(ref bool suppressDefault, ref SignWell.Sdk.Models.ValidationErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
@@ -504,11 +534,23 @@ namespace SignWell.Sdk.Raw
             /// <returns></returns>
             public SignWell.Sdk.Models.RateLimitErrorResponse? TooManyRequests()
             {
-                // This logic may be modified with the AsModel.mustache template
+                bool suppressDefault = false;
+                SignWell.Sdk.Models.RateLimitErrorResponse? result = default;
+                OnTooManyRequests(ref suppressDefault, ref result);
+                if (!suppressDefault)
+                    result = DefaultTooManyRequests();
+                return result;
+            }
+
+            private SignWell.Sdk.Models.RateLimitErrorResponse? DefaultTooManyRequests()
+            {
+                // NOTICE: Consider this AsModel template deprecated. Implement the appropriate partial method instead
                 return IsTooManyRequests
                     ? System.Text.Json.JsonSerializer.Deserialize<SignWell.Sdk.Models.RateLimitErrorResponse>(RawContent, _jsonSerializerOptions)
                     : default;
             }
+
+            partial void OnTooManyRequests(ref bool suppressDefault, ref SignWell.Sdk.Models.RateLimitErrorResponse? result);
 
             /// <summary>
             /// Returns true if the response is 429 TooManyRequests and the deserialized response is not null
@@ -535,7 +577,7 @@ namespace SignWell.Sdk.Raw
                 bool suppressDefaultLog = false;
                 OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
                 if (!suppressDefaultLog)
-                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+                    Logger.LogError(RestLogEvents.ApiDeserializationFailed, exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
             }
 
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);

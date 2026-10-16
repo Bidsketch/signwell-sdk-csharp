@@ -188,8 +188,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CheckboxGroupsInner" />
     /// </summary>
-    public class CheckboxGroupsInnerJsonConverter : JsonConverter<CheckboxGroupsInner>
+    public partial class CheckboxGroupsInnerJsonConverter : JsonConverter<CheckboxGroupsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CheckboxGroupsInnerJsonConverter" /> class.
+        /// </summary>
+        public CheckboxGroupsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CheckboxGroupsInner" />
         /// </summary>
@@ -241,9 +251,7 @@ namespace SignWell.Sdk.Models
                             checkboxIds = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "validation":
-                            string? validationRawValue = utf8JsonReader.GetString();
-                            if (validationRawValue != null)
-                                validation = new Option<CheckboxValidation?>(CheckboxValidationValueConverter.FromStringOrDefault(validationRawValue));
+                            validation = new Option<CheckboxValidation?>(JsonSerializer.Deserialize<CheckboxValidation?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "required":
                             required = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -264,37 +272,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!groupName.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupsInner.", nameof(groupName));
+                throw new JsonException("Property is required for class CheckboxGroupsInner: group_name.");
 
             if (!recipientId.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupsInner.", nameof(recipientId));
+                throw new JsonException("Property is required for class CheckboxGroupsInner: recipient_id.");
 
             if (!checkboxIds.IsSet)
-                throw new ArgumentException("Property is required for class CheckboxGroupsInner.", nameof(checkboxIds));
+                throw new JsonException("Property is required for class CheckboxGroupsInner: checkbox_ids.");
 
             if (groupName.IsSet && groupName.Value == null)
-                throw new ArgumentNullException(nameof(groupName), "Property is not nullable for class CheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupsInner: group_name.");
 
             if (recipientId.IsSet && recipientId.Value == null)
-                throw new ArgumentNullException(nameof(recipientId), "Property is not nullable for class CheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupsInner: recipient_id.");
 
             if (checkboxIds.IsSet && checkboxIds.Value == null)
-                throw new ArgumentNullException(nameof(checkboxIds), "Property is not nullable for class CheckboxGroupsInner.");
-
-            if (validation.IsSet && validation.Value == null)
-                throw new ArgumentNullException(nameof(validation), "Property is not nullable for class CheckboxGroupsInner.");
-
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class CheckboxGroupsInner.");
-
-            if (minValue.IsSet && minValue.Value == null)
-                throw new ArgumentNullException(nameof(minValue), "Property is not nullable for class CheckboxGroupsInner.");
-
-            if (maxValue.IsSet && maxValue.Value == null)
-                throw new ArgumentNullException(nameof(maxValue), "Property is not nullable for class CheckboxGroupsInner.");
-
-            if (exactValue.IsSet && exactValue.Value == null)
-                throw new ArgumentNullException(nameof(exactValue), "Property is not nullable for class CheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class CheckboxGroupsInner: checkbox_ids.");
 
             return new CheckboxGroupsInner(groupName.Value!, recipientId.Value!, checkboxIds.Value!, validation, required, minValue, maxValue, exactValue);
         }
@@ -305,7 +298,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="checkboxGroupsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CheckboxGroupsInner checkboxGroupsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -320,17 +312,22 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="checkboxGroupsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CheckboxGroupsInner checkboxGroupsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (checkboxGroupsInner.GroupName == null)
-                throw new ArgumentNullException(nameof(checkboxGroupsInner.GroupName), "Property is required for class CheckboxGroupsInner.");
+            if (checkboxGroupsInner.ValidationOption.IsSet && checkboxGroupsInner.Validation == null)
+                throw new JsonException("Cannot write null property CheckboxGroupsInner.Validation to non-nullable JSON property 'validation'.");
 
-            if (checkboxGroupsInner.RecipientId == null)
-                throw new ArgumentNullException(nameof(checkboxGroupsInner.RecipientId), "Property is required for class CheckboxGroupsInner.");
+            if (checkboxGroupsInner.RequiredOption.IsSet && checkboxGroupsInner.Required == null)
+                throw new JsonException("Cannot write null property CheckboxGroupsInner.Required to non-nullable JSON property 'required'.");
 
-            if (checkboxGroupsInner.CheckboxIds == null)
-                throw new ArgumentNullException(nameof(checkboxGroupsInner.CheckboxIds), "Property is required for class CheckboxGroupsInner.");
+            if (checkboxGroupsInner.MinValueOption.IsSet && checkboxGroupsInner.MinValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupsInner.MinValue to non-nullable JSON property 'min_value'.");
+
+            if (checkboxGroupsInner.MaxValueOption.IsSet && checkboxGroupsInner.MaxValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupsInner.MaxValue to non-nullable JSON property 'max_value'.");
+
+            if (checkboxGroupsInner.ExactValueOption.IsSet && checkboxGroupsInner.ExactValue == null)
+                throw new JsonException("Cannot write null property CheckboxGroupsInner.ExactValue to non-nullable JSON property 'exact_value'.");
 
             writer.WriteString("group_name", checkboxGroupsInner.GroupName);
 

@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **PreassignedRecipientEmail** | **string** |  | [optional] 
 **SigningOrder** | **int** |  | [optional] 
 **AttachmentRequests** | [**List&lt;AttachmentRequestInfo&gt;**](AttachmentRequestInfo.md) |  | [optional] 
+**PasscodeDelivery** | [**DocumentResponseRecipientsInnerPasscodeDelivery**](DocumentResponseRecipientsInnerPasscodeDelivery.md) |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

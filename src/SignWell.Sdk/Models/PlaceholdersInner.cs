@@ -36,15 +36,17 @@ namespace SignWell.Sdk.Models
         /// </summary>
         /// <param name="id">A unique identifier that you will give to each placeholder. We recommend numbering sequentially from 1 to X. IDs are required for associating recipients to fields and more.</param>
         /// <param name="name">Name of the placeholder.</param>
-        /// <param name="preassignedRecipientName">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.</param>
+        /// <param name="preassignedRecipientName">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.</param>
         /// <param name="preassignedRecipientEmail">In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the email.</param>
+        /// <param name="passcodeDelivery">passcodeDelivery</param>
         [JsonConstructor]
-        public PlaceholdersInner(string id, string name, Option<string?> preassignedRecipientName = default, Option<string?> preassignedRecipientEmail = default)
+        public PlaceholdersInner(string id, string name, Option<string?> preassignedRecipientName = default, Option<string?> preassignedRecipientEmail = default, Option<PlaceholdersInnerPasscodeDelivery?> passcodeDelivery = default)
         {
             Id = id;
             Name = name;
             PreassignedRecipientNameOption = preassignedRecipientName;
             PreassignedRecipientEmailOption = preassignedRecipientEmail;
+            PasscodeDeliveryOption = passcodeDelivery;
             OnCreated();
         }
 
@@ -72,9 +74,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> PreassignedRecipientNameOption { get; private set; }
 
         /// <summary>
-        /// In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.
+        /// In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.
         /// </summary>
-        /// <value>In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name.</value>
+        /// <value>In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the name. Every recipient on a 21 CFR Part 11 document needs a name, so leaving it unset means the name has to be supplied when the document is created.</value>
         [JsonPropertyName("preassigned_recipient_name")]
         public string? PreassignedRecipientName { get { return this.PreassignedRecipientNameOption.Value; } set { this.PreassignedRecipientNameOption = new Option<string?>(value); } }
 
@@ -91,6 +93,19 @@ namespace SignWell.Sdk.Models
         /// <value>In some cases, it may be necessary to pre-fill the name and email for a placeholder because it will always be the same person for all documents created from this template. This sets the email.</value>
         [JsonPropertyName("preassigned_recipient_email")]
         public string? PreassignedRecipientEmail { get { return this.PreassignedRecipientEmailOption.Value; } set { this.PreassignedRecipientEmailOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of PasscodeDelivery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<PlaceholdersInnerPasscodeDelivery?> PasscodeDeliveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PasscodeDelivery
+        /// </summary>
+        [JsonPropertyName("passcode_delivery")]
+        public PlaceholdersInnerPasscodeDelivery? PasscodeDelivery { get { return this.PasscodeDeliveryOption.Value; } set { this.PasscodeDeliveryOption = new Option<PlaceholdersInnerPasscodeDelivery?>(value); } }
 
         /// <summary>
         /// Gets or Sets additional properties
@@ -110,6 +125,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  PreassignedRecipientName: ").Append(PreassignedRecipientName).Append("\n");
             sb.Append("  PreassignedRecipientEmail: ").Append(PreassignedRecipientEmail).Append("\n");
+            sb.Append("  PasscodeDelivery: ").Append(PasscodeDelivery).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -129,8 +145,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="PlaceholdersInner" />
     /// </summary>
-    public class PlaceholdersInnerJsonConverter : JsonConverter<PlaceholdersInner>
+    public partial class PlaceholdersInnerJsonConverter : JsonConverter<PlaceholdersInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlaceholdersInnerJsonConverter" /> class.
+        /// </summary>
+        public PlaceholdersInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="PlaceholdersInner" />
         /// </summary>
@@ -152,6 +178,7 @@ namespace SignWell.Sdk.Models
             Option<string?> name = default;
             Option<string?> preassignedRecipientName = default;
             Option<string?> preassignedRecipientEmail = default;
+            Option<PlaceholdersInnerPasscodeDelivery?> passcodeDelivery = default;
 
             while (utf8JsonReader.Read())
             {
@@ -180,6 +207,9 @@ namespace SignWell.Sdk.Models
                         case "preassigned_recipient_email":
                             preassignedRecipientEmail = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "passcode_delivery":
+                            passcodeDelivery = new Option<PlaceholdersInnerPasscodeDelivery?>(JsonSerializer.Deserialize<PlaceholdersInnerPasscodeDelivery>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -187,24 +217,18 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class PlaceholdersInner.", nameof(id));
+                throw new JsonException("Property is required for class PlaceholdersInner: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class PlaceholdersInner.", nameof(name));
+                throw new JsonException("Property is required for class PlaceholdersInner: name.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class PlaceholdersInner.");
+                throw new JsonException("Property is not nullable for class PlaceholdersInner: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class PlaceholdersInner.");
+                throw new JsonException("Property is not nullable for class PlaceholdersInner: name.");
 
-            if (preassignedRecipientName.IsSet && preassignedRecipientName.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientName), "Property is not nullable for class PlaceholdersInner.");
-
-            if (preassignedRecipientEmail.IsSet && preassignedRecipientEmail.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientEmail), "Property is not nullable for class PlaceholdersInner.");
-
-            return new PlaceholdersInner(id.Value!, name.Value!, preassignedRecipientName, preassignedRecipientEmail);
+            return new PlaceholdersInner(id.Value!, name.Value!, preassignedRecipientName, preassignedRecipientEmail, passcodeDelivery);
         }
 
         /// <summary>
@@ -213,7 +237,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="placeholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, PlaceholdersInner placeholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -228,20 +251,16 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="placeholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, PlaceholdersInner placeholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (placeholdersInner.Id == null)
-                throw new ArgumentNullException(nameof(placeholdersInner.Id), "Property is required for class PlaceholdersInner.");
-
-            if (placeholdersInner.Name == null)
-                throw new ArgumentNullException(nameof(placeholdersInner.Name), "Property is required for class PlaceholdersInner.");
-
             if (placeholdersInner.PreassignedRecipientNameOption.IsSet && placeholdersInner.PreassignedRecipientName == null)
-                throw new ArgumentNullException(nameof(placeholdersInner.PreassignedRecipientName), "Property is required for class PlaceholdersInner.");
+                throw new JsonException("Cannot write null property PlaceholdersInner.PreassignedRecipientName to non-nullable JSON property 'preassigned_recipient_name'.");
 
             if (placeholdersInner.PreassignedRecipientEmailOption.IsSet && placeholdersInner.PreassignedRecipientEmail == null)
-                throw new ArgumentNullException(nameof(placeholdersInner.PreassignedRecipientEmail), "Property is required for class PlaceholdersInner.");
+                throw new JsonException("Cannot write null property PlaceholdersInner.PreassignedRecipientEmail to non-nullable JSON property 'preassigned_recipient_email'.");
+
+            if (placeholdersInner.PasscodeDeliveryOption.IsSet && placeholdersInner.PasscodeDelivery == null)
+                throw new JsonException("Cannot write null property PlaceholdersInner.PasscodeDelivery to non-nullable JSON property 'passcode_delivery'.");
 
             writer.WriteString("id", placeholdersInner.Id);
 
@@ -252,6 +271,12 @@ namespace SignWell.Sdk.Models
 
             if (placeholdersInner.PreassignedRecipientEmailOption.IsSet)
                 writer.WriteString("preassigned_recipient_email", placeholdersInner.PreassignedRecipientEmail);
+
+            if (placeholdersInner.PasscodeDeliveryOption.IsSet)
+            {
+                writer.WritePropertyName("passcode_delivery");
+                JsonSerializer.Serialize(writer, placeholdersInner.PasscodeDelivery, jsonSerializerOptions);
+            }
         }
     }
 }

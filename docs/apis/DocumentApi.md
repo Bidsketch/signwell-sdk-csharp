@@ -5,14 +5,15 @@ All URIs are relative to *https://www.signwell.com*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**CreateDocument**](DocumentApi.md#createdocument) | **POST** /api/v1/documents | Create Document |
-| [**CreateDocumentFromTemplate**](DocumentApi.md#createdocumentfromtemplate) | **POST** /api/v1/document_templates/documents | Create Document from Template |
-| [**DeleteDocument**](DocumentApi.md#deletedocument) | **DELETE** /api/v1/documents/{id} | Delete Document |
-| [**GetCompletedPdf**](DocumentApi.md#getcompletedpdf) | **GET** /api/v1/documents/{id}/completed_pdf | Completed PDF |
-| [**GetDocument**](DocumentApi.md#getdocument) | **GET** /api/v1/documents/{id} | Get Document |
+| [**CreateDocumentFromTemplate**](DocumentApi.md#createdocumentfromtemplate) | **POST** /api/v1/document_templates/documents/ | Create Document from Template |
+| [**DeleteDocument**](DocumentApi.md#deletedocument) | **DELETE** /api/v1/documents/{id}/ | Delete Document |
+| [**GetCompletedPdf**](DocumentApi.md#getcompletedpdf) | **GET** /api/v1/documents/{id}/completed_pdf/ | Completed PDF |
+| [**GetDocument**](DocumentApi.md#getdocument) | **GET** /api/v1/documents/{id}/ | Get Document |
 | [**ListDocuments**](DocumentApi.md#listdocuments) | **GET** /api/v1/documents | List Documents |
-| [**SendDocument**](DocumentApi.md#senddocument) | **POST** /api/v1/documents/{id}/send | Update and Send Document |
-| [**SendReminder**](DocumentApi.md#sendreminder) | **POST** /api/v1/documents/{id}/remind | Send Reminder |
-| [**UpdateRecipients**](DocumentApi.md#updaterecipients) | **PATCH** /api/v1/documents/{id}/recipients | Update Recipients |
+| [**SendDocument**](DocumentApi.md#senddocument) | **POST** /api/v1/documents/{id}/send/ | Update and Send Document |
+| [**SendReminder**](DocumentApi.md#sendreminder) | **POST** /api/v1/documents/{id}/remind/ | Send Reminder |
+| [**UpdateAuthentication**](DocumentApi.md#updateauthentication) | **PATCH** /api/v1/documents/{id}/authentication/ | Update Authentication |
+| [**UpdateRecipients**](DocumentApi.md#updaterecipients) | **PATCH** /api/v1/documents/{id}/recipients/ | Update Recipients |
 
 <a id="createdocument"></a>
 # **CreateDocument**
@@ -20,7 +21,7 @@ All URIs are relative to *https://www.signwell.com*
 
 Create Document
 
-Creates and optionally sends a new document for signing. If `draft` is set to true the document will not be sent.
+Creates and optionally sends a new document for signing. If `draft` is set to true the document will not be sent. Recipients are notified by email, SMS, or both based on each recipient's `delivery_method`. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled, and requires a `phone_number` in E.164 format.
 
 
 ### Parameters
@@ -59,7 +60,7 @@ Creates and optionally sends a new document for signing. If `draft` is set to tr
 
 Create Document from Template
 
-Creates and optionally sends a new document for signing. If `draft` is set to true the document will not be sent.
+Creates and optionally sends a new document for signing. If `draft` is set to true the document will not be sent. Pre-signed template signatures and initials are copied to the new document as document content — they remain visible on the document but do not generate a signing event, do not emit a `document_signed` webhook, and the recipient's status will not reflect them as a real signing action. If the template was pre-signed for a signer and the request adds new unsigned signature/initials fields for that same signer, the pre-applied ratifications are cleared silently so the signer is asked to sign once. Recipients are notified by email, SMS, or both based on each recipient's `delivery_method`. SMS delivery is available only to workspaces that are eligible for SMS and have it enabled, and requires a `phone_number` in E.164 format.
 
 
 ### Parameters
@@ -177,7 +178,7 @@ Gets a completed document PDF or ZIP file. Supply the unique document ID from ei
 
 Get Document
 
-Returns a document and all associated document data. Supply the unique document ID from either a document creation request or Document page URL.
+Returns a document and all associated document data. Supply the unique document ID from either a document creation request or Document page URL. Each recipient includes its `delivery_method`, and recipients whose delivery includes SMS also include an `sms` object with the masked phone number and SMS delivery status.
 
 
 ### Parameters
@@ -255,7 +256,7 @@ Returns a paginated list of documents for the authenticated account.
 
 Update and Send Document
 
-Updates a draft document and sends it to be signed by recipients.
+Updates a draft document and sends it to be signed by recipients. `subject` and `message` apply to email notifications only; SMS notifications always use fixed system templates.
 
 
 ### Parameters
@@ -294,7 +295,7 @@ Updates a draft document and sends it to be signed by recipients.
 
 Send Reminder
 
-Sends a reminder email to recipients that have not signed yet.
+Sends a reminder to recipients who have not signed yet. Each recipient is reminded through their delivery method (email, SMS, or both). SMS reminders are only sent to recipients whose delivery method includes SMS, and only when the workspace is eligible for SMS and has it enabled.
 
 
 ### Parameters
@@ -322,8 +323,49 @@ void (empty response body)
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | created |  -  |
-| **422** | unprocessable entity |  -  |
 | **404** | not found |  -  |
+| **422** | unprocessable entity |  -  |
+| **429** | rate limit exceeded |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="updateauthentication"></a>
+# **UpdateAuthentication**
+> DocumentResponse UpdateAuthentication (Guid id, UpdateAuthenticationRequest updateAuthenticationRequest)
+
+Update Authentication
+
+Update passcode delivery settings for recipients on a sent document. Only recipients who have not started signing can be updated.
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **id** | **Guid** |  |  |
+| **updateAuthenticationRequest** | [**UpdateAuthenticationRequest**](UpdateAuthenticationRequest.md) |  |  |
+
+### Return type
+
+[**DocumentResponse**](DocumentResponse.md)
+
+### Authorization
+
+[api_key](../README.md#api_key)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | successful |  -  |
+| **400** | bad request - invalid delivery methods |  -  |
+| **404** | not found |  -  |
+| **422** | unprocessable entity - invalid delivery methods |  -  |
 | **429** | rate limit exceeded |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -334,7 +376,7 @@ void (empty response body)
 
 Update Recipients
 
-Updates one or more recipients on a document that has already been sent. Only recipients who have not started signing may be updated. Recipient IDs must be retrieved from the Get Document response. Allowed document statuses: sent, viewed, pending, bounced. For non-embedded documents, updated recipients will receive a new notification email. For embedded signing documents, email behavior follows each recipient's send_email setting.
+Updates one or more recipients on a document that has already been sent. Only recipients who have not started signing may be updated. Recipient IDs must be retrieved from the Get Document response. Allowed document statuses: sent, viewed, pending, bounced. For non-embedded documents, updated recipients will receive a new notification email. For embedded signing documents, email behavior follows each recipient's send_email setting. This endpoint does not support changing a recipient's `delivery_method` or `phone_number`; SMS delivery settings are set when the document is created.
 
 
 ### Parameters
@@ -362,10 +404,10 @@ Updates one or more recipients on a document that has already been sent. Only re
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | successful |  -  |
-| **409** | conflict - document not in eligible state |  -  |
 | **400** | bad request - invalid structure |  -  |
-| **422** | unprocessable entity - business rule violation |  -  |
 | **404** | not found |  -  |
+| **409** | conflict - document not in eligible state |  -  |
+| **422** | unprocessable entity - business rule violation |  -  |
 | **429** | rate limit exceeded |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)

@@ -26,7 +26,7 @@ namespace SignWell.Sdk.Test.Raw
     public class DependencyInjectionTest
     {
         private readonly IHost _hostUsingConfigureWithoutAClient =
-            Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureApi((context, services, options) =>
+            Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureApi((context, options) =>
             {
                 ApiKeyToken apiKeyToken1 = new ApiKeyToken("<token>", ClientUtils.ApiKeyHeader.X_Api_Key, timeout: TimeSpan.FromSeconds(1));
                 options.AddTokens(apiKeyToken1);
@@ -34,7 +34,7 @@ namespace SignWell.Sdk.Test.Raw
             .Build();
 
         private readonly IHost _hostUsingConfigureWithAClient =
-            Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureApi((context, services, options) =>
+            Host.CreateDefaultBuilder(Array.Empty<string>()).ConfigureApi((context, options) =>
             {
                 ApiKeyToken apiKeyToken1 = new ApiKeyToken("<token>", ClientUtils.ApiKeyHeader.X_Api_Key, timeout: TimeSpan.FromSeconds(1));
                 options.AddTokens(apiKeyToken1);

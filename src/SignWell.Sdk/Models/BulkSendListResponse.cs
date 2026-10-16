@@ -143,8 +143,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendListResponse" />
     /// </summary>
-    public class BulkSendListResponseJsonConverter : JsonConverter<BulkSendListResponse>
+    public partial class BulkSendListResponseJsonConverter : JsonConverter<BulkSendListResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendListResponseJsonConverter" /> class.
+        /// </summary>
+        public BulkSendListResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="BulkSendListResponse" />
         /// </summary>
@@ -209,28 +219,28 @@ namespace SignWell.Sdk.Models
             }
 
             if (!bulkSends.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendListResponse.", nameof(bulkSends));
+                throw new JsonException("Property is required for class BulkSendListResponse: bulk_sends.");
 
             if (!currentPage.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendListResponse.", nameof(currentPage));
+                throw new JsonException("Property is required for class BulkSendListResponse: current_page.");
 
             if (!totalCount.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendListResponse.", nameof(totalCount));
+                throw new JsonException("Property is required for class BulkSendListResponse: total_count.");
 
             if (!totalPages.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendListResponse.", nameof(totalPages));
+                throw new JsonException("Property is required for class BulkSendListResponse: total_pages.");
 
             if (bulkSends.IsSet && bulkSends.Value == null)
-                throw new ArgumentNullException(nameof(bulkSends), "Property is not nullable for class BulkSendListResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendListResponse: bulk_sends.");
 
             if (currentPage.IsSet && currentPage.Value == null)
-                throw new ArgumentNullException(nameof(currentPage), "Property is not nullable for class BulkSendListResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendListResponse: current_page.");
 
             if (totalCount.IsSet && totalCount.Value == null)
-                throw new ArgumentNullException(nameof(totalCount), "Property is not nullable for class BulkSendListResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendListResponse: total_count.");
 
             if (totalPages.IsSet && totalPages.Value == null)
-                throw new ArgumentNullException(nameof(totalPages), "Property is not nullable for class BulkSendListResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendListResponse: total_pages.");
 
             return new BulkSendListResponse(bulkSends.Value!, currentPage.Value!.Value!, totalCount.Value!.Value!, totalPages.Value!.Value!, nextPage, previousPage);
         }
@@ -241,7 +251,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendListResponse bulkSendListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -256,12 +265,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendListResponse bulkSendListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendListResponse.BulkSends == null)
-                throw new ArgumentNullException(nameof(bulkSendListResponse.BulkSends), "Property is required for class BulkSendListResponse.");
-
             writer.WritePropertyName("bulk_sends");
             JsonSerializer.Serialize(writer, bulkSendListResponse.BulkSends, jsonSerializerOptions);
             writer.WriteNumber("current_page", bulkSendListResponse.CurrentPage);

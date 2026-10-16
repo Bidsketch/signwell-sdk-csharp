@@ -64,21 +64,21 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
-        /// Test the property 'Email'
-        /// </summary>
-        [Fact]
-        public void EmailTest()
-        {
-            // TODO unit test for the property 'Email'
-        }
-
-        /// <summary>
         /// Test the property 'Id'
         /// </summary>
         [Fact]
         public void IdTest()
         {
             // TODO unit test for the property 'Id'
+        }
+
+        /// <summary>
+        /// Test the property 'Email'
+        /// </summary>
+        [Fact]
+        public void EmailTest()
+        {
+            // TODO unit test for the property 'Email'
         }
 
         /// <summary>
@@ -124,6 +124,24 @@ namespace SignWell.Sdk.Test.Model
         public void SendEmailDelayTest()
         {
             // TODO unit test for the property 'SendEmailDelay'
+        }
+
+        /// <summary>
+        /// Test the property 'DeliveryMethod'
+        /// </summary>
+        [Fact]
+        public void DeliveryMethodTest()
+        {
+            // TODO unit test for the property 'DeliveryMethod'
+        }
+
+        /// <summary>
+        /// Test the property 'Sms'
+        /// </summary>
+        [Fact]
+        public void SmsTest()
+        {
+            // TODO unit test for the property 'Sms'
         }
 
         /// <summary>
@@ -187,6 +205,15 @@ namespace SignWell.Sdk.Test.Model
         public void PasscodeTest()
         {
             // TODO unit test for the property 'Passcode'
+        }
+
+        /// <summary>
+        /// Test the property 'PasscodeDelivery'
+        /// </summary>
+        [Fact]
+        public void PasscodeDeliveryTest()
+        {
+            // TODO unit test for the property 'PasscodeDelivery'
         }
 
         /// <summary>

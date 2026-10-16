@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="RateLimitErrorResponse" />
     /// </summary>
-    public class RateLimitErrorResponseJsonConverter : JsonConverter<RateLimitErrorResponse>
+    public partial class RateLimitErrorResponseJsonConverter : JsonConverter<RateLimitErrorResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RateLimitErrorResponseJsonConverter" /> class.
+        /// </summary>
+        public RateLimitErrorResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="RateLimitErrorResponse" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!error.IsSet)
-                throw new ArgumentException("Property is required for class RateLimitErrorResponse.", nameof(error));
+                throw new JsonException("Property is required for class RateLimitErrorResponse: error.");
 
             if (error.IsSet && error.Value == null)
-                throw new ArgumentNullException(nameof(error), "Property is not nullable for class RateLimitErrorResponse.");
+                throw new JsonException("Property is not nullable for class RateLimitErrorResponse: error.");
 
             return new RateLimitErrorResponse(error.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="rateLimitErrorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, RateLimitErrorResponse rateLimitErrorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="rateLimitErrorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, RateLimitErrorResponse rateLimitErrorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (rateLimitErrorResponse.Error == null)
-                throw new ArgumentNullException(nameof(rateLimitErrorResponse.Error), "Property is required for class RateLimitErrorResponse.");
-
             writer.WriteString("error", rateLimitErrorResponse.Error);
         }
     }

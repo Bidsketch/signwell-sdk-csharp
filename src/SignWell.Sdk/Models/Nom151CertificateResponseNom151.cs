@@ -155,12 +155,22 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="Nom151CertificateResponseNom151" />
     /// </summary>
-    public class Nom151CertificateResponseNom151JsonConverter : JsonConverter<Nom151CertificateResponseNom151>
+    public partial class Nom151CertificateResponseNom151JsonConverter : JsonConverter<Nom151CertificateResponseNom151>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Nom151CertificateResponseNom151JsonConverter" /> class.
+        /// </summary>
+        public Nom151CertificateResponseNom151JsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// The format to use to serialize IssuedAt
         /// </summary>
-        public static string IssuedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string IssuedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// Deserializes json to <see cref="Nom151CertificateResponseNom151" />
@@ -234,52 +244,52 @@ namespace SignWell.Sdk.Models
             }
 
             if (!status.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(status));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: status.");
 
             if (!transactionId.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(transactionId));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: transactionId.");
 
             if (!hash.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(hash));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: hash.");
 
             if (!folio.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(folio));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: folio.");
 
             if (!issuedAt.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(issuedAt));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: issuedAt.");
 
             if (!provider.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(provider));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: provider.");
 
             if (!validationUrl.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(validationUrl));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: validationUrl.");
 
             if (!constancia.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponseNom151.", nameof(constancia));
+                throw new JsonException("Property is required for class Nom151CertificateResponseNom151: constancia.");
 
             if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: status.");
 
             if (transactionId.IsSet && transactionId.Value == null)
-                throw new ArgumentNullException(nameof(transactionId), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: transactionId.");
 
             if (hash.IsSet && hash.Value == null)
-                throw new ArgumentNullException(nameof(hash), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: hash.");
 
             if (folio.IsSet && folio.Value == null)
-                throw new ArgumentNullException(nameof(folio), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: folio.");
 
             if (issuedAt.IsSet && issuedAt.Value == null)
-                throw new ArgumentNullException(nameof(issuedAt), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: issuedAt.");
 
             if (provider.IsSet && provider.Value == null)
-                throw new ArgumentNullException(nameof(provider), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: provider.");
 
             if (validationUrl.IsSet && validationUrl.Value == null)
-                throw new ArgumentNullException(nameof(validationUrl), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: validationUrl.");
 
             if (constancia.IsSet && constancia.Value == null)
-                throw new ArgumentNullException(nameof(constancia), "Property is not nullable for class Nom151CertificateResponseNom151.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponseNom151: constancia.");
 
             return new Nom151CertificateResponseNom151(status.Value!, transactionId.Value!, hash.Value!, folio.Value!, issuedAt.Value!.Value!, provider.Value!, validationUrl.Value!, constancia.Value!);
         }
@@ -290,7 +300,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151CertificateResponseNom151"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, Nom151CertificateResponseNom151 nom151CertificateResponseNom151, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -305,30 +314,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151CertificateResponseNom151"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, Nom151CertificateResponseNom151 nom151CertificateResponseNom151, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (nom151CertificateResponseNom151.Status == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.Status), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.TransactionId == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.TransactionId), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.Hash == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.Hash), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.Folio == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.Folio), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.Provider == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.Provider), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.ValidationUrl == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.ValidationUrl), "Property is required for class Nom151CertificateResponseNom151.");
-
-            if (nom151CertificateResponseNom151.Constancia == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponseNom151.Constancia), "Property is required for class Nom151CertificateResponseNom151.");
-
             writer.WriteString("status", nom151CertificateResponseNom151.Status);
 
             writer.WriteString("transactionId", nom151CertificateResponseNom151.TransactionId);

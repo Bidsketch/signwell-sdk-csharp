@@ -17,10 +17,11 @@ jobs:
       - name: Require generator source for generated changes
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
           if grep -Eq '^(src/SignWell\.Sdk/(Models|Raw|Client|Extensions)/|api/openapi\.yaml)' <<< "$changed"; then
-            if ! grep -Eq 'signwell-sdk-generator|generator source' <<< "${{ github.event.pull_request.body }}"; then
+            if ! grep -Eq 'signwell-sdk-generator|generator source' <<< "$PR_BODY"; then
               echo "::error::Generated SDK changes must link their signwell-sdk-generator source change."
               exit 1
             fi

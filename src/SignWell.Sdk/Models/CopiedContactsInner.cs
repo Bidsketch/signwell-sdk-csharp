@@ -102,8 +102,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CopiedContactsInner" />
     /// </summary>
-    public class CopiedContactsInnerJsonConverter : JsonConverter<CopiedContactsInner>
+    public partial class CopiedContactsInnerJsonConverter : JsonConverter<CopiedContactsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopiedContactsInnerJsonConverter" /> class.
+        /// </summary>
+        public CopiedContactsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CopiedContactsInner" />
         /// </summary>
@@ -152,13 +162,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class CopiedContactsInner.", nameof(email));
+                throw new JsonException("Property is required for class CopiedContactsInner: email.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class CopiedContactsInner.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class CopiedContactsInner.");
+                throw new JsonException("Property is not nullable for class CopiedContactsInner: email.");
 
             return new CopiedContactsInner(email.Value!, name);
         }
@@ -169,7 +176,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedContactsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CopiedContactsInner copiedContactsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -184,14 +190,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="copiedContactsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CopiedContactsInner copiedContactsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (copiedContactsInner.Email == null)
-                throw new ArgumentNullException(nameof(copiedContactsInner.Email), "Property is required for class CopiedContactsInner.");
-
             if (copiedContactsInner.NameOption.IsSet && copiedContactsInner.Name == null)
-                throw new ArgumentNullException(nameof(copiedContactsInner.Name), "Property is required for class CopiedContactsInner.");
+                throw new JsonException("Cannot write null property CopiedContactsInner.Name to non-nullable JSON property 'name'.");
 
             writer.WriteString("email", copiedContactsInner.Email);
 

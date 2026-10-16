@@ -82,6 +82,15 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
+        /// Test the property 'SendSmsTestPreviewEmail'
+        /// </summary>
+        [Fact]
+        public void SendSmsTestPreviewEmailTest()
+        {
+            // TODO unit test for the property 'SendSmsTestPreviewEmail'
+        }
+
+        /// <summary>
         /// Test the property 'Name'
         /// </summary>
         [Fact]
@@ -190,6 +199,15 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
+        /// Test the property 'Embedded'
+        /// </summary>
+        [Fact]
+        public void EmbeddedTest()
+        {
+            // TODO unit test for the property 'Embedded'
+        }
+
+        /// <summary>
         /// Test the property 'TextTags'
         /// </summary>
         [Fact]
@@ -259,6 +277,15 @@ namespace SignWell.Sdk.Test.Model
         public void LanguageTest()
         {
             // TODO unit test for the property 'Language'
+        }
+
+        /// <summary>
+        /// Test the property 'ConditionalRules'
+        /// </summary>
+        [Fact]
+        public void ConditionalRulesTest()
+        {
+            // TODO unit test for the property 'ConditionalRules'
         }
 
         /// <summary>

@@ -55,21 +55,21 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
-        /// Test the property 'Name'
-        /// </summary>
-        [Fact]
-        public void NameTest()
-        {
-            // TODO unit test for the property 'Name'
-        }
-
-        /// <summary>
         /// Test the property 'PagesNumber'
         /// </summary>
         [Fact]
         public void PagesNumberTest()
         {
             // TODO unit test for the property 'PagesNumber'
+        }
+
+        /// <summary>
+        /// Test the property 'Name'
+        /// </summary>
+        [Fact]
+        public void NameTest()
+        {
+            // TODO unit test for the property 'Name'
         }
     }
 }

@@ -119,8 +119,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DetailedOption" />
     /// </summary>
-    public class DetailedOptionJsonConverter : JsonConverter<DetailedOption>
+    public partial class DetailedOptionJsonConverter : JsonConverter<DetailedOption>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DetailedOptionJsonConverter" /> class.
+        /// </summary>
+        public DetailedOptionJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DetailedOption" />
         /// </summary>
@@ -173,16 +183,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DetailedOption.", nameof(name));
+                throw new JsonException("Property is required for class DetailedOption: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DetailedOption.");
-
-            if (apiId.IsSet && apiId.Value == null)
-                throw new ArgumentNullException(nameof(apiId), "Property is not nullable for class DetailedOption.");
-
-            if (isOther.IsSet && isOther.Value == null)
-                throw new ArgumentNullException(nameof(isOther), "Property is not nullable for class DetailedOption.");
+                throw new JsonException("Property is not nullable for class DetailedOption: name.");
 
             return new DetailedOption(name.Value!, apiId, isOther);
         }
@@ -193,7 +197,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="detailedOption"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DetailedOption detailedOption, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -208,14 +211,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="detailedOption"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DetailedOption detailedOption, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (detailedOption.Name == null)
-                throw new ArgumentNullException(nameof(detailedOption.Name), "Property is required for class DetailedOption.");
-
             if (detailedOption.ApiIdOption.IsSet && detailedOption.ApiId == null)
-                throw new ArgumentNullException(nameof(detailedOption.ApiId), "Property is required for class DetailedOption.");
+                throw new JsonException("Cannot write null property DetailedOption.ApiId to non-nullable JSON property 'api_id'.");
+
+            if (detailedOption.IsOtherOption.IsSet && detailedOption.IsOther == null)
+                throw new JsonException("Cannot write null property DetailedOption.IsOther to non-nullable JSON property 'is_other'.");
 
             writer.WriteString("name", detailedOption.Name);
 

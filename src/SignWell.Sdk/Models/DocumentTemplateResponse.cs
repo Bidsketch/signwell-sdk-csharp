@@ -64,8 +64,9 @@ namespace SignWell.Sdk.Models
         /// <param name="allowReassign">allowReassign</param>
         /// <param name="labels">labels</param>
         /// <param name="checkboxGroups">checkboxGroups</param>
+        /// <param name="conditionalRules">conditionalRules</param>
         [JsonConstructor]
-        public DocumentTemplateResponse(Guid id, Option<Guid?> apiApplicationId = default, Option<string?> requesterEmailAddress = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<Dictionary<string, string>?> metadata = default, Option<DateTimeOffset?> createdAt = default, Option<DateTimeOffset?> updatedAt = default, Option<List<DocumentTemplateResponsePlaceholdersInner>?> placeholders = default, Option<List<DocumentTemplateResponseCopiedPlaceholdersInner>?> copiedPlaceholders = default, Option<string?> status = default, Option<bool?> reminders = default, Option<bool?> archived = default, Option<string?> embeddedEditUrl = default, Option<string?> templateLink = default, Option<Guid?> templateId = default, Option<bool?> applySigningOrder = default, Option<string?> redirectUrl = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<int?> expiresIn = default, Option<List<FileInfo>?> files = default, Option<List<List<DocumentResponseFieldsInnerInner>>?> fields = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<List<LabelInfo>?> labels = default, Option<List<CheckboxGroupInfo>?> checkboxGroups = default)
+        public DocumentTemplateResponse(Guid id, Option<Guid?> apiApplicationId = default, Option<string?> requesterEmailAddress = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<Dictionary<string, string>?> metadata = default, Option<DateTimeOffset?> createdAt = default, Option<DateTimeOffset?> updatedAt = default, Option<List<DocumentTemplateResponsePlaceholdersInner>?> placeholders = default, Option<List<DocumentTemplateResponseCopiedPlaceholdersInner>?> copiedPlaceholders = default, Option<string?> status = default, Option<bool?> reminders = default, Option<bool?> archived = default, Option<string?> embeddedEditUrl = default, Option<string?> templateLink = default, Option<Guid?> templateId = default, Option<bool?> applySigningOrder = default, Option<string?> redirectUrl = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<int?> expiresIn = default, Option<List<FileInfo>?> files = default, Option<List<List<DocumentResponseFieldsInnerInner>>?> fields = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<List<LabelInfo>?> labels = default, Option<List<CheckboxGroupInfo>?> checkboxGroups = default, Option<List<ConditionalRuleInfo>?> conditionalRules = default)
         {
             Id = id;
             ApiApplicationIdOption = apiApplicationId;
@@ -97,6 +98,7 @@ namespace SignWell.Sdk.Models
             AllowReassignOption = allowReassign;
             LabelsOption = labels;
             CheckboxGroupsOption = checkboxGroups;
+            ConditionalRulesOption = conditionalRules;
             OnCreated();
         }
 
@@ -486,6 +488,19 @@ namespace SignWell.Sdk.Models
         public List<CheckboxGroupInfo>? CheckboxGroups { get { return this.CheckboxGroupsOption.Value; } set { this.CheckboxGroupsOption = new Option<List<CheckboxGroupInfo>?>(value); } }
 
         /// <summary>
+        /// Used to track the state of ConditionalRules
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalRuleInfo>?> ConditionalRulesOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ConditionalRules
+        /// </summary>
+        [JsonPropertyName("conditional_rules")]
+        public List<ConditionalRuleInfo>? ConditionalRules { get { return this.ConditionalRulesOption.Value; } set { this.ConditionalRulesOption = new Option<List<ConditionalRuleInfo>?>(value); } }
+
+        /// <summary>
         /// Gets or Sets additional properties
         /// </summary>
         [JsonExtensionData]
@@ -529,6 +544,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  AllowReassign: ").Append(AllowReassign).Append("\n");
             sb.Append("  Labels: ").Append(Labels).Append("\n");
             sb.Append("  CheckboxGroups: ").Append(CheckboxGroups).Append("\n");
+            sb.Append("  ConditionalRules: ").Append(ConditionalRules).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -548,17 +564,27 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentTemplateResponse" />
     /// </summary>
-    public class DocumentTemplateResponseJsonConverter : JsonConverter<DocumentTemplateResponse>
+    public partial class DocumentTemplateResponseJsonConverter : JsonConverter<DocumentTemplateResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentTemplateResponseJsonConverter" /> class.
+        /// </summary>
+        public DocumentTemplateResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// The format to use to serialize CreatedAt
         /// </summary>
-        public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string CreatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// The format to use to serialize UpdatedAt
         /// </summary>
-        public static string UpdatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string UpdatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// Deserializes json to <see cref="DocumentTemplateResponse" />
@@ -607,6 +633,7 @@ namespace SignWell.Sdk.Models
             Option<bool?> allowReassign = default;
             Option<List<LabelInfo>?> labels = default;
             Option<List<CheckboxGroupInfo>?> checkboxGroups = default;
+            Option<List<ConditionalRuleInfo>?> conditionalRules = default;
 
             while (utf8JsonReader.Read())
             {
@@ -713,6 +740,9 @@ namespace SignWell.Sdk.Models
                         case "checkbox_groups":
                             checkboxGroups = new Option<List<CheckboxGroupInfo>?>(JsonSerializer.Deserialize<List<CheckboxGroupInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
+                        case "conditional_rules":
+                            conditionalRules = new Option<List<ConditionalRuleInfo>?>(JsonSerializer.Deserialize<List<ConditionalRuleInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -720,63 +750,12 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateResponse.", nameof(id));
+                throw new JsonException("Property is required for class DocumentTemplateResponse: id.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class DocumentTemplateResponse.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateResponse: id.");
 
-            if (requesterEmailAddress.IsSet && requesterEmailAddress.Value == null)
-                throw new ArgumentNullException(nameof(requesterEmailAddress), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (updatedAt.IsSet && updatedAt.Value == null)
-                throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (placeholders.IsSet && placeholders.Value == null)
-                throw new ArgumentNullException(nameof(placeholders), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (copiedPlaceholders.IsSet && copiedPlaceholders.Value == null)
-                throw new ArgumentNullException(nameof(copiedPlaceholders), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (archived.IsSet && archived.Value == null)
-                throw new ArgumentNullException(nameof(archived), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (templateLink.IsSet && templateLink.Value == null)
-                throw new ArgumentNullException(nameof(templateLink), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (language.IsSet && language.Value == null)
-                throw new ArgumentNullException(nameof(language), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (files.IsSet && files.Value == null)
-                throw new ArgumentNullException(nameof(files), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (fields.IsSet && fields.Value == null)
-                throw new ArgumentNullException(nameof(fields), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class DocumentTemplateResponse.");
-
-            if (checkboxGroups.IsSet && checkboxGroups.Value == null)
-                throw new ArgumentNullException(nameof(checkboxGroups), "Property is not nullable for class DocumentTemplateResponse.");
-
-            return new DocumentTemplateResponse(id.Value!.Value!, apiApplicationId, requesterEmailAddress, customRequesterName, customRequesterEmail, name, subject, message, metadata, createdAt, updatedAt, placeholders, copiedPlaceholders, status, reminders, archived, embeddedEditUrl, templateLink, templateId, applySigningOrder, redirectUrl, declineRedirectUrl, language, expiresIn, files, fields, allowDecline, allowReassign, labels, checkboxGroups);
+            return new DocumentTemplateResponse(id.Value!.Value!, apiApplicationId, requesterEmailAddress, customRequesterName, customRequesterEmail, name, subject, message, metadata, createdAt, updatedAt, placeholders, copiedPlaceholders, status, reminders, archived, embeddedEditUrl, templateLink, templateId, applySigningOrder, redirectUrl, declineRedirectUrl, language, expiresIn, files, fields, allowDecline, allowReassign, labels, checkboxGroups, conditionalRules);
         }
 
         /// <summary>
@@ -785,7 +764,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentTemplateResponse documentTemplateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -800,47 +778,61 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentTemplateResponse documentTemplateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             if (documentTemplateResponse.RequesterEmailAddressOption.IsSet && documentTemplateResponse.RequesterEmailAddress == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.RequesterEmailAddress), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.RequesterEmailAddress to non-nullable JSON property 'requester_email_address'.");
 
             if (documentTemplateResponse.NameOption.IsSet && documentTemplateResponse.Name == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Name), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Name to non-nullable JSON property 'name'.");
 
             if (documentTemplateResponse.SubjectOption.IsSet && documentTemplateResponse.Subject == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Subject), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Subject to non-nullable JSON property 'subject'.");
 
             if (documentTemplateResponse.MessageOption.IsSet && documentTemplateResponse.Message == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Message), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Message to non-nullable JSON property 'message'.");
+
+            if (documentTemplateResponse.CreatedAtOption.IsSet && documentTemplateResponse.CreatedAt == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.CreatedAt to non-nullable JSON property 'created_at'.");
+
+            if (documentTemplateResponse.UpdatedAtOption.IsSet && documentTemplateResponse.UpdatedAt == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.UpdatedAt to non-nullable JSON property 'updated_at'.");
 
             if (documentTemplateResponse.PlaceholdersOption.IsSet && documentTemplateResponse.Placeholders == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Placeholders), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Placeholders to non-nullable JSON property 'placeholders'.");
 
             if (documentTemplateResponse.CopiedPlaceholdersOption.IsSet && documentTemplateResponse.CopiedPlaceholders == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.CopiedPlaceholders), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.CopiedPlaceholders to non-nullable JSON property 'copied_placeholders'.");
 
             if (documentTemplateResponse.StatusOption.IsSet && documentTemplateResponse.Status == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Status), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Status to non-nullable JSON property 'status'.");
+
+            if (documentTemplateResponse.ArchivedOption.IsSet && documentTemplateResponse.Archived == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Archived to non-nullable JSON property 'archived'.");
 
             if (documentTemplateResponse.TemplateLinkOption.IsSet && documentTemplateResponse.TemplateLink == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.TemplateLink), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.TemplateLink to non-nullable JSON property 'template_link'.");
+
+            if (documentTemplateResponse.ApplySigningOrderOption.IsSet && documentTemplateResponse.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
 
             if (documentTemplateResponse.LanguageOption.IsSet && documentTemplateResponse.Language == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Language), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Language to non-nullable JSON property 'language'.");
 
             if (documentTemplateResponse.FilesOption.IsSet && documentTemplateResponse.Files == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Files), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Files to non-nullable JSON property 'files'.");
 
             if (documentTemplateResponse.FieldsOption.IsSet && documentTemplateResponse.Fields == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Fields), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Fields to non-nullable JSON property 'fields'.");
 
             if (documentTemplateResponse.LabelsOption.IsSet && documentTemplateResponse.Labels == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.Labels), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.Labels to non-nullable JSON property 'labels'.");
 
             if (documentTemplateResponse.CheckboxGroupsOption.IsSet && documentTemplateResponse.CheckboxGroups == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponse.CheckboxGroups), "Property is required for class DocumentTemplateResponse.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.CheckboxGroups to non-nullable JSON property 'checkbox_groups'.");
+
+            if (documentTemplateResponse.ConditionalRulesOption.IsSet && documentTemplateResponse.ConditionalRules == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponse.ConditionalRules to non-nullable JSON property 'conditional_rules'.");
 
             writer.WriteString("id", documentTemplateResponse.Id);
 
@@ -980,6 +972,11 @@ namespace SignWell.Sdk.Models
             {
                 writer.WritePropertyName("checkbox_groups");
                 JsonSerializer.Serialize(writer, documentTemplateResponse.CheckboxGroups, jsonSerializerOptions);
+            }
+            if (documentTemplateResponse.ConditionalRulesOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_rules");
+                JsonSerializer.Serialize(writer, documentTemplateResponse.ConditionalRules, jsonSerializerOptions);
             }
         }
     }

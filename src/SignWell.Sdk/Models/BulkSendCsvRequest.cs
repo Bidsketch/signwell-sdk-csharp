@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="BulkSendCsvRequest" /> class.
         /// </summary>
         /// <param name="templateIds">Specify one or more templates to generate a single blank CSV file that will contain available columns for your recipient data. The template_ids[] parameter is an array of template IDs (e.g.,&#x60;/?template_ids[]&#x3D;5a67dbd7-928a-4ea0-a7e2-e476a0eb045f&amp;template_ids[]&#x3D;d7315111-c671-4b15-8354-c9a19bbaefa0&#x60;). Each ID should be a separate parameter in the query string.</param>
-        /// <param name="bulkSendCsv">A RFC 4648 base64 string of the template CSV file to be validated.</param>
+        /// <param name="bulkSendCsv">A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.</param>
         [JsonConstructor]
         public BulkSendCsvRequest(List<Guid> templateIds, string bulkSendCsv)
         {
@@ -54,9 +54,9 @@ namespace SignWell.Sdk.Models
         public List<Guid> TemplateIds { get; set; }
 
         /// <summary>
-        /// A RFC 4648 base64 string of the template CSV file to be validated.
+        /// A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.
         /// </summary>
-        /// <value>A RFC 4648 base64 string of the template CSV file to be validated.</value>
+        /// <value>A RFC 4648 base64 string of the template CSV file to be validated. While 21 CFR Part 11 is enabled, every recipient needs a name: the CSV must carry a name column next to each placeholder email column (for example &#x60;signer_name&#x60; alongside &#x60;signer_email&#x60;), and each row must fill that name in wherever it carries the matching email, otherwise it returns a 422. A row that leaves both the email and the name blank sends nothing to that placeholder, so no name is needed there.</value>
         /* <example>bmFtZSxlbWFpbApUZXN0LHRlc3RAZXhhbXBsZS5jb20K</example> */
         [JsonPropertyName("bulk_send_csv")]
         public string BulkSendCsv { get; set; }
@@ -96,8 +96,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendCsvRequest" />
     /// </summary>
-    public class BulkSendCsvRequestJsonConverter : JsonConverter<BulkSendCsvRequest>
+    public partial class BulkSendCsvRequestJsonConverter : JsonConverter<BulkSendCsvRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendCsvRequestJsonConverter" /> class.
+        /// </summary>
+        public BulkSendCsvRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="BulkSendCsvRequest" />
         /// </summary>
@@ -146,16 +156,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!templateIds.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendCsvRequest.", nameof(templateIds));
+                throw new JsonException("Property is required for class BulkSendCsvRequest: template_ids.");
 
             if (!bulkSendCsv.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendCsvRequest.", nameof(bulkSendCsv));
+                throw new JsonException("Property is required for class BulkSendCsvRequest: bulk_send_csv.");
 
             if (templateIds.IsSet && templateIds.Value == null)
-                throw new ArgumentNullException(nameof(templateIds), "Property is not nullable for class BulkSendCsvRequest.");
+                throw new JsonException("Property is not nullable for class BulkSendCsvRequest: template_ids.");
 
             if (bulkSendCsv.IsSet && bulkSendCsv.Value == null)
-                throw new ArgumentNullException(nameof(bulkSendCsv), "Property is not nullable for class BulkSendCsvRequest.");
+                throw new JsonException("Property is not nullable for class BulkSendCsvRequest: bulk_send_csv.");
 
             return new BulkSendCsvRequest(templateIds.Value!, bulkSendCsv.Value!);
         }
@@ -166,7 +176,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendCsvRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendCsvRequest bulkSendCsvRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -181,15 +190,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendCsvRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendCsvRequest bulkSendCsvRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendCsvRequest.TemplateIds == null)
-                throw new ArgumentNullException(nameof(bulkSendCsvRequest.TemplateIds), "Property is required for class BulkSendCsvRequest.");
-
-            if (bulkSendCsvRequest.BulkSendCsv == null)
-                throw new ArgumentNullException(nameof(bulkSendCsvRequest.BulkSendCsv), "Property is required for class BulkSendCsvRequest.");
-
             writer.WritePropertyName("template_ids");
             JsonSerializer.Serialize(writer, bulkSendCsvRequest.TemplateIds, jsonSerializerOptions);
             writer.WriteString("bulk_send_csv", bulkSendCsvRequest.BulkSendCsv);

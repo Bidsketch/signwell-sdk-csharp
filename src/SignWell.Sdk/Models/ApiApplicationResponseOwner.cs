@@ -118,8 +118,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ApiApplicationResponseOwner" />
     /// </summary>
-    public class ApiApplicationResponseOwnerJsonConverter : JsonConverter<ApiApplicationResponseOwner>
+    public partial class ApiApplicationResponseOwnerJsonConverter : JsonConverter<ApiApplicationResponseOwner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiApplicationResponseOwnerJsonConverter" /> class.
+        /// </summary>
+        public ApiApplicationResponseOwnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ApiApplicationResponseOwner" />
         /// </summary>
@@ -176,25 +186,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class ApiApplicationResponseOwner.", nameof(id));
+                throw new JsonException("Property is required for class ApiApplicationResponseOwner: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class ApiApplicationResponseOwner.", nameof(name));
+                throw new JsonException("Property is required for class ApiApplicationResponseOwner: name.");
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class ApiApplicationResponseOwner.", nameof(email));
+                throw new JsonException("Property is required for class ApiApplicationResponseOwner: email.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class ApiApplicationResponseOwner.");
+                throw new JsonException("Property is not nullable for class ApiApplicationResponseOwner: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class ApiApplicationResponseOwner.");
+                throw new JsonException("Property is not nullable for class ApiApplicationResponseOwner: name.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class ApiApplicationResponseOwner.");
-
-            if (accountId.IsSet && accountId.Value == null)
-                throw new ArgumentNullException(nameof(accountId), "Property is not nullable for class ApiApplicationResponseOwner.");
+                throw new JsonException("Property is not nullable for class ApiApplicationResponseOwner: email.");
 
             return new ApiApplicationResponseOwner(id.Value!.Value!, name.Value!, email.Value!, accountId);
         }
@@ -205,7 +212,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponseOwner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ApiApplicationResponseOwner apiApplicationResponseOwner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -220,14 +226,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponseOwner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ApiApplicationResponseOwner apiApplicationResponseOwner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (apiApplicationResponseOwner.Name == null)
-                throw new ArgumentNullException(nameof(apiApplicationResponseOwner.Name), "Property is required for class ApiApplicationResponseOwner.");
-
-            if (apiApplicationResponseOwner.Email == null)
-                throw new ArgumentNullException(nameof(apiApplicationResponseOwner.Email), "Property is required for class ApiApplicationResponseOwner.");
+            if (apiApplicationResponseOwner.AccountIdOption.IsSet && apiApplicationResponseOwner.AccountId == null)
+                throw new JsonException("Cannot write null property ApiApplicationResponseOwner.AccountId to non-nullable JSON property 'account_id'.");
 
             writer.WriteString("id", apiApplicationResponseOwner.Id);
 

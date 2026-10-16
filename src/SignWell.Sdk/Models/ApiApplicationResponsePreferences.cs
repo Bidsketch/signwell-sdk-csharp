@@ -155,8 +155,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ApiApplicationResponsePreferences" />
     /// </summary>
-    public class ApiApplicationResponsePreferencesJsonConverter : JsonConverter<ApiApplicationResponsePreferences>
+    public partial class ApiApplicationResponsePreferencesJsonConverter : JsonConverter<ApiApplicationResponsePreferences>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiApplicationResponsePreferencesJsonConverter" /> class.
+        /// </summary>
+        public ApiApplicationResponsePreferencesJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ApiApplicationResponsePreferences" />
         /// </summary>
@@ -216,9 +226,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (buttonsBorderRadius.IsSet && buttonsBorderRadius.Value == null)
-                throw new ArgumentNullException(nameof(buttonsBorderRadius), "Property is not nullable for class ApiApplicationResponsePreferences.");
-
             return new ApiApplicationResponsePreferences(buttonTextColor, buttonsBorderRadius, customLogoFile, linkTextColor, primaryColor);
         }
 
@@ -228,7 +235,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponsePreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ApiApplicationResponsePreferences apiApplicationResponsePreferences, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -243,9 +249,11 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="apiApplicationResponsePreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ApiApplicationResponsePreferences apiApplicationResponsePreferences, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (apiApplicationResponsePreferences.ButtonsBorderRadiusOption.IsSet && apiApplicationResponsePreferences.ButtonsBorderRadius == null)
+                throw new JsonException("Cannot write null property ApiApplicationResponsePreferences.ButtonsBorderRadius to non-nullable JSON property 'buttons_border_radius'.");
+
             if (apiApplicationResponsePreferences.ButtonTextColorOption.IsSet)
                 if (apiApplicationResponsePreferences.ButtonTextColorOption.Value != null)
                     writer.WriteString("button_text_color", apiApplicationResponsePreferences.ButtonTextColor);

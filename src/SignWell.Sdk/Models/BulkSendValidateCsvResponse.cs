@@ -190,8 +190,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendValidateCsvResponse" />
     /// </summary>
-    public class BulkSendValidateCsvResponseJsonConverter : JsonConverter<BulkSendValidateCsvResponse>
+    public partial class BulkSendValidateCsvResponseJsonConverter : JsonConverter<BulkSendValidateCsvResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendValidateCsvResponseJsonConverter" /> class.
+        /// </summary>
+        public BulkSendValidateCsvResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="BulkSendValidateCsvResponse" />
         /// </summary>
@@ -264,31 +274,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!bulkSendCsv.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendValidateCsvResponse.", nameof(bulkSendCsv));
+                throw new JsonException("Property is required for class BulkSendValidateCsvResponse: bulk_send_csv.");
 
             if (!templateIds.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendValidateCsvResponse.", nameof(templateIds));
+                throw new JsonException("Property is required for class BulkSendValidateCsvResponse: template_ids.");
 
             if (bulkSendCsv.IsSet && bulkSendCsv.Value == null)
-                throw new ArgumentNullException(nameof(bulkSendCsv), "Property is not nullable for class BulkSendValidateCsvResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendValidateCsvResponse: bulk_send_csv.");
 
             if (templateIds.IsSet && templateIds.Value == null)
-                throw new ArgumentNullException(nameof(templateIds), "Property is not nullable for class BulkSendValidateCsvResponse.");
-
-            if (skipRowErrors.IsSet && skipRowErrors.Value == null)
-                throw new ArgumentNullException(nameof(skipRowErrors), "Property is not nullable for class BulkSendValidateCsvResponse.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class BulkSendValidateCsvResponse.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class BulkSendValidateCsvResponse.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class BulkSendValidateCsvResponse.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class BulkSendValidateCsvResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendValidateCsvResponse: template_ids.");
 
             return new BulkSendValidateCsvResponse(bulkSendCsv.Value!, templateIds.Value!, skipRowErrors, apiApplicationId, name, subject, message, applySigningOrder);
         }
@@ -299,7 +294,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendValidateCsvResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendValidateCsvResponse bulkSendValidateCsvResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -314,23 +308,22 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendValidateCsvResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendValidateCsvResponse bulkSendValidateCsvResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendValidateCsvResponse.BulkSendCsv == null)
-                throw new ArgumentNullException(nameof(bulkSendValidateCsvResponse.BulkSendCsv), "Property is required for class BulkSendValidateCsvResponse.");
-
-            if (bulkSendValidateCsvResponse.TemplateIds == null)
-                throw new ArgumentNullException(nameof(bulkSendValidateCsvResponse.TemplateIds), "Property is required for class BulkSendValidateCsvResponse.");
+            if (bulkSendValidateCsvResponse.SkipRowErrorsOption.IsSet && bulkSendValidateCsvResponse.SkipRowErrors == null)
+                throw new JsonException("Cannot write null property BulkSendValidateCsvResponse.SkipRowErrors to non-nullable JSON property 'skip_row_errors'.");
 
             if (bulkSendValidateCsvResponse.NameOption.IsSet && bulkSendValidateCsvResponse.Name == null)
-                throw new ArgumentNullException(nameof(bulkSendValidateCsvResponse.Name), "Property is required for class BulkSendValidateCsvResponse.");
+                throw new JsonException("Cannot write null property BulkSendValidateCsvResponse.Name to non-nullable JSON property 'name'.");
 
             if (bulkSendValidateCsvResponse.SubjectOption.IsSet && bulkSendValidateCsvResponse.Subject == null)
-                throw new ArgumentNullException(nameof(bulkSendValidateCsvResponse.Subject), "Property is required for class BulkSendValidateCsvResponse.");
+                throw new JsonException("Cannot write null property BulkSendValidateCsvResponse.Subject to non-nullable JSON property 'subject'.");
 
             if (bulkSendValidateCsvResponse.MessageOption.IsSet && bulkSendValidateCsvResponse.Message == null)
-                throw new ArgumentNullException(nameof(bulkSendValidateCsvResponse.Message), "Property is required for class BulkSendValidateCsvResponse.");
+                throw new JsonException("Cannot write null property BulkSendValidateCsvResponse.Message to non-nullable JSON property 'message'.");
+
+            if (bulkSendValidateCsvResponse.ApplySigningOrderOption.IsSet && bulkSendValidateCsvResponse.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property BulkSendValidateCsvResponse.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
 
             writer.WriteString("bulk_send_csv", bulkSendValidateCsvResponse.BulkSendCsv);
 

@@ -108,8 +108,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ErrorResponse" />
     /// </summary>
-    public class ErrorResponseJsonConverter : JsonConverter<ErrorResponse>
+    public partial class ErrorResponseJsonConverter : JsonConverter<ErrorResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ErrorResponseJsonConverter" /> class.
+        /// </summary>
+        public ErrorResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ErrorResponse" />
         /// </summary>
@@ -157,12 +167,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class ErrorResponse.");
-
-            if (meta.IsSet && meta.Value == null)
-                throw new ArgumentNullException(nameof(meta), "Property is not nullable for class ErrorResponse.");
-
             return new ErrorResponse(message, meta);
         }
 
@@ -172,7 +176,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="errorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ErrorResponse errorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -187,14 +190,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="errorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ErrorResponse errorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             if (errorResponse.MessageOption.IsSet && errorResponse.Message == null)
-                throw new ArgumentNullException(nameof(errorResponse.Message), "Property is required for class ErrorResponse.");
+                throw new JsonException("Cannot write null property ErrorResponse.Message to non-nullable JSON property 'message'.");
 
             if (errorResponse.MetaOption.IsSet && errorResponse.Meta == null)
-                throw new ArgumentNullException(nameof(errorResponse.Meta), "Property is required for class ErrorResponse.");
+                throw new JsonException("Cannot write null property ErrorResponse.Meta to non-nullable JSON property 'meta'.");
 
             if (errorResponse.MessageOption.IsSet)
                 writer.WriteString("message", errorResponse.Message);

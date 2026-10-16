@@ -125,5 +125,14 @@ namespace SignWell.Sdk.Test.Model
         {
             // TODO unit test for the property 'AttachmentRequests'
         }
+
+        /// <summary>
+        /// Test the property 'PasscodeDelivery'
+        /// </summary>
+        [Fact]
+        public void PasscodeDeliveryTest()
+        {
+            // TODO unit test for the property 'PasscodeDelivery'
+        }
     }
 }

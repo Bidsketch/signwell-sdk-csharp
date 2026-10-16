@@ -8,11 +8,14 @@ on:
     - cron: "23 3 * * 1"
 
 permissions:
+  actions: read
   contents: read
   security-events: write
 
 jobs:
   analyze:
+    # Match Java's policy: private prerelease repositories do not have Code Security enabled.
+    if: github.event.repository.visibility == 'public'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
