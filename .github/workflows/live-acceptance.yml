@@ -38,7 +38,7 @@ jobs:
         env:
           SIGNWELL_API_KEY: ${{ secrets.SIGNWELL_API_KEY }}
           SIGNWELL_COMPLETED_DOCUMENT_ID: ${{ inputs.completed_document_id }}
-          SIGNWELL_NOM151_DOCUMENT_ID: ${{ inputs.nom151_document_id || inputs.completed_document_id }}
+          SIGNWELL_NOM151_DOCUMENT_ID: ${{ inputs.nom151_document_id }}
           SIGNWELL_TEMPLATE_IDS: ${{ inputs.template_ids }}
           SIGNWELL_FIXTURE_FILE_URL: ${{ inputs.fixture_file_url }}
           SIGNWELL_RECIPIENT_EMAIL: ${{ inputs.recipient_email }}

@@ -22,6 +22,9 @@ static async Task ExpectNotFound(Func<Task> action, string operation)
 
 var apiKey = Required("SIGNWELL_API_KEY");
 var recipientEmail = Required("SIGNWELL_RECIPIENT_EMAIL");
+var completedDocumentId = Guid.Parse(Required("SIGNWELL_COMPLETED_DOCUMENT_ID"));
+var nom151Fixture = Environment.GetEnvironmentVariable("SIGNWELL_NOM151_DOCUMENT_ID");
+Guid? nom151DocumentId = string.IsNullOrWhiteSpace(nom151Fixture) ? null : Guid.Parse(nom151Fixture);
 var fixtureFileUrl = Environment.GetEnvironmentVariable("SIGNWELL_FIXTURE_FILE_URL")
     ?? "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
@@ -173,6 +176,33 @@ try
     Console.WriteLine("PASS bulk-send create validation, lookup/documents, and webhook CRUD");
     await Task.Delay(TimeSpan.FromSeconds(60));
 
+    using (var completedPdf = await client.Documents.GetCompletedPdfStreamAsync(completedDocumentId))
+    {
+        require(completedPdf.ReadByte() >= 0, "Completed PDF stream is empty.");
+        await completedPdf.CopyToAsync(Stream.Null);
+    }
+    require(!string.IsNullOrWhiteSpace((await client.Documents.GetCompletedPdfUrlAsync(completedDocumentId)).FileUrl),
+        "Completed PDF URL is missing.");
+    Console.WriteLine("PASS completed PDF stream and URL using supplied fixture");
+
+    if (nom151DocumentId is { } certificateDocumentId)
+    {
+        using (var certificateZip = await client.Regional.GetNom151StreamAsync(certificateDocumentId))
+        {
+            require(certificateZip.ReadByte() >= 0, "NOM-151 stream is empty.");
+            await certificateZip.CopyToAsync(Stream.Null);
+        }
+        require(!string.IsNullOrWhiteSpace((await client.Regional.GetNom151UrlAsync(certificateDocumentId)).FileUrl),
+            "NOM-151 URL is missing.");
+        require(!string.IsNullOrWhiteSpace((await client.Regional.GetNom151ObjectAsync(certificateDocumentId)).Nom151?.Status),
+            "NOM-151 certificate status is missing.");
+        Console.WriteLine("PASS NOM-151 stream, URL, and object using supplied fixture");
+    }
+    else
+    {
+        Console.WriteLine("SKIP NOM-151 success modes: SIGNWELL_NOM151_DOCUMENT_ID is not configured.");
+    }
+
     await ExpectNotFound(() => client.Documents.GetCompletedPdfStreamAsync(Guid.NewGuid()), "completed PDF stream");
     await ExpectNotFound(() => client.Documents.GetCompletedPdfUrlAsync(Guid.NewGuid()), "completed PDF URL");
     await ExpectNotFound(() => client.Regional.GetNom151StreamAsync(Guid.NewGuid()), "NOM-151 stream");
@@ -182,7 +212,7 @@ try
     await ExpectNotFound(() => client.ApiApplications.DeleteAsync(Guid.NewGuid()), "API application delete");
     await client.Templates.DeleteAsync(secondTemplate);
     templates.Remove(secondTemplate);
-    Console.WriteLine("PASS response modes, typed failures, and template delete");
+    Console.WriteLine("PASS typed failures and template delete");
 }
 finally
 {
