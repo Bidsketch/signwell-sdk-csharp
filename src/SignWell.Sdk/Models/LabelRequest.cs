@@ -84,8 +84,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="LabelRequest" />
     /// </summary>
-    public class LabelRequestJsonConverter : JsonConverter<LabelRequest>
+    public partial class LabelRequestJsonConverter : JsonConverter<LabelRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LabelRequestJsonConverter" /> class.
+        /// </summary>
+        public LabelRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="LabelRequest" />
         /// </summary>
@@ -130,10 +140,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class LabelRequest.", nameof(name));
+                throw new JsonException("Property is required for class LabelRequest: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class LabelRequest.");
+                throw new JsonException("Property is not nullable for class LabelRequest: name.");
 
             return new LabelRequest(name.Value!);
         }
@@ -144,7 +154,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, LabelRequest labelRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -159,12 +168,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, LabelRequest labelRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (labelRequest.Name == null)
-                throw new ArgumentNullException(nameof(labelRequest.Name), "Property is required for class LabelRequest.");
-
             writer.WriteString("name", labelRequest.Name);
         }
     }

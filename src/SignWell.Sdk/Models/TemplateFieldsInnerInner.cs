@@ -45,6 +45,8 @@ namespace SignWell.Sdk.Models
         /// <param name="apiId">Unique identifier of the field. Useful when needing to reference specific field values or update a document and its fields.</param>
         /// <param name="name">Checkbox fields only. At least 2 checkbox fields in an array of fields must be assigned to the same recipient and grouped with selection requirements.</param>
         /// <param name="validation">validation</param>
+        /// <param name="validationRegex">Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.</param>
+        /// <param name="validationRegexErrorMessage">Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.</param>
         /// <param name="fixedWidth">Text fields only: whether the field width will stay fixed and text will display in multiple lines, rather than one long line. If set to &#x60;false&#x60; the field width will automatically grow horizontally to fit text on one line. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="lockSignDate">Date fields only: makes fields readonly and automatically populates with the date the recipient signed. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="dateFormat">dateFormat</param>
@@ -54,7 +56,7 @@ namespace SignWell.Sdk.Models
         /// <param name="defaultOption">Default selected option (for dropdown/select fields only)</param>
         /// <param name="allowOther">Whether to allow \&quot;Other\&quot; option with text input (for dropdown/select fields only) (default to false)</param>
         [JsonConstructor]
-        public TemplateFieldsInnerInner(float x, float y, int page, string placeholderId, FieldType type, Option<bool?> required = default, Option<string?> label = default, Option<AdditionalFieldsInnerInnerValue?> value = default, Option<string?> apiId = default, Option<string?> name = default, Option<TextValidation?> validation = default, Option<bool?> fixedWidth = default, Option<bool?> lockSignDate = default, Option<DateFormat?> dateFormat = default, Option<float?> height = default, Option<float?> width = default, Option<List<DropdownOption>?> options = default, Option<string?> defaultOption = default, Option<bool?> allowOther = default)
+        public TemplateFieldsInnerInner(float x, float y, int page, string placeholderId, FieldType type, Option<bool?> required = default, Option<string?> label = default, Option<AdditionalFieldsInnerInnerValue?> value = default, Option<string?> apiId = default, Option<string?> name = default, Option<TextValidation?> validation = default, Option<string?> validationRegex = default, Option<string?> validationRegexErrorMessage = default, Option<bool?> fixedWidth = default, Option<bool?> lockSignDate = default, Option<DateFormat?> dateFormat = default, Option<float?> height = default, Option<float?> width = default, Option<List<DropdownOption>?> options = default, Option<string?> defaultOption = default, Option<bool?> allowOther = default)
         {
             X = x;
             Y = y;
@@ -67,6 +69,8 @@ namespace SignWell.Sdk.Models
             ApiIdOption = apiId;
             NameOption = name;
             ValidationOption = validation;
+            ValidationRegexOption = validationRegex;
+            ValidationRegexErrorMessageOption = validationRegexErrorMessage;
             FixedWidthOption = fixedWidth;
             LockSignDateOption = lockSignDate;
             DateFormatOption = dateFormat;
@@ -210,6 +214,34 @@ namespace SignWell.Sdk.Models
         public string? Name { get { return this.NameOption.Value; } set { this.NameOption = new Option<string?>(value); } }
 
         /// <summary>
+        /// Used to track the state of ValidationRegex
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ValidationRegexOption { get; private set; }
+
+        /// <summary>
+        /// Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.
+        /// </summary>
+        /// <value>Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.</value>
+        [JsonPropertyName("validation_regex")]
+        public string? ValidationRegex { get { return this.ValidationRegexOption.Value; } set { this.ValidationRegexOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ValidationRegexErrorMessage
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ValidationRegexErrorMessageOption { get; private set; }
+
+        /// <summary>
+        /// Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.
+        /// </summary>
+        /// <value>Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.</value>
+        [JsonPropertyName("validation_regex_error_message")]
+        public string? ValidationRegexErrorMessage { get { return this.ValidationRegexErrorMessageOption.Value; } set { this.ValidationRegexErrorMessageOption = new Option<string?>(value); } }
+
+        /// <summary>
         /// Used to track the state of FixedWidth
         /// </summary>
         [JsonIgnore]
@@ -332,6 +364,8 @@ namespace SignWell.Sdk.Models
             sb.Append("  ApiId: ").Append(ApiId).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Validation: ").Append(Validation).Append("\n");
+            sb.Append("  ValidationRegex: ").Append(ValidationRegex).Append("\n");
+            sb.Append("  ValidationRegexErrorMessage: ").Append(ValidationRegexErrorMessage).Append("\n");
             sb.Append("  FixedWidth: ").Append(FixedWidth).Append("\n");
             sb.Append("  LockSignDate: ").Append(LockSignDate).Append("\n");
             sb.Append("  DateFormat: ").Append(DateFormat).Append("\n");
@@ -359,8 +393,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateFieldsInnerInner" />
     /// </summary>
-    public class TemplateFieldsInnerInnerJsonConverter : JsonConverter<TemplateFieldsInnerInner>
+    public partial class TemplateFieldsInnerInnerJsonConverter : JsonConverter<TemplateFieldsInnerInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateFieldsInnerInnerJsonConverter" /> class.
+        /// </summary>
+        public TemplateFieldsInnerInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateFieldsInnerInner" />
         /// </summary>
@@ -389,6 +433,8 @@ namespace SignWell.Sdk.Models
             Option<string?> apiId = default;
             Option<string?> name = default;
             Option<TextValidation?> validation = default;
+            Option<string?> validationRegex = default;
+            Option<string?> validationRegexErrorMessage = default;
             Option<bool?> fixedWidth = default;
             Option<bool?> lockSignDate = default;
             Option<DateFormat?> dateFormat = default;
@@ -426,9 +472,7 @@ namespace SignWell.Sdk.Models
                             placeholderId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<FieldType?>(FieldTypeValueConverter.FromStringOrDefault(typeRawValue));
+                            type = new Option<FieldType?>(JsonSerializer.Deserialize<FieldType?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "required":
                             required = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -446,9 +490,13 @@ namespace SignWell.Sdk.Models
                             name = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "validation":
-                            string? validationRawValue = utf8JsonReader.GetString();
-                            if (validationRawValue != null)
-                                validation = new Option<TextValidation?>(TextValidationValueConverter.FromStringOrDefault(validationRawValue));
+                            validation = new Option<TextValidation?>(JsonSerializer.Deserialize<TextValidation?>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "validation_regex":
+                            validationRegex = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "validation_regex_error_message":
+                            validationRegexErrorMessage = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "fixed_width":
                             fixedWidth = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -457,9 +505,7 @@ namespace SignWell.Sdk.Models
                             lockSignDate = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "date_format":
-                            string? dateFormatRawValue = utf8JsonReader.GetString();
-                            if (dateFormatRawValue != null)
-                                dateFormat = new Option<DateFormat?>(DateFormatValueConverter.FromStringOrDefault(dateFormatRawValue));
+                            dateFormat = new Option<DateFormat?>(JsonSerializer.Deserialize<DateFormat?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "height":
                             height = new Option<float?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (float?)null : (float)utf8JsonReader.GetDouble());
@@ -483,78 +529,36 @@ namespace SignWell.Sdk.Models
             }
 
             if (!x.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldsInnerInner.", nameof(x));
+                throw new JsonException("Property is required for class TemplateFieldsInnerInner: x.");
 
             if (!y.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldsInnerInner.", nameof(y));
+                throw new JsonException("Property is required for class TemplateFieldsInnerInner: y.");
 
             if (!page.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldsInnerInner.", nameof(page));
+                throw new JsonException("Property is required for class TemplateFieldsInnerInner: page.");
 
             if (!placeholderId.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldsInnerInner.", nameof(placeholderId));
+                throw new JsonException("Property is required for class TemplateFieldsInnerInner: placeholder_id.");
 
             if (!type.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldsInnerInner.", nameof(type));
+                throw new JsonException("Property is required for class TemplateFieldsInnerInner: type.");
 
             if (x.IsSet && x.Value == null)
-                throw new ArgumentNullException(nameof(x), "Property is not nullable for class TemplateFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldsInnerInner: x.");
 
             if (y.IsSet && y.Value == null)
-                throw new ArgumentNullException(nameof(y), "Property is not nullable for class TemplateFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldsInnerInner: y.");
 
             if (page.IsSet && page.Value == null)
-                throw new ArgumentNullException(nameof(page), "Property is not nullable for class TemplateFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldsInnerInner: page.");
 
             if (placeholderId.IsSet && placeholderId.Value == null)
-                throw new ArgumentNullException(nameof(placeholderId), "Property is not nullable for class TemplateFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldsInnerInner: placeholder_id.");
 
             if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class TemplateFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldsInnerInner: type.");
 
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (label.IsSet && label.Value == null)
-                throw new ArgumentNullException(nameof(label), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (value.IsSet && value.Value == null)
-                throw new ArgumentNullException(nameof(value), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (apiId.IsSet && apiId.Value == null)
-                throw new ArgumentNullException(nameof(apiId), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (validation.IsSet && validation.Value == null)
-                throw new ArgumentNullException(nameof(validation), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (fixedWidth.IsSet && fixedWidth.Value == null)
-                throw new ArgumentNullException(nameof(fixedWidth), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (lockSignDate.IsSet && lockSignDate.Value == null)
-                throw new ArgumentNullException(nameof(lockSignDate), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (dateFormat.IsSet && dateFormat.Value == null)
-                throw new ArgumentNullException(nameof(dateFormat), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (height.IsSet && height.Value == null)
-                throw new ArgumentNullException(nameof(height), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (width.IsSet && width.Value == null)
-                throw new ArgumentNullException(nameof(width), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (defaultOption.IsSet && defaultOption.Value == null)
-                throw new ArgumentNullException(nameof(defaultOption), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            if (allowOther.IsSet && allowOther.Value == null)
-                throw new ArgumentNullException(nameof(allowOther), "Property is not nullable for class TemplateFieldsInnerInner.");
-
-            return new TemplateFieldsInnerInner(x.Value!.Value!, y.Value!.Value!, page.Value!.Value!, placeholderId.Value!, type.Value!.Value!, required, label, value, apiId, name, validation, fixedWidth, lockSignDate, dateFormat, height, width, options, defaultOption, allowOther);
+            return new TemplateFieldsInnerInner(x.Value!.Value!, y.Value!.Value!, page.Value!.Value!, placeholderId.Value!, type.Value!.Value!, required, label, value, apiId, name, validation, validationRegex, validationRegexErrorMessage, fixedWidth, lockSignDate, dateFormat, height, width, options, defaultOption, allowOther);
         }
 
         /// <summary>
@@ -563,7 +567,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateFieldsInnerInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, TemplateFieldsInnerInner templateFieldsInnerInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -578,29 +581,55 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateFieldsInnerInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateFieldsInnerInner templateFieldsInnerInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (templateFieldsInnerInner.PlaceholderId == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.PlaceholderId), "Property is required for class TemplateFieldsInnerInner.");
+            if (templateFieldsInnerInner.RequiredOption.IsSet && templateFieldsInnerInner.Required == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Required to non-nullable JSON property 'required'.");
 
             if (templateFieldsInnerInner.LabelOption.IsSet && templateFieldsInnerInner.Label == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.Label), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Label to non-nullable JSON property 'label'.");
 
             if (templateFieldsInnerInner.ValueOption.IsSet && templateFieldsInnerInner.Value == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.Value), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Value to non-nullable JSON property 'value'.");
 
             if (templateFieldsInnerInner.ApiIdOption.IsSet && templateFieldsInnerInner.ApiId == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.ApiId), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.ApiId to non-nullable JSON property 'api_id'.");
 
             if (templateFieldsInnerInner.NameOption.IsSet && templateFieldsInnerInner.Name == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.Name), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Name to non-nullable JSON property 'name'.");
+
+            if (templateFieldsInnerInner.ValidationOption.IsSet && templateFieldsInnerInner.Validation == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Validation to non-nullable JSON property 'validation'.");
+
+            if (templateFieldsInnerInner.ValidationRegexOption.IsSet && templateFieldsInnerInner.ValidationRegex == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.ValidationRegex to non-nullable JSON property 'validation_regex'.");
+
+            if (templateFieldsInnerInner.ValidationRegexErrorMessageOption.IsSet && templateFieldsInnerInner.ValidationRegexErrorMessage == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.ValidationRegexErrorMessage to non-nullable JSON property 'validation_regex_error_message'.");
+
+            if (templateFieldsInnerInner.FixedWidthOption.IsSet && templateFieldsInnerInner.FixedWidth == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.FixedWidth to non-nullable JSON property 'fixed_width'.");
+
+            if (templateFieldsInnerInner.LockSignDateOption.IsSet && templateFieldsInnerInner.LockSignDate == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.LockSignDate to non-nullable JSON property 'lock_sign_date'.");
+
+            if (templateFieldsInnerInner.DateFormatOption.IsSet && templateFieldsInnerInner.DateFormat == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.DateFormat to non-nullable JSON property 'date_format'.");
+
+            if (templateFieldsInnerInner.HeightOption.IsSet && templateFieldsInnerInner.Height == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Height to non-nullable JSON property 'height'.");
+
+            if (templateFieldsInnerInner.WidthOption.IsSet && templateFieldsInnerInner.Width == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Width to non-nullable JSON property 'width'.");
 
             if (templateFieldsInnerInner.OptionsOption.IsSet && templateFieldsInnerInner.Options == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.Options), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.Options to non-nullable JSON property 'options'.");
 
             if (templateFieldsInnerInner.DefaultOptionOption.IsSet && templateFieldsInnerInner.DefaultOption == null)
-                throw new ArgumentNullException(nameof(templateFieldsInnerInner.DefaultOption), "Property is required for class TemplateFieldsInnerInner.");
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.DefaultOption to non-nullable JSON property 'default_option'.");
+
+            if (templateFieldsInnerInner.AllowOtherOption.IsSet && templateFieldsInnerInner.AllowOther == null)
+                throw new JsonException("Cannot write null property TemplateFieldsInnerInner.AllowOther to non-nullable JSON property 'allow_other'.");
 
             writer.WriteNumber("x", templateFieldsInnerInner.X);
 
@@ -622,7 +651,13 @@ namespace SignWell.Sdk.Models
             if (templateFieldsInnerInner.ValueOption.IsSet)
             {
                 writer.WritePropertyName("value");
-                JsonSerializer.Serialize(writer, templateFieldsInnerInner.Value, jsonSerializerOptions);
+                if (templateFieldsInnerInner.Type == FieldType.Checkbox)
+
+                    writer.WriteStringValue(SignWell.Sdk.Embedded.SignWellValues.NormalizeCheckbox(templateFieldsInnerInner.Value!));
+
+                else
+
+                    JsonSerializer.Serialize(writer, templateFieldsInnerInner.Value, jsonSerializerOptions);
             }
             if (templateFieldsInnerInner.ApiIdOption.IsSet)
                 writer.WriteString("api_id", templateFieldsInnerInner.ApiId);
@@ -635,6 +670,12 @@ namespace SignWell.Sdk.Models
                 var validationRawValue = TextValidationValueConverter.ToJsonValue(templateFieldsInnerInner.Validation!.Value);
                 writer.WriteString("validation", validationRawValue);
             }
+            if (templateFieldsInnerInner.ValidationRegexOption.IsSet)
+                writer.WriteString("validation_regex", templateFieldsInnerInner.ValidationRegex);
+
+            if (templateFieldsInnerInner.ValidationRegexErrorMessageOption.IsSet)
+                writer.WriteString("validation_regex_error_message", templateFieldsInnerInner.ValidationRegexErrorMessage);
+
             if (templateFieldsInnerInner.FixedWidthOption.IsSet)
                 writer.WriteBoolean("fixed_width", templateFieldsInnerInner.FixedWidthOption.Value!.Value);
 

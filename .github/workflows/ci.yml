@@ -52,7 +52,7 @@ jobs:
         env:
           FRAMEWORK: ${{ matrix.framework }}
         run: |
-          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --source "$PWD/artifacts" --source https://api.nuget.org/v3/index.json
+          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --packages "$RUNNER_TEMP/signwell-consumer-packages" --source "$PWD/artifacts" --source https://api.nuget.org/v3/index.json
           dotnet build samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj -c Release --no-restore -p:TargetFramework="$FRAMEWORK"
       - name: Consume packed SDK on Windows
         if: runner.os == 'Windows'
@@ -61,5 +61,5 @@ jobs:
           FRAMEWORK: ${{ matrix.framework }}
         run: |
           dotnet nuget add source "$env:GITHUB_WORKSPACE/artifacts" --name signwell-local
-          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj
+          dotnet restore samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj --packages "$env:RUNNER_TEMP/signwell-consumer-packages"
           dotnet build samples/SignWell.Sdk.Smoke/SignWell.Sdk.Smoke.csproj -c Release --no-restore -p:TargetFramework="$env:FRAMEWORK"

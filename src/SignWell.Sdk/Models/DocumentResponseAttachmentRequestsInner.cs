@@ -109,8 +109,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseAttachmentRequestsInner" />
     /// </summary>
-    public class DocumentResponseAttachmentRequestsInnerJsonConverter : JsonConverter<DocumentResponseAttachmentRequestsInner>
+    public partial class DocumentResponseAttachmentRequestsInnerJsonConverter : JsonConverter<DocumentResponseAttachmentRequestsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseAttachmentRequestsInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseAttachmentRequestsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseAttachmentRequestsInner" />
         /// </summary>
@@ -163,19 +173,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseAttachmentRequestsInner.", nameof(name));
+                throw new JsonException("Property is required for class DocumentResponseAttachmentRequestsInner: name.");
 
             if (!recipientId.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseAttachmentRequestsInner.", nameof(recipientId));
+                throw new JsonException("Property is required for class DocumentResponseAttachmentRequestsInner: recipient_id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentResponseAttachmentRequestsInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseAttachmentRequestsInner: name.");
 
             if (recipientId.IsSet && recipientId.Value == null)
-                throw new ArgumentNullException(nameof(recipientId), "Property is not nullable for class DocumentResponseAttachmentRequestsInner.");
-
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class DocumentResponseAttachmentRequestsInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseAttachmentRequestsInner: recipient_id.");
 
             return new DocumentResponseAttachmentRequestsInner(name.Value!, recipientId.Value!, required);
         }
@@ -186,7 +193,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseAttachmentRequestsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponseAttachmentRequestsInner documentResponseAttachmentRequestsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -201,14 +207,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseAttachmentRequestsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseAttachmentRequestsInner documentResponseAttachmentRequestsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentResponseAttachmentRequestsInner.Name == null)
-                throw new ArgumentNullException(nameof(documentResponseAttachmentRequestsInner.Name), "Property is required for class DocumentResponseAttachmentRequestsInner.");
-
-            if (documentResponseAttachmentRequestsInner.RecipientId == null)
-                throw new ArgumentNullException(nameof(documentResponseAttachmentRequestsInner.RecipientId), "Property is required for class DocumentResponseAttachmentRequestsInner.");
+            if (documentResponseAttachmentRequestsInner.RequiredOption.IsSet && documentResponseAttachmentRequestsInner.Required == null)
+                throw new JsonException("Cannot write null property DocumentResponseAttachmentRequestsInner.Required to non-nullable JSON property 'required'.");
 
             writer.WriteString("name", documentResponseAttachmentRequestsInner.Name);
 

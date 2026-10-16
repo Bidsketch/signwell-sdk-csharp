@@ -60,7 +60,7 @@ namespace SignWell.Sdk.Test.Raw
             DocumentTemplateRequest documentTemplateRequest = default!;
             var response = await _instance.CreateTemplateAsync(documentTemplateRequest);
             var model = response.Created();
-            Assert.IsType<DocumentTemplateResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentTemplateResponse>(model);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SignWell.Sdk.Test.Raw
             Guid id = default!;
             var response = await _instance.GetTemplateAsync(id);
             var model = response.Ok();
-            Assert.IsType<DocumentTemplateResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentTemplateResponse>(model);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<string> query = default!;
             var response = await _instance.ListTemplatesAsync(page, limit, query);
             var model = response.Ok();
-            Assert.IsType<DocumentTemplateListResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentTemplateListResponse>(model);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SignWell.Sdk.Test.Raw
             DocumentTemplateUpdateRequest documentTemplateUpdateRequest = default!;
             var response = await _instance.UpdateTemplateAsync(id, documentTemplateUpdateRequest);
             var model = response.Ok();
-            Assert.IsType<DocumentTemplateResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentTemplateResponse>(model);
         }
     }
 }

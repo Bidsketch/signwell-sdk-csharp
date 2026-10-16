@@ -207,12 +207,22 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendResponse" />
     /// </summary>
-    public class BulkSendResponseJsonConverter : JsonConverter<BulkSendResponse>
+    public partial class BulkSendResponseJsonConverter : JsonConverter<BulkSendResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendResponseJsonConverter" /> class.
+        /// </summary>
+        public BulkSendResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// The format to use to serialize CreatedAt
         /// </summary>
-        public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+        public string CreatedAtFormat { get; private set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
         /// Deserializes json to <see cref="BulkSendResponse" />
@@ -294,40 +304,28 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponse.", nameof(id));
+                throw new JsonException("Property is required for class BulkSendResponse: id.");
 
             if (!documentsCount.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponse.", nameof(documentsCount));
+                throw new JsonException("Property is required for class BulkSendResponse: documents_count.");
 
             if (!createdAt.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponse.", nameof(createdAt));
+                throw new JsonException("Property is required for class BulkSendResponse: created_at.");
 
             if (!status.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendResponse.", nameof(status));
+                throw new JsonException("Property is required for class BulkSendResponse: status.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class BulkSendResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendResponse: id.");
 
             if (documentsCount.IsSet && documentsCount.Value == null)
-                throw new ArgumentNullException(nameof(documentsCount), "Property is not nullable for class BulkSendResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendResponse: documents_count.");
 
             if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class BulkSendResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendResponse: created_at.");
 
             if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class BulkSendResponse.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class BulkSendResponse.");
-
-            if (documentsCompleted.IsSet && documentsCompleted.Value == null)
-                throw new ArgumentNullException(nameof(documentsCompleted), "Property is not nullable for class BulkSendResponse.");
-
-            if (documentsNotCompleted.IsSet && documentsNotCompleted.Value == null)
-                throw new ArgumentNullException(nameof(documentsNotCompleted), "Property is not nullable for class BulkSendResponse.");
-
-            if (templates.IsSet && templates.Value == null)
-                throw new ArgumentNullException(nameof(templates), "Property is not nullable for class BulkSendResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendResponse: status.");
 
             return new BulkSendResponse(id.Value!.Value!, documentsCount.Value!.Value!, createdAt.Value!.Value!, status.Value!, name, apiApplicationId, documentsCompleted, documentsNotCompleted, userId, templates);
         }
@@ -338,7 +336,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendResponse bulkSendResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -353,17 +350,19 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendResponse bulkSendResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendResponse.Status == null)
-                throw new ArgumentNullException(nameof(bulkSendResponse.Status), "Property is required for class BulkSendResponse.");
-
             if (bulkSendResponse.NameOption.IsSet && bulkSendResponse.Name == null)
-                throw new ArgumentNullException(nameof(bulkSendResponse.Name), "Property is required for class BulkSendResponse.");
+                throw new JsonException("Cannot write null property BulkSendResponse.Name to non-nullable JSON property 'name'.");
+
+            if (bulkSendResponse.DocumentsCompletedOption.IsSet && bulkSendResponse.DocumentsCompleted == null)
+                throw new JsonException("Cannot write null property BulkSendResponse.DocumentsCompleted to non-nullable JSON property 'documents_completed'.");
+
+            if (bulkSendResponse.DocumentsNotCompletedOption.IsSet && bulkSendResponse.DocumentsNotCompleted == null)
+                throw new JsonException("Cannot write null property BulkSendResponse.DocumentsNotCompleted to non-nullable JSON property 'documents_not_completed'.");
 
             if (bulkSendResponse.TemplatesOption.IsSet && bulkSendResponse.Templates == null)
-                throw new ArgumentNullException(nameof(bulkSendResponse.Templates), "Property is required for class BulkSendResponse.");
+                throw new JsonException("Cannot write null property BulkSendResponse.Templates to non-nullable JSON property 'templates'.");
 
             writer.WriteString("id", bulkSendResponse.Id);
 

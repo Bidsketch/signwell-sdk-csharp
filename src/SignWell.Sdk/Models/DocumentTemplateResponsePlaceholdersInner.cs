@@ -42,8 +42,9 @@ namespace SignWell.Sdk.Models
         /// <param name="preassignedRecipientEmail">preassignedRecipientEmail</param>
         /// <param name="signingOrder">signingOrder</param>
         /// <param name="attachmentRequests">attachmentRequests</param>
+        /// <param name="passcodeDelivery">passcodeDelivery</param>
         [JsonConstructor]
-        public DocumentTemplateResponsePlaceholdersInner(string name, Option<string?> id = default, Option<string?> subject = default, Option<string?> message = default, Option<string?> preassignedRecipientName = default, Option<string?> preassignedRecipientEmail = default, Option<int?> signingOrder = default, Option<List<AttachmentRequestInfo>?> attachmentRequests = default)
+        public DocumentTemplateResponsePlaceholdersInner(string name, Option<string?> id = default, Option<string?> subject = default, Option<string?> message = default, Option<string?> preassignedRecipientName = default, Option<string?> preassignedRecipientEmail = default, Option<int?> signingOrder = default, Option<List<AttachmentRequestInfo>?> attachmentRequests = default, Option<DocumentResponseRecipientsInnerPasscodeDelivery?> passcodeDelivery = default)
         {
             Name = name;
             IdOption = id;
@@ -53,6 +54,7 @@ namespace SignWell.Sdk.Models
             PreassignedRecipientEmailOption = preassignedRecipientEmail;
             SigningOrderOption = signingOrder;
             AttachmentRequestsOption = attachmentRequests;
+            PasscodeDeliveryOption = passcodeDelivery;
             OnCreated();
         }
 
@@ -156,6 +158,19 @@ namespace SignWell.Sdk.Models
         public List<AttachmentRequestInfo>? AttachmentRequests { get { return this.AttachmentRequestsOption.Value; } set { this.AttachmentRequestsOption = new Option<List<AttachmentRequestInfo>?>(value); } }
 
         /// <summary>
+        /// Used to track the state of PasscodeDelivery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DocumentResponseRecipientsInnerPasscodeDelivery?> PasscodeDeliveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PasscodeDelivery
+        /// </summary>
+        [JsonPropertyName("passcode_delivery")]
+        public DocumentResponseRecipientsInnerPasscodeDelivery? PasscodeDelivery { get { return this.PasscodeDeliveryOption.Value; } set { this.PasscodeDeliveryOption = new Option<DocumentResponseRecipientsInnerPasscodeDelivery?>(value); } }
+
+        /// <summary>
         /// Gets or Sets additional properties
         /// </summary>
         [JsonExtensionData]
@@ -177,6 +192,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  PreassignedRecipientEmail: ").Append(PreassignedRecipientEmail).Append("\n");
             sb.Append("  SigningOrder: ").Append(SigningOrder).Append("\n");
             sb.Append("  AttachmentRequests: ").Append(AttachmentRequests).Append("\n");
+            sb.Append("  PasscodeDelivery: ").Append(PasscodeDelivery).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -196,8 +212,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentTemplateResponsePlaceholdersInner" />
     /// </summary>
-    public class DocumentTemplateResponsePlaceholdersInnerJsonConverter : JsonConverter<DocumentTemplateResponsePlaceholdersInner>
+    public partial class DocumentTemplateResponsePlaceholdersInnerJsonConverter : JsonConverter<DocumentTemplateResponsePlaceholdersInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentTemplateResponsePlaceholdersInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentTemplateResponsePlaceholdersInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentTemplateResponsePlaceholdersInner" />
         /// </summary>
@@ -223,6 +249,7 @@ namespace SignWell.Sdk.Models
             Option<string?> preassignedRecipientEmail = default;
             Option<int?> signingOrder = default;
             Option<List<AttachmentRequestInfo>?> attachmentRequests = default;
+            Option<DocumentResponseRecipientsInnerPasscodeDelivery?> passcodeDelivery = default;
 
             while (utf8JsonReader.Read())
             {
@@ -263,6 +290,9 @@ namespace SignWell.Sdk.Models
                         case "attachment_requests":
                             attachmentRequests = new Option<List<AttachmentRequestInfo>?>(JsonSerializer.Deserialize<List<AttachmentRequestInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
+                        case "passcode_delivery":
+                            passcodeDelivery = new Option<DocumentResponseRecipientsInnerPasscodeDelivery?>(JsonSerializer.Deserialize<DocumentResponseRecipientsInnerPasscodeDelivery>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -270,27 +300,12 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateResponsePlaceholdersInner.", nameof(name));
+                throw new JsonException("Property is required for class DocumentTemplateResponsePlaceholdersInner: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateResponsePlaceholdersInner: name.");
 
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
-
-            if (preassignedRecipientName.IsSet && preassignedRecipientName.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientName), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
-
-            if (preassignedRecipientEmail.IsSet && preassignedRecipientEmail.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientEmail), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
-
-            if (signingOrder.IsSet && signingOrder.Value == null)
-                throw new ArgumentNullException(nameof(signingOrder), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
-
-            if (attachmentRequests.IsSet && attachmentRequests.Value == null)
-                throw new ArgumentNullException(nameof(attachmentRequests), "Property is not nullable for class DocumentTemplateResponsePlaceholdersInner.");
-
-            return new DocumentTemplateResponsePlaceholdersInner(name.Value!, id, subject, message, preassignedRecipientName, preassignedRecipientEmail, signingOrder, attachmentRequests);
+            return new DocumentTemplateResponsePlaceholdersInner(name.Value!, id, subject, message, preassignedRecipientName, preassignedRecipientEmail, signingOrder, attachmentRequests, passcodeDelivery);
         }
 
         /// <summary>
@@ -299,7 +314,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponsePlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentTemplateResponsePlaceholdersInner documentTemplateResponsePlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -314,23 +328,25 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponsePlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentTemplateResponsePlaceholdersInner documentTemplateResponsePlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentTemplateResponsePlaceholdersInner.Name == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponsePlaceholdersInner.Name), "Property is required for class DocumentTemplateResponsePlaceholdersInner.");
-
             if (documentTemplateResponsePlaceholdersInner.IdOption.IsSet && documentTemplateResponsePlaceholdersInner.Id == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponsePlaceholdersInner.Id), "Property is required for class DocumentTemplateResponsePlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.Id to non-nullable JSON property 'id'.");
 
             if (documentTemplateResponsePlaceholdersInner.PreassignedRecipientNameOption.IsSet && documentTemplateResponsePlaceholdersInner.PreassignedRecipientName == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponsePlaceholdersInner.PreassignedRecipientName), "Property is required for class DocumentTemplateResponsePlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.PreassignedRecipientName to non-nullable JSON property 'preassigned_recipient_name'.");
 
             if (documentTemplateResponsePlaceholdersInner.PreassignedRecipientEmailOption.IsSet && documentTemplateResponsePlaceholdersInner.PreassignedRecipientEmail == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponsePlaceholdersInner.PreassignedRecipientEmail), "Property is required for class DocumentTemplateResponsePlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.PreassignedRecipientEmail to non-nullable JSON property 'preassigned_recipient_email'.");
+
+            if (documentTemplateResponsePlaceholdersInner.SigningOrderOption.IsSet && documentTemplateResponsePlaceholdersInner.SigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.SigningOrder to non-nullable JSON property 'signing_order'.");
 
             if (documentTemplateResponsePlaceholdersInner.AttachmentRequestsOption.IsSet && documentTemplateResponsePlaceholdersInner.AttachmentRequests == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponsePlaceholdersInner.AttachmentRequests), "Property is required for class DocumentTemplateResponsePlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.AttachmentRequests to non-nullable JSON property 'attachment_requests'.");
+
+            if (documentTemplateResponsePlaceholdersInner.PasscodeDeliveryOption.IsSet && documentTemplateResponsePlaceholdersInner.PasscodeDelivery == null)
+                throw new JsonException("Cannot write null property DocumentTemplateResponsePlaceholdersInner.PasscodeDelivery to non-nullable JSON property 'passcode_delivery'.");
 
             writer.WriteString("name", documentTemplateResponsePlaceholdersInner.Name);
 
@@ -362,6 +378,11 @@ namespace SignWell.Sdk.Models
             {
                 writer.WritePropertyName("attachment_requests");
                 JsonSerializer.Serialize(writer, documentTemplateResponsePlaceholdersInner.AttachmentRequests, jsonSerializerOptions);
+            }
+            if (documentTemplateResponsePlaceholdersInner.PasscodeDeliveryOption.IsSet)
+            {
+                writer.WritePropertyName("passcode_delivery");
+                JsonSerializer.Serialize(writer, documentTemplateResponsePlaceholdersInner.PasscodeDelivery, jsonSerializerOptions);
             }
         }
     }

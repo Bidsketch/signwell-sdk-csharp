@@ -62,7 +62,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<bool> objectOnly = default!;
             var response = await _instance.GetNom151CertificateAsync(id, urlOnly, objectOnly);
             var model = response.Ok();
-            Assert.IsType<Nom151UrlResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.Nom151UrlResponse>(model);
         }
     }
 }

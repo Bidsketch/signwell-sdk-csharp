@@ -180,8 +180,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentTemplateResponseCopiedPlaceholdersInner" />
     /// </summary>
-    public class DocumentTemplateResponseCopiedPlaceholdersInnerJsonConverter : JsonConverter<DocumentTemplateResponseCopiedPlaceholdersInner>
+    public partial class DocumentTemplateResponseCopiedPlaceholdersInnerJsonConverter : JsonConverter<DocumentTemplateResponseCopiedPlaceholdersInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentTemplateResponseCopiedPlaceholdersInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentTemplateResponseCopiedPlaceholdersInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentTemplateResponseCopiedPlaceholdersInner" />
         /// </summary>
@@ -250,22 +260,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.", nameof(name));
+                throw new JsonException("Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner.");
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner.");
-
-            if (placeholderId.IsSet && placeholderId.Value == null)
-                throw new ArgumentNullException(nameof(placeholderId), "Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner.");
-
-            if (preassignedRecipientName.IsSet && preassignedRecipientName.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientName), "Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner.");
-
-            if (preassignedRecipientEmail.IsSet && preassignedRecipientEmail.Value == null)
-                throw new ArgumentNullException(nameof(preassignedRecipientEmail), "Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner.");
+                throw new JsonException("Property is not nullable for class DocumentTemplateResponseCopiedPlaceholdersInner: name.");
 
             return new DocumentTemplateResponseCopiedPlaceholdersInner(name.Value!, id, placeholderId, subject, message, preassignedRecipientName, preassignedRecipientEmail);
         }
@@ -276,7 +274,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponseCopiedPlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentTemplateResponseCopiedPlaceholdersInner documentTemplateResponseCopiedPlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -291,23 +288,19 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateResponseCopiedPlaceholdersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentTemplateResponseCopiedPlaceholdersInner documentTemplateResponseCopiedPlaceholdersInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentTemplateResponseCopiedPlaceholdersInner.Name == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponseCopiedPlaceholdersInner.Name), "Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.");
-
             if (documentTemplateResponseCopiedPlaceholdersInner.IdOption.IsSet && documentTemplateResponseCopiedPlaceholdersInner.Id == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponseCopiedPlaceholdersInner.Id), "Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponseCopiedPlaceholdersInner.Id to non-nullable JSON property 'id'.");
 
             if (documentTemplateResponseCopiedPlaceholdersInner.PlaceholderIdOption.IsSet && documentTemplateResponseCopiedPlaceholdersInner.PlaceholderId == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponseCopiedPlaceholdersInner.PlaceholderId), "Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponseCopiedPlaceholdersInner.PlaceholderId to non-nullable JSON property 'placeholder_id'.");
 
             if (documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientNameOption.IsSet && documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientName == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientName), "Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientName to non-nullable JSON property 'preassigned_recipient_name'.");
 
             if (documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientEmailOption.IsSet && documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientEmail == null)
-                throw new ArgumentNullException(nameof(documentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientEmail), "Property is required for class DocumentTemplateResponseCopiedPlaceholdersInner.");
+                throw new JsonException("Cannot write null property DocumentTemplateResponseCopiedPlaceholdersInner.PreassignedRecipientEmail to non-nullable JSON property 'preassigned_recipient_email'.");
 
             writer.WriteString("name", documentTemplateResponseCopiedPlaceholdersInner.Name);
 

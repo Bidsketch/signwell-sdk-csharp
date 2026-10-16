@@ -188,8 +188,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateCheckboxGroupsInner" />
     /// </summary>
-    public class TemplateCheckboxGroupsInnerJsonConverter : JsonConverter<TemplateCheckboxGroupsInner>
+    public partial class TemplateCheckboxGroupsInnerJsonConverter : JsonConverter<TemplateCheckboxGroupsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateCheckboxGroupsInnerJsonConverter" /> class.
+        /// </summary>
+        public TemplateCheckboxGroupsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateCheckboxGroupsInner" />
         /// </summary>
@@ -241,9 +251,7 @@ namespace SignWell.Sdk.Models
                             checkboxIds = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "validation":
-                            string? validationRawValue = utf8JsonReader.GetString();
-                            if (validationRawValue != null)
-                                validation = new Option<CheckboxValidation?>(CheckboxValidationValueConverter.FromStringOrDefault(validationRawValue));
+                            validation = new Option<CheckboxValidation?>(JsonSerializer.Deserialize<CheckboxValidation?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "required":
                             required = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -264,37 +272,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!groupName.IsSet)
-                throw new ArgumentException("Property is required for class TemplateCheckboxGroupsInner.", nameof(groupName));
+                throw new JsonException("Property is required for class TemplateCheckboxGroupsInner: group_name.");
 
             if (!placeholderId.IsSet)
-                throw new ArgumentException("Property is required for class TemplateCheckboxGroupsInner.", nameof(placeholderId));
+                throw new JsonException("Property is required for class TemplateCheckboxGroupsInner: placeholder_id.");
 
             if (!checkboxIds.IsSet)
-                throw new ArgumentException("Property is required for class TemplateCheckboxGroupsInner.", nameof(checkboxIds));
+                throw new JsonException("Property is required for class TemplateCheckboxGroupsInner: checkbox_ids.");
 
             if (groupName.IsSet && groupName.Value == null)
-                throw new ArgumentNullException(nameof(groupName), "Property is not nullable for class TemplateCheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class TemplateCheckboxGroupsInner: group_name.");
 
             if (placeholderId.IsSet && placeholderId.Value == null)
-                throw new ArgumentNullException(nameof(placeholderId), "Property is not nullable for class TemplateCheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class TemplateCheckboxGroupsInner: placeholder_id.");
 
             if (checkboxIds.IsSet && checkboxIds.Value == null)
-                throw new ArgumentNullException(nameof(checkboxIds), "Property is not nullable for class TemplateCheckboxGroupsInner.");
-
-            if (validation.IsSet && validation.Value == null)
-                throw new ArgumentNullException(nameof(validation), "Property is not nullable for class TemplateCheckboxGroupsInner.");
-
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class TemplateCheckboxGroupsInner.");
-
-            if (minValue.IsSet && minValue.Value == null)
-                throw new ArgumentNullException(nameof(minValue), "Property is not nullable for class TemplateCheckboxGroupsInner.");
-
-            if (maxValue.IsSet && maxValue.Value == null)
-                throw new ArgumentNullException(nameof(maxValue), "Property is not nullable for class TemplateCheckboxGroupsInner.");
-
-            if (exactValue.IsSet && exactValue.Value == null)
-                throw new ArgumentNullException(nameof(exactValue), "Property is not nullable for class TemplateCheckboxGroupsInner.");
+                throw new JsonException("Property is not nullable for class TemplateCheckboxGroupsInner: checkbox_ids.");
 
             return new TemplateCheckboxGroupsInner(groupName.Value!, placeholderId.Value!, checkboxIds.Value!, validation, required, minValue, maxValue, exactValue);
         }
@@ -305,7 +298,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateCheckboxGroupsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, TemplateCheckboxGroupsInner templateCheckboxGroupsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -320,17 +312,22 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateCheckboxGroupsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateCheckboxGroupsInner templateCheckboxGroupsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (templateCheckboxGroupsInner.GroupName == null)
-                throw new ArgumentNullException(nameof(templateCheckboxGroupsInner.GroupName), "Property is required for class TemplateCheckboxGroupsInner.");
+            if (templateCheckboxGroupsInner.ValidationOption.IsSet && templateCheckboxGroupsInner.Validation == null)
+                throw new JsonException("Cannot write null property TemplateCheckboxGroupsInner.Validation to non-nullable JSON property 'validation'.");
 
-            if (templateCheckboxGroupsInner.PlaceholderId == null)
-                throw new ArgumentNullException(nameof(templateCheckboxGroupsInner.PlaceholderId), "Property is required for class TemplateCheckboxGroupsInner.");
+            if (templateCheckboxGroupsInner.RequiredOption.IsSet && templateCheckboxGroupsInner.Required == null)
+                throw new JsonException("Cannot write null property TemplateCheckboxGroupsInner.Required to non-nullable JSON property 'required'.");
 
-            if (templateCheckboxGroupsInner.CheckboxIds == null)
-                throw new ArgumentNullException(nameof(templateCheckboxGroupsInner.CheckboxIds), "Property is required for class TemplateCheckboxGroupsInner.");
+            if (templateCheckboxGroupsInner.MinValueOption.IsSet && templateCheckboxGroupsInner.MinValue == null)
+                throw new JsonException("Cannot write null property TemplateCheckboxGroupsInner.MinValue to non-nullable JSON property 'min_value'.");
+
+            if (templateCheckboxGroupsInner.MaxValueOption.IsSet && templateCheckboxGroupsInner.MaxValue == null)
+                throw new JsonException("Cannot write null property TemplateCheckboxGroupsInner.MaxValue to non-nullable JSON property 'max_value'.");
+
+            if (templateCheckboxGroupsInner.ExactValueOption.IsSet && templateCheckboxGroupsInner.ExactValue == null)
+                throw new JsonException("Cannot write null property TemplateCheckboxGroupsInner.ExactValue to non-nullable JSON property 'exact_value'.");
 
             writer.WriteString("group_name", templateCheckboxGroupsInner.GroupName);
 

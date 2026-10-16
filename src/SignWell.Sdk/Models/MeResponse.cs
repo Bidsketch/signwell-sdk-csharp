@@ -147,8 +147,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="MeResponse" />
     /// </summary>
-    public class MeResponseJsonConverter : JsonConverter<MeResponse>
+    public partial class MeResponseJsonConverter : JsonConverter<MeResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeResponseJsonConverter" /> class.
+        /// </summary>
+        public MeResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="MeResponse" />
         /// </summary>
@@ -217,43 +227,40 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(id));
+                throw new JsonException("Property is required for class MeResponse: id.");
 
             if (!role.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(role));
+                throw new JsonException("Property is required for class MeResponse: role.");
 
             if (!user.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(user));
+                throw new JsonException("Property is required for class MeResponse: user.");
 
             if (!account.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(account));
+                throw new JsonException("Property is required for class MeResponse: account.");
 
             if (!workspace.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(workspace));
+                throw new JsonException("Property is required for class MeResponse: workspace.");
 
             if (!contact.IsSet)
-                throw new ArgumentException("Property is required for class MeResponse.", nameof(contact));
+                throw new JsonException("Property is required for class MeResponse: contact.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: id.");
 
             if (role.IsSet && role.Value == null)
-                throw new ArgumentNullException(nameof(role), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: role.");
 
             if (user.IsSet && user.Value == null)
-                throw new ArgumentNullException(nameof(user), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: user.");
 
             if (account.IsSet && account.Value == null)
-                throw new ArgumentNullException(nameof(account), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: account.");
 
             if (workspace.IsSet && workspace.Value == null)
-                throw new ArgumentNullException(nameof(workspace), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: workspace.");
 
             if (contact.IsSet && contact.Value == null)
-                throw new ArgumentNullException(nameof(contact), "Property is not nullable for class MeResponse.");
-
-            if (archived.IsSet && archived.Value == null)
-                throw new ArgumentNullException(nameof(archived), "Property is not nullable for class MeResponse.");
+                throw new JsonException("Property is not nullable for class MeResponse: contact.");
 
             return new MeResponse(id.Value!.Value!, role.Value!, user.Value!, account.Value!, workspace.Value!, contact.Value!, archived);
         }
@@ -264,7 +271,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, MeResponse meResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -279,23 +285,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, MeResponse meResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (meResponse.Role == null)
-                throw new ArgumentNullException(nameof(meResponse.Role), "Property is required for class MeResponse.");
-
-            if (meResponse.User == null)
-                throw new ArgumentNullException(nameof(meResponse.User), "Property is required for class MeResponse.");
-
-            if (meResponse.Account == null)
-                throw new ArgumentNullException(nameof(meResponse.Account), "Property is required for class MeResponse.");
-
-            if (meResponse.Workspace == null)
-                throw new ArgumentNullException(nameof(meResponse.Workspace), "Property is required for class MeResponse.");
-
-            if (meResponse.Contact == null)
-                throw new ArgumentNullException(nameof(meResponse.Contact), "Property is required for class MeResponse.");
+            if (meResponse.ArchivedOption.IsSet && meResponse.Archived == null)
+                throw new JsonException("Cannot write null property MeResponse.Archived to non-nullable JSON property 'archived'.");
 
             writer.WriteString("id", meResponse.Id);
 

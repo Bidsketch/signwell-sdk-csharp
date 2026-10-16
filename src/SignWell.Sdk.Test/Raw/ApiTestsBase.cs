@@ -51,7 +51,7 @@ namespace SignWell.Sdk.Test.Raw
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
-            .ConfigureApi((context, services, options) =>
+            .ConfigureApi((context, options) =>
             {
                 string apiKeyTokenValue1 = context.Configuration["<token>"] ?? throw new Exception("Token not found.");
                 ApiKeyToken apiKeyToken1 = new ApiKeyToken(apiKeyTokenValue1, ClientUtils.ApiKeyHeader.X_Api_Key, timeout: TimeSpan.FromSeconds(1));

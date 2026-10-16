@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="AdditionalFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="string"></param>
-        internal AdditionalFieldsInnerInnerValue(string @string)
+        public AdditionalFieldsInnerInnerValue(string @string)
         {
             String = @string;
             OnCreated();
@@ -45,7 +45,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="AdditionalFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="bool"></param>
-        internal AdditionalFieldsInnerInnerValue(bool @bool)
+        public AdditionalFieldsInnerInnerValue(bool @bool)
         {
             Bool = @bool;
             OnCreated();
@@ -55,7 +55,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="AdditionalFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="decimal"></param>
-        internal AdditionalFieldsInnerInnerValue(decimal @decimal)
+        public AdditionalFieldsInnerInnerValue(decimal @decimal)
         {
             Decimal = @decimal;
             OnCreated();
@@ -111,8 +111,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AdditionalFieldsInnerInnerValue" />
     /// </summary>
-    public class AdditionalFieldsInnerInnerValueJsonConverter : JsonConverter<AdditionalFieldsInnerInnerValue>
+    public partial class AdditionalFieldsInnerInnerValueJsonConverter : JsonConverter<AdditionalFieldsInnerInnerValue>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdditionalFieldsInnerInnerValueJsonConverter" /> class.
+        /// </summary>
+        public AdditionalFieldsInnerInnerValueJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AdditionalFieldsInnerInnerValue" />
         /// </summary>
@@ -121,96 +131,41 @@ namespace SignWell.Sdk.Models
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override AdditionalFieldsInnerInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
+public override AdditionalFieldsInnerInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (utf8JsonReader.TokenType == JsonTokenType.String)
+        return new AdditionalFieldsInnerInnerValue(utf8JsonReader.GetString()!);
+    if (utf8JsonReader.TokenType == JsonTokenType.True || utf8JsonReader.TokenType == JsonTokenType.False)
+        return new AdditionalFieldsInnerInnerValue(utf8JsonReader.GetBoolean());
+    if (utf8JsonReader.TokenType == JsonTokenType.Number && utf8JsonReader.TryGetDecimal(out var number))
+        return new AdditionalFieldsInnerInnerValue(number);
+    throw new JsonException();
+}
 
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            string? varString = default;
-            bool? varBool = default;
-            decimal? varDecimal = default;
-
-            Utf8JsonReader utf8JsonReaderOneOf = utf8JsonReader;
-            while (utf8JsonReaderOneOf.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (utf8JsonReaderOneOf.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReaderOneOf.CurrentDepth - 1)
-                {
-                    Utf8JsonReader utf8JsonReaderString = utf8JsonReader;
-                    ClientUtils.TryDeserialize<string?>(ref utf8JsonReaderString, jsonSerializerOptions, out varString);
-
-                    Utf8JsonReader utf8JsonReaderBool = utf8JsonReader;
-                    ClientUtils.TryDeserialize<bool?>(ref utf8JsonReaderBool, jsonSerializerOptions, out varBool);
-
-                    Utf8JsonReader utf8JsonReaderDecimal = utf8JsonReader;
-                    ClientUtils.TryDeserialize<decimal?>(ref utf8JsonReaderDecimal, jsonSerializerOptions, out varDecimal);
-                }
-            }
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (varString != null)
-                return new AdditionalFieldsInnerInnerValue(varString);
-
-            if (varBool != null)
-                return new AdditionalFieldsInnerInnerValue(varBool.Value);
-
-            if (varDecimal != null)
-                return new AdditionalFieldsInnerInnerValue(varDecimal.Value);
-
-            throw new JsonException();
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="AdditionalFieldsInnerInnerValue" />
+/// <summary>
+/// Serializes a <see cref="AdditionalFieldsInnerInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="additionalFieldsInnerInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, AdditionalFieldsInnerInnerValue additionalFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
+public override void Write(Utf8JsonWriter writer, AdditionalFieldsInnerInnerValue additionalFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (additionalFieldsInnerInnerValue.String is not null)
+        writer.WriteStringValue(additionalFieldsInnerInnerValue.String);
+    else if (additionalFieldsInnerInnerValue.Bool.HasValue)
+        writer.WriteBooleanValue(additionalFieldsInnerInnerValue.Bool.Value);
+    else if (additionalFieldsInnerInnerValue.Decimal.HasValue)
+        writer.WriteNumberValue(additionalFieldsInnerInnerValue.Decimal.Value);
+    else
+        writer.WriteNullValue();
+}
 
-            WriteProperties(writer, additionalFieldsInnerInnerValue, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="AdditionalFieldsInnerInnerValue" />
+/// <summary>
+/// Serializes the properties of <see cref="AdditionalFieldsInnerInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="additionalFieldsInnerInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AdditionalFieldsInnerInnerValue additionalFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
         {
 

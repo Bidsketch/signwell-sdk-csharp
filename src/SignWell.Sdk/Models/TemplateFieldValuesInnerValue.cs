@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="TemplateFieldValuesInnerValue" /> class.
         /// </summary>
         /// <param name="string"></param>
-        internal TemplateFieldValuesInnerValue(string @string)
+        public TemplateFieldValuesInnerValue(string @string)
         {
             String = @string;
             OnCreated();
@@ -45,7 +45,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="TemplateFieldValuesInnerValue" /> class.
         /// </summary>
         /// <param name="bool"></param>
-        internal TemplateFieldValuesInnerValue(bool @bool)
+        public TemplateFieldValuesInnerValue(bool @bool)
         {
             Bool = @bool;
             OnCreated();
@@ -55,7 +55,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="TemplateFieldValuesInnerValue" /> class.
         /// </summary>
         /// <param name="decimal"></param>
-        internal TemplateFieldValuesInnerValue(decimal @decimal)
+        public TemplateFieldValuesInnerValue(decimal @decimal)
         {
             Decimal = @decimal;
             OnCreated();
@@ -111,8 +111,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateFieldValuesInnerValue" />
     /// </summary>
-    public class TemplateFieldValuesInnerValueJsonConverter : JsonConverter<TemplateFieldValuesInnerValue>
+    public partial class TemplateFieldValuesInnerValueJsonConverter : JsonConverter<TemplateFieldValuesInnerValue>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateFieldValuesInnerValueJsonConverter" /> class.
+        /// </summary>
+        public TemplateFieldValuesInnerValueJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateFieldValuesInnerValue" />
         /// </summary>
@@ -121,96 +131,41 @@ namespace SignWell.Sdk.Models
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override TemplateFieldValuesInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
+public override TemplateFieldValuesInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (utf8JsonReader.TokenType == JsonTokenType.String)
+        return new TemplateFieldValuesInnerValue(utf8JsonReader.GetString()!);
+    if (utf8JsonReader.TokenType == JsonTokenType.True || utf8JsonReader.TokenType == JsonTokenType.False)
+        return new TemplateFieldValuesInnerValue(utf8JsonReader.GetBoolean());
+    if (utf8JsonReader.TokenType == JsonTokenType.Number && utf8JsonReader.TryGetDecimal(out var number))
+        return new TemplateFieldValuesInnerValue(number);
+    throw new JsonException();
+}
 
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            string? varString = default;
-            bool? varBool = default;
-            decimal? varDecimal = default;
-
-            Utf8JsonReader utf8JsonReaderOneOf = utf8JsonReader;
-            while (utf8JsonReaderOneOf.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (utf8JsonReaderOneOf.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReaderOneOf.CurrentDepth - 1)
-                {
-                    Utf8JsonReader utf8JsonReaderString = utf8JsonReader;
-                    ClientUtils.TryDeserialize<string?>(ref utf8JsonReaderString, jsonSerializerOptions, out varString);
-
-                    Utf8JsonReader utf8JsonReaderBool = utf8JsonReader;
-                    ClientUtils.TryDeserialize<bool?>(ref utf8JsonReaderBool, jsonSerializerOptions, out varBool);
-
-                    Utf8JsonReader utf8JsonReaderDecimal = utf8JsonReader;
-                    ClientUtils.TryDeserialize<decimal?>(ref utf8JsonReaderDecimal, jsonSerializerOptions, out varDecimal);
-                }
-            }
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (varString != null)
-                return new TemplateFieldValuesInnerValue(varString);
-
-            if (varBool != null)
-                return new TemplateFieldValuesInnerValue(varBool.Value);
-
-            if (varDecimal != null)
-                return new TemplateFieldValuesInnerValue(varDecimal.Value);
-
-            throw new JsonException();
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="TemplateFieldValuesInnerValue" />
+/// <summary>
+/// Serializes a <see cref="TemplateFieldValuesInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="templateFieldValuesInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, TemplateFieldValuesInnerValue templateFieldValuesInnerValue, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
+public override void Write(Utf8JsonWriter writer, TemplateFieldValuesInnerValue templateFieldValuesInnerValue, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (templateFieldValuesInnerValue.String is not null)
+        writer.WriteStringValue(templateFieldValuesInnerValue.String);
+    else if (templateFieldValuesInnerValue.Bool.HasValue)
+        writer.WriteBooleanValue(templateFieldValuesInnerValue.Bool.Value);
+    else if (templateFieldValuesInnerValue.Decimal.HasValue)
+        writer.WriteNumberValue(templateFieldValuesInnerValue.Decimal.Value);
+    else
+        writer.WriteNullValue();
+}
 
-            WriteProperties(writer, templateFieldValuesInnerValue, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="TemplateFieldValuesInnerValue" />
+/// <summary>
+/// Serializes the properties of <see cref="TemplateFieldValuesInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="templateFieldValuesInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateFieldValuesInnerValue templateFieldValuesInnerValue, JsonSerializerOptions jsonSerializerOptions)
         {
 

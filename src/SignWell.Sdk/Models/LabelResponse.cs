@@ -100,8 +100,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="LabelResponse" />
     /// </summary>
-    public class LabelResponseJsonConverter : JsonConverter<LabelResponse>
+    public partial class LabelResponseJsonConverter : JsonConverter<LabelResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LabelResponseJsonConverter" /> class.
+        /// </summary>
+        public LabelResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="LabelResponse" />
         /// </summary>
@@ -150,13 +160,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class LabelResponse.", nameof(name));
+                throw new JsonException("Property is required for class LabelResponse: name.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class LabelResponse.");
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class LabelResponse.");
+                throw new JsonException("Property is not nullable for class LabelResponse: name.");
 
             return new LabelResponse(name.Value!, id);
         }
@@ -167,7 +174,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, LabelResponse labelResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -182,11 +188,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, LabelResponse labelResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (labelResponse.Name == null)
-                throw new ArgumentNullException(nameof(labelResponse.Name), "Property is required for class LabelResponse.");
+            if (labelResponse.IdOption.IsSet && labelResponse.Id == null)
+                throw new JsonException("Cannot write null property LabelResponse.Id to non-nullable JSON property 'id'.");
 
             writer.WriteString("name", labelResponse.Name);
 

@@ -112,8 +112,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ErrorResponseMeta" />
     /// </summary>
-    public class ErrorResponseMetaJsonConverter : JsonConverter<ErrorResponseMeta>
+    public partial class ErrorResponseMetaJsonConverter : JsonConverter<ErrorResponseMeta>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ErrorResponseMetaJsonConverter" /> class.
+        /// </summary>
+        public ErrorResponseMetaJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ErrorResponseMeta" />
         /// </summary>
@@ -166,19 +176,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!error.IsSet)
-                throw new ArgumentException("Property is required for class ErrorResponseMeta.", nameof(error));
+                throw new JsonException("Property is required for class ErrorResponseMeta: error.");
 
             if (!message.IsSet)
-                throw new ArgumentException("Property is required for class ErrorResponseMeta.", nameof(message));
+                throw new JsonException("Property is required for class ErrorResponseMeta: message.");
 
             if (error.IsSet && error.Value == null)
-                throw new ArgumentNullException(nameof(error), "Property is not nullable for class ErrorResponseMeta.");
+                throw new JsonException("Property is not nullable for class ErrorResponseMeta: error.");
 
             if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class ErrorResponseMeta.");
-
-            if (messages.IsSet && messages.Value == null)
-                throw new ArgumentNullException(nameof(messages), "Property is not nullable for class ErrorResponseMeta.");
+                throw new JsonException("Property is not nullable for class ErrorResponseMeta: message.");
 
             return new ErrorResponseMeta(error.Value!, message.Value!, messages);
         }
@@ -189,7 +196,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="errorResponseMeta"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ErrorResponseMeta errorResponseMeta, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -204,17 +210,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="errorResponseMeta"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ErrorResponseMeta errorResponseMeta, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (errorResponseMeta.Error == null)
-                throw new ArgumentNullException(nameof(errorResponseMeta.Error), "Property is required for class ErrorResponseMeta.");
-
-            if (errorResponseMeta.Message == null)
-                throw new ArgumentNullException(nameof(errorResponseMeta.Message), "Property is required for class ErrorResponseMeta.");
-
             if (errorResponseMeta.MessagesOption.IsSet && errorResponseMeta.Messages == null)
-                throw new ArgumentNullException(nameof(errorResponseMeta.Messages), "Property is required for class ErrorResponseMeta.");
+                throw new JsonException("Cannot write null property ErrorResponseMeta.Messages to non-nullable JSON property 'messages'.");
 
             writer.WriteString("error", errorResponseMeta.Error);
 

@@ -97,8 +97,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DropdownOption" />
     /// </summary>
-    public class DropdownOptionJsonConverter : JsonConverter<DropdownOption>
+    public partial class DropdownOptionJsonConverter : JsonConverter<DropdownOption>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DropdownOptionJsonConverter" /> class.
+        /// </summary>
+        public DropdownOptionJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DropdownOption" />
         /// </summary>
@@ -107,89 +117,38 @@ namespace SignWell.Sdk.Models
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override DropdownOption Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
+public override DropdownOption Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (utf8JsonReader.TokenType == JsonTokenType.String)
+        return new DropdownOption(utf8JsonReader.GetString()!);
+    if (utf8JsonReader.TokenType == JsonTokenType.StartObject)
+        return new DropdownOption(JsonSerializer.Deserialize<DetailedOption>(ref utf8JsonReader, jsonSerializerOptions)
+            ?? throw new JsonException("Dropdown option cannot be null."));
+    throw new JsonException("Dropdown options must be strings or detailed option objects.");
+}
 
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            string? varString = default;
-            DetailedOption? detailedOption = default;
-
-            Utf8JsonReader utf8JsonReaderOneOf = utf8JsonReader;
-            while (utf8JsonReaderOneOf.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (utf8JsonReaderOneOf.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReaderOneOf.CurrentDepth - 1)
-                {
-                    Utf8JsonReader utf8JsonReaderString = utf8JsonReader;
-                    ClientUtils.TryDeserialize<string?>(ref utf8JsonReaderString, jsonSerializerOptions, out varString);
-
-                    Utf8JsonReader utf8JsonReaderDetailedOption = utf8JsonReader;
-                    ClientUtils.TryDeserialize<DetailedOption?>(ref utf8JsonReaderDetailedOption, jsonSerializerOptions, out detailedOption);
-                }
-            }
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (varString != null)
-                return new DropdownOption(varString);
-
-            if (detailedOption != null)
-                return new DropdownOption(detailedOption);
-
-            throw new JsonException();
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="DropdownOption" />
+/// <summary>
+/// Serializes a <see cref="DropdownOption" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="dropdownOption"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, DropdownOption dropdownOption, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
+public override void Write(Utf8JsonWriter writer, DropdownOption dropdownOption, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (dropdownOption.String is not null && dropdownOption.DetailedOption is null)
+        writer.WriteStringValue(dropdownOption.String);
+    else if (dropdownOption.DetailedOption is not null && dropdownOption.String is null)
+        JsonSerializer.Serialize(writer, dropdownOption.DetailedOption, jsonSerializerOptions);
+    else
+        throw new JsonException("Dropdown options must contain exactly one value.");
+}
 
-            WriteProperties(writer, dropdownOption, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="DropdownOption" />
+/// <summary>
+/// Serializes the properties of <see cref="DropdownOption" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="dropdownOption"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DropdownOption dropdownOption, JsonSerializerOptions jsonSerializerOptions)
         {
 

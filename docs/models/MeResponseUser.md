@@ -5,7 +5,7 @@ The authenticated user
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **Guid** |  | 
+**Id** | **string** |  | 
 **Name** | **string** |  | 
 **Email** | **string** |  | 
 **HasGoogleRegistration** | **bool** |  | [optional] 

@@ -299,8 +299,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AccountInfoResponsePreferences" />
     /// </summary>
-    public class AccountInfoResponsePreferencesJsonConverter : JsonConverter<AccountInfoResponsePreferences>
+    public partial class AccountInfoResponsePreferencesJsonConverter : JsonConverter<AccountInfoResponsePreferences>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountInfoResponsePreferencesJsonConverter" /> class.
+        /// </summary>
+        public AccountInfoResponsePreferencesJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AccountInfoResponsePreferences" />
         /// </summary>
@@ -396,45 +406,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (dateFormat.IsSet && dateFormat.Value == null)
-                throw new ArgumentNullException(nameof(dateFormat), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (daysUntilLinksExpire.IsSet && daysUntilLinksExpire.Value == null)
-                throw new ArgumentNullException(nameof(daysUntilLinksExpire), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (disableApplyEverywhere.IsSet && disableApplyEverywhere.Value == null)
-                throw new ArgumentNullException(nameof(disableApplyEverywhere), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (disableApplyEverywhereEffective.IsSet && disableApplyEverywhereEffective.Value == null)
-                throw new ArgumentNullException(nameof(disableApplyEverywhereEffective), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (disableDrawnSignatures.IsSet && disableDrawnSignatures.Value == null)
-                throw new ArgumentNullException(nameof(disableDrawnSignatures), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (disableTypedSignatures.IsSet && disableTypedSignatures.Value == null)
-                throw new ArgumentNullException(nameof(disableTypedSignatures), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (disableUploadedSignatures.IsSet && disableUploadedSignatures.Value == null)
-                throw new ArgumentNullException(nameof(disableUploadedSignatures), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (enableRedirect.IsSet && enableRedirect.Value == null)
-                throw new ArgumentNullException(nameof(enableRedirect), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (hideDocumentIdInAudit.IsSet && hideDocumentIdInAudit.Value == null)
-                throw new ArgumentNullException(nameof(hideDocumentIdInAudit), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (muteBranding.IsSet && muteBranding.Value == null)
-                throw new ArgumentNullException(nameof(muteBranding), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (separateAuditPdf.IsSet && separateAuditPdf.Value == null)
-                throw new ArgumentNullException(nameof(separateAuditPdf), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (separateCompletedFile.IsSet && separateCompletedFile.Value == null)
-                throw new ArgumentNullException(nameof(separateCompletedFile), "Property is not nullable for class AccountInfoResponsePreferences.");
-
-            if (enableNom151Compliance.IsSet && enableNom151Compliance.Value == null)
-                throw new ArgumentNullException(nameof(enableNom151Compliance), "Property is not nullable for class AccountInfoResponsePreferences.");
-
             return new AccountInfoResponsePreferences(dateFormat, daysUntilLinksExpire, disableApplyEverywhere, disableApplyEverywhereEffective, disableDrawnSignatures, disableTypedSignatures, disableUploadedSignatures, enableRedirect, hideDocumentIdInAudit, muteBranding, redirectUrl, separateAuditPdf, separateCompletedFile, enableNom151Compliance);
         }
 
@@ -444,7 +415,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponsePreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, AccountInfoResponsePreferences accountInfoResponsePreferences, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -459,11 +429,46 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponsePreferences"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AccountInfoResponsePreferences accountInfoResponsePreferences, JsonSerializerOptions jsonSerializerOptions)
         {
             if (accountInfoResponsePreferences.DateFormatOption.IsSet && accountInfoResponsePreferences.DateFormat == null)
-                throw new ArgumentNullException(nameof(accountInfoResponsePreferences.DateFormat), "Property is required for class AccountInfoResponsePreferences.");
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DateFormat to non-nullable JSON property 'date_format'.");
+
+            if (accountInfoResponsePreferences.DaysUntilLinksExpireOption.IsSet && accountInfoResponsePreferences.DaysUntilLinksExpire == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DaysUntilLinksExpire to non-nullable JSON property 'days_until_links_expire'.");
+
+            if (accountInfoResponsePreferences.DisableApplyEverywhereOption.IsSet && accountInfoResponsePreferences.DisableApplyEverywhere == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DisableApplyEverywhere to non-nullable JSON property 'disable_apply_everywhere'.");
+
+            if (accountInfoResponsePreferences.DisableApplyEverywhereEffectiveOption.IsSet && accountInfoResponsePreferences.DisableApplyEverywhereEffective == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DisableApplyEverywhereEffective to non-nullable JSON property 'disable_apply_everywhere_effective'.");
+
+            if (accountInfoResponsePreferences.DisableDrawnSignaturesOption.IsSet && accountInfoResponsePreferences.DisableDrawnSignatures == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DisableDrawnSignatures to non-nullable JSON property 'disable_drawn_signatures'.");
+
+            if (accountInfoResponsePreferences.DisableTypedSignaturesOption.IsSet && accountInfoResponsePreferences.DisableTypedSignatures == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DisableTypedSignatures to non-nullable JSON property 'disable_typed_signatures'.");
+
+            if (accountInfoResponsePreferences.DisableUploadedSignaturesOption.IsSet && accountInfoResponsePreferences.DisableUploadedSignatures == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.DisableUploadedSignatures to non-nullable JSON property 'disable_uploaded_signatures'.");
+
+            if (accountInfoResponsePreferences.EnableRedirectOption.IsSet && accountInfoResponsePreferences.EnableRedirect == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.EnableRedirect to non-nullable JSON property 'enable_redirect'.");
+
+            if (accountInfoResponsePreferences.HideDocumentIdInAuditOption.IsSet && accountInfoResponsePreferences.HideDocumentIdInAudit == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.HideDocumentIdInAudit to non-nullable JSON property 'hide_document_id_in_audit'.");
+
+            if (accountInfoResponsePreferences.MuteBrandingOption.IsSet && accountInfoResponsePreferences.MuteBranding == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.MuteBranding to non-nullable JSON property 'mute_branding'.");
+
+            if (accountInfoResponsePreferences.SeparateAuditPdfOption.IsSet && accountInfoResponsePreferences.SeparateAuditPdf == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.SeparateAuditPdf to non-nullable JSON property 'separate_audit_pdf'.");
+
+            if (accountInfoResponsePreferences.SeparateCompletedFileOption.IsSet && accountInfoResponsePreferences.SeparateCompletedFile == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.SeparateCompletedFile to non-nullable JSON property 'separate_completed_file'.");
+
+            if (accountInfoResponsePreferences.EnableNom151ComplianceOption.IsSet && accountInfoResponsePreferences.EnableNom151Compliance == null)
+                throw new JsonException("Cannot write null property AccountInfoResponsePreferences.EnableNom151Compliance to non-nullable JSON property 'enable_nom151_compliance'.");
 
             if (accountInfoResponsePreferences.DateFormatOption.IsSet)
                 writer.WriteString("date_format", accountInfoResponsePreferences.DateFormat);

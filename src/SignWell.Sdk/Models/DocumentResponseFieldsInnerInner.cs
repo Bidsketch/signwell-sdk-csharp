@@ -48,6 +48,8 @@ namespace SignWell.Sdk.Models
         /// <param name="required">required</param>
         /// <param name="type">type</param>
         /// <param name="validation">validation</param>
+        /// <param name="validationRegex">Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.</param>
+        /// <param name="validationRegexErrorMessage">Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.</param>
         /// <param name="value">value</param>
         /// <param name="height">height</param>
         /// <param name="width">width</param>
@@ -58,7 +60,7 @@ namespace SignWell.Sdk.Models
         /// <param name="defaultOption">Default selected option</param>
         /// <param name="allowOther">Whether \&quot;Other\&quot; option is allowed</param>
         [JsonConstructor]
-        public DocumentResponseFieldsInnerInner(float x, float y, int page, Option<DocumentResponseFieldsInnerInnerRecipient?> recipient = default, Option<Guid?> apiId = default, Option<string?> name = default, Option<DateFormat?> dateFormat = default, Option<bool?> fixedWidth = default, Option<string?> formula = default, Option<string?> label = default, Option<bool?> lockSignDate = default, Option<bool?> required = default, Option<FieldType?> type = default, Option<TextValidation?> validation = default, Option<DocumentResponseFieldsInnerInnerValue?> value = default, Option<string?> height = default, Option<string?> width = default, Option<string?> recipientId = default, Option<Guid?> signingElementsGroupId = default, Option<string?> placeholderName = default, Option<List<DocumentResponseFieldsInnerInnerOptionsInner>?> options = default, Option<string?> defaultOption = default, Option<bool?> allowOther = default)
+        public DocumentResponseFieldsInnerInner(float x, float y, int page, Option<DocumentResponseFieldsInnerInnerRecipient?> recipient = default, Option<string?> apiId = default, Option<string?> name = default, Option<DateFormat?> dateFormat = default, Option<bool?> fixedWidth = default, Option<string?> formula = default, Option<string?> label = default, Option<bool?> lockSignDate = default, Option<bool?> required = default, Option<FieldType?> type = default, Option<TextValidation?> validation = default, Option<string?> validationRegex = default, Option<string?> validationRegexErrorMessage = default, Option<DocumentResponseFieldsInnerInnerValue?> value = default, Option<string?> height = default, Option<string?> width = default, Option<string?> recipientId = default, Option<Guid?> signingElementsGroupId = default, Option<string?> placeholderName = default, Option<List<DocumentResponseFieldsInnerInnerOptionsInner>?> options = default, Option<string?> defaultOption = default, Option<bool?> allowOther = default)
         {
             X = x;
             Y = y;
@@ -74,6 +76,8 @@ namespace SignWell.Sdk.Models
             RequiredOption = required;
             TypeOption = type;
             ValidationOption = validation;
+            ValidationRegexOption = validationRegex;
+            ValidationRegexErrorMessageOption = validationRegexErrorMessage;
             ValueOption = value;
             HeightOption = height;
             WidthOption = width;
@@ -163,13 +167,13 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<Guid?> ApiIdOption { get; private set; }
+        public Option<string?> ApiIdOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ApiId
         /// </summary>
         [JsonPropertyName("api_id")]
-        public Guid? ApiId { get { return this.ApiIdOption.Value; } set { this.ApiIdOption = new Option<Guid?>(value); } }
+        public string? ApiId { get { return this.ApiIdOption.Value; } set { this.ApiIdOption = new Option<string?>(value); } }
 
         /// <summary>
         /// Used to track the state of Name
@@ -248,6 +252,34 @@ namespace SignWell.Sdk.Models
         /// </summary>
         [JsonPropertyName("required")]
         public bool? Required { get { return this.RequiredOption.Value; } set { this.RequiredOption = new Option<bool?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ValidationRegex
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ValidationRegexOption { get; private set; }
+
+        /// <summary>
+        /// Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.
+        /// </summary>
+        /// <value>Text fields with custom validation only: the regex pattern used to validate field values. Required when validation is set to custom.</value>
+        [JsonPropertyName("validation_regex")]
+        public string? ValidationRegex { get { return this.ValidationRegexOption.Value; } set { this.ValidationRegexOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ValidationRegexErrorMessage
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ValidationRegexErrorMessageOption { get; private set; }
+
+        /// <summary>
+        /// Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.
+        /// </summary>
+        /// <value>Text fields with custom validation only: the error message shown to the recipient when their input doesn&#39;t match the regex pattern. Required when validation is set to custom.</value>
+        [JsonPropertyName("validation_regex_error_message")]
+        public string? ValidationRegexErrorMessage { get { return this.ValidationRegexErrorMessageOption.Value; } set { this.ValidationRegexErrorMessageOption = new Option<string?>(value); } }
 
         /// <summary>
         /// Used to track the state of Value
@@ -397,6 +429,8 @@ namespace SignWell.Sdk.Models
             sb.Append("  Required: ").Append(Required).Append("\n");
             sb.Append("  Type: ").Append(Type).Append("\n");
             sb.Append("  Validation: ").Append(Validation).Append("\n");
+            sb.Append("  ValidationRegex: ").Append(ValidationRegex).Append("\n");
+            sb.Append("  ValidationRegexErrorMessage: ").Append(ValidationRegexErrorMessage).Append("\n");
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("  Height: ").Append(Height).Append("\n");
             sb.Append("  Width: ").Append(Width).Append("\n");
@@ -425,8 +459,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseFieldsInnerInner" />
     /// </summary>
-    public class DocumentResponseFieldsInnerInnerJsonConverter : JsonConverter<DocumentResponseFieldsInnerInner>
+    public partial class DocumentResponseFieldsInnerInnerJsonConverter : JsonConverter<DocumentResponseFieldsInnerInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseFieldsInnerInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseFieldsInnerInner" />
         /// </summary>
@@ -448,7 +492,7 @@ namespace SignWell.Sdk.Models
             Option<float?> y = default;
             Option<int?> page = default;
             Option<DocumentResponseFieldsInnerInnerRecipient?> recipient = default;
-            Option<Guid?> apiId = default;
+            Option<string?> apiId = default;
             Option<string?> name = default;
             Option<DateFormat?> dateFormat = default;
             Option<bool?> fixedWidth = default;
@@ -458,6 +502,8 @@ namespace SignWell.Sdk.Models
             Option<bool?> required = default;
             Option<FieldType?> type = default;
             Option<TextValidation?> validation = default;
+            Option<string?> validationRegex = default;
+            Option<string?> validationRegexErrorMessage = default;
             Option<DocumentResponseFieldsInnerInnerValue?> value = default;
             Option<string?> height = default;
             Option<string?> width = default;
@@ -496,15 +542,13 @@ namespace SignWell.Sdk.Models
                             recipient = new Option<DocumentResponseFieldsInnerInnerRecipient?>(JsonSerializer.Deserialize<DocumentResponseFieldsInnerInnerRecipient>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "api_id":
-                            apiId = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
+                            apiId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         case "date_format":
-                            string? dateFormatRawValue = utf8JsonReader.GetString();
-                            if (dateFormatRawValue != null)
-                                dateFormat = new Option<DateFormat?>(DateFormatValueConverter.FromStringOrDefault(dateFormatRawValue));
+                            dateFormat = new Option<DateFormat?>(JsonSerializer.Deserialize<DateFormat?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "fixed_width":
                             fixedWidth = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
@@ -522,14 +566,16 @@ namespace SignWell.Sdk.Models
                             required = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<FieldType?>(FieldTypeValueConverter.FromStringOrDefault(typeRawValue));
+                            type = new Option<FieldType?>(JsonSerializer.Deserialize<FieldType?>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "validation":
-                            string? validationRawValue = utf8JsonReader.GetString();
-                            if (validationRawValue != null)
-                                validation = new Option<TextValidation?>(TextValidationValueConverter.FromStringOrDefault(validationRawValue));
+                            validation = new Option<TextValidation?>(JsonSerializer.Deserialize<TextValidation?>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "validation_regex":
+                            validationRegex = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "validation_regex_error_message":
+                            validationRegexErrorMessage = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "value":
                             value = new Option<DocumentResponseFieldsInnerInnerValue?>(JsonSerializer.Deserialize<DocumentResponseFieldsInnerInnerValue>(ref utf8JsonReader, jsonSerializerOptions));
@@ -565,75 +611,24 @@ namespace SignWell.Sdk.Models
             }
 
             if (!x.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseFieldsInnerInner.", nameof(x));
+                throw new JsonException("Property is required for class DocumentResponseFieldsInnerInner: x.");
 
             if (!y.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseFieldsInnerInner.", nameof(y));
+                throw new JsonException("Property is required for class DocumentResponseFieldsInnerInner: y.");
 
             if (!page.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseFieldsInnerInner.", nameof(page));
+                throw new JsonException("Property is required for class DocumentResponseFieldsInnerInner: page.");
 
             if (x.IsSet && x.Value == null)
-                throw new ArgumentNullException(nameof(x), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseFieldsInnerInner: x.");
 
             if (y.IsSet && y.Value == null)
-                throw new ArgumentNullException(nameof(y), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseFieldsInnerInner: y.");
 
             if (page.IsSet && page.Value == null)
-                throw new ArgumentNullException(nameof(page), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Property is not nullable for class DocumentResponseFieldsInnerInner: page.");
 
-            if (recipient.IsSet && recipient.Value == null)
-                throw new ArgumentNullException(nameof(recipient), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (apiId.IsSet && apiId.Value == null)
-                throw new ArgumentNullException(nameof(apiId), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (dateFormat.IsSet && dateFormat.Value == null)
-                throw new ArgumentNullException(nameof(dateFormat), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (fixedWidth.IsSet && fixedWidth.Value == null)
-                throw new ArgumentNullException(nameof(fixedWidth), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (formula.IsSet && formula.Value == null)
-                throw new ArgumentNullException(nameof(formula), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (label.IsSet && label.Value == null)
-                throw new ArgumentNullException(nameof(label), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (lockSignDate.IsSet && lockSignDate.Value == null)
-                throw new ArgumentNullException(nameof(lockSignDate), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (validation.IsSet && validation.Value == null)
-                throw new ArgumentNullException(nameof(validation), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (height.IsSet && height.Value == null)
-                throw new ArgumentNullException(nameof(height), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (width.IsSet && width.Value == null)
-                throw new ArgumentNullException(nameof(width), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (signingElementsGroupId.IsSet && signingElementsGroupId.Value == null)
-                throw new ArgumentNullException(nameof(signingElementsGroupId), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (placeholderName.IsSet && placeholderName.Value == null)
-                throw new ArgumentNullException(nameof(placeholderName), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (defaultOption.IsSet && defaultOption.Value == null)
-                throw new ArgumentNullException(nameof(defaultOption), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            if (allowOther.IsSet && allowOther.Value == null)
-                throw new ArgumentNullException(nameof(allowOther), "Property is not nullable for class DocumentResponseFieldsInnerInner.");
-
-            return new DocumentResponseFieldsInnerInner(x.Value!.Value!, y.Value!.Value!, page.Value!.Value!, recipient, apiId, name, dateFormat, fixedWidth, formula, label, lockSignDate, required, type, validation, value, height, width, recipientId, signingElementsGroupId, placeholderName, options, defaultOption, allowOther);
+            return new DocumentResponseFieldsInnerInner(x.Value!.Value!, y.Value!.Value!, page.Value!.Value!, recipient, apiId, name, dateFormat, fixedWidth, formula, label, lockSignDate, required, type, validation, validationRegex, validationRegexErrorMessage, value, height, width, recipientId, signingElementsGroupId, placeholderName, options, defaultOption, allowOther);
         }
 
         /// <summary>
@@ -642,7 +637,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponseFieldsInnerInner documentResponseFieldsInnerInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -657,32 +651,64 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseFieldsInnerInner documentResponseFieldsInnerInner, JsonSerializerOptions jsonSerializerOptions)
         {
             if (documentResponseFieldsInnerInner.RecipientOption.IsSet && documentResponseFieldsInnerInner.Recipient == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Recipient), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Recipient to non-nullable JSON property 'recipient'.");
+
+            if (documentResponseFieldsInnerInner.ApiIdOption.IsSet && documentResponseFieldsInnerInner.ApiId == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.ApiId to non-nullable JSON property 'api_id'.");
+
+            if (documentResponseFieldsInnerInner.DateFormatOption.IsSet && documentResponseFieldsInnerInner.DateFormat == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.DateFormat to non-nullable JSON property 'date_format'.");
+
+            if (documentResponseFieldsInnerInner.FixedWidthOption.IsSet && documentResponseFieldsInnerInner.FixedWidth == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.FixedWidth to non-nullable JSON property 'fixed_width'.");
 
             if (documentResponseFieldsInnerInner.FormulaOption.IsSet && documentResponseFieldsInnerInner.Formula == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Formula), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Formula to non-nullable JSON property 'formula'.");
 
             if (documentResponseFieldsInnerInner.LabelOption.IsSet && documentResponseFieldsInnerInner.Label == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Label), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Label to non-nullable JSON property 'label'.");
+
+            if (documentResponseFieldsInnerInner.LockSignDateOption.IsSet && documentResponseFieldsInnerInner.LockSignDate == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.LockSignDate to non-nullable JSON property 'lock_sign_date'.");
+
+            if (documentResponseFieldsInnerInner.RequiredOption.IsSet && documentResponseFieldsInnerInner.Required == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Required to non-nullable JSON property 'required'.");
+
+            if (documentResponseFieldsInnerInner.TypeOption.IsSet && documentResponseFieldsInnerInner.Type == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Type to non-nullable JSON property 'type'.");
+
+            if (documentResponseFieldsInnerInner.ValidationOption.IsSet && documentResponseFieldsInnerInner.Validation == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Validation to non-nullable JSON property 'validation'.");
+
+            if (documentResponseFieldsInnerInner.ValidationRegexOption.IsSet && documentResponseFieldsInnerInner.ValidationRegex == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.ValidationRegex to non-nullable JSON property 'validation_regex'.");
+
+            if (documentResponseFieldsInnerInner.ValidationRegexErrorMessageOption.IsSet && documentResponseFieldsInnerInner.ValidationRegexErrorMessage == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.ValidationRegexErrorMessage to non-nullable JSON property 'validation_regex_error_message'.");
 
             if (documentResponseFieldsInnerInner.HeightOption.IsSet && documentResponseFieldsInnerInner.Height == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Height), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Height to non-nullable JSON property 'height'.");
 
             if (documentResponseFieldsInnerInner.WidthOption.IsSet && documentResponseFieldsInnerInner.Width == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Width), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Width to non-nullable JSON property 'width'.");
+
+            if (documentResponseFieldsInnerInner.SigningElementsGroupIdOption.IsSet && documentResponseFieldsInnerInner.SigningElementsGroupId == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.SigningElementsGroupId to non-nullable JSON property 'signing_elements_group_id'.");
 
             if (documentResponseFieldsInnerInner.PlaceholderNameOption.IsSet && documentResponseFieldsInnerInner.PlaceholderName == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.PlaceholderName), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.PlaceholderName to non-nullable JSON property 'placeholder_name'.");
 
             if (documentResponseFieldsInnerInner.OptionsOption.IsSet && documentResponseFieldsInnerInner.Options == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.Options), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.Options to non-nullable JSON property 'options'.");
 
             if (documentResponseFieldsInnerInner.DefaultOptionOption.IsSet && documentResponseFieldsInnerInner.DefaultOption == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInner.DefaultOption), "Property is required for class DocumentResponseFieldsInnerInner.");
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.DefaultOption to non-nullable JSON property 'default_option'.");
+
+            if (documentResponseFieldsInnerInner.AllowOtherOption.IsSet && documentResponseFieldsInnerInner.AllowOther == null)
+                throw new JsonException("Cannot write null property DocumentResponseFieldsInnerInner.AllowOther to non-nullable JSON property 'allow_other'.");
 
             writer.WriteNumber("x", documentResponseFieldsInnerInner.X);
 
@@ -696,7 +722,7 @@ namespace SignWell.Sdk.Models
                 JsonSerializer.Serialize(writer, documentResponseFieldsInnerInner.Recipient, jsonSerializerOptions);
             }
             if (documentResponseFieldsInnerInner.ApiIdOption.IsSet)
-                writer.WriteString("api_id", documentResponseFieldsInnerInner.ApiIdOption.Value!.Value);
+                writer.WriteString("api_id", documentResponseFieldsInnerInner.ApiId);
 
             if (documentResponseFieldsInnerInner.NameOption.IsSet)
                 if (documentResponseFieldsInnerInner.NameOption.Value != null)
@@ -734,11 +760,23 @@ namespace SignWell.Sdk.Models
                 var validationRawValue = TextValidationValueConverter.ToJsonValue(documentResponseFieldsInnerInner.Validation!.Value);
                 writer.WriteString("validation", validationRawValue);
             }
+            if (documentResponseFieldsInnerInner.ValidationRegexOption.IsSet)
+                writer.WriteString("validation_regex", documentResponseFieldsInnerInner.ValidationRegex);
+
+            if (documentResponseFieldsInnerInner.ValidationRegexErrorMessageOption.IsSet)
+                writer.WriteString("validation_regex_error_message", documentResponseFieldsInnerInner.ValidationRegexErrorMessage);
+
             if (documentResponseFieldsInnerInner.ValueOption.IsSet)
                 if (documentResponseFieldsInnerInner.ValueOption.Value != null)
                 {
                     writer.WritePropertyName("value");
-                    JsonSerializer.Serialize(writer, documentResponseFieldsInnerInner.Value, jsonSerializerOptions);
+                    if (documentResponseFieldsInnerInner.Type == FieldType.Checkbox)
+
+                        writer.WriteStringValue(SignWell.Sdk.Embedded.SignWellValues.NormalizeCheckbox(documentResponseFieldsInnerInner.Value!));
+
+                    else
+
+                        JsonSerializer.Serialize(writer, documentResponseFieldsInnerInner.Value, jsonSerializerOptions);
                 }
                 else
                     writer.WriteNull("value");

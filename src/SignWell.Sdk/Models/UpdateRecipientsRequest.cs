@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="UpdateRecipientsRequest" />
     /// </summary>
-    public class UpdateRecipientsRequestJsonConverter : JsonConverter<UpdateRecipientsRequest>
+    public partial class UpdateRecipientsRequestJsonConverter : JsonConverter<UpdateRecipientsRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateRecipientsRequestJsonConverter" /> class.
+        /// </summary>
+        public UpdateRecipientsRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="UpdateRecipientsRequest" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!recipients.IsSet)
-                throw new ArgumentException("Property is required for class UpdateRecipientsRequest.", nameof(recipients));
+                throw new JsonException("Property is required for class UpdateRecipientsRequest: recipients.");
 
             if (recipients.IsSet && recipients.Value == null)
-                throw new ArgumentNullException(nameof(recipients), "Property is not nullable for class UpdateRecipientsRequest.");
+                throw new JsonException("Property is not nullable for class UpdateRecipientsRequest: recipients.");
 
             return new UpdateRecipientsRequest(recipients.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateRecipientsRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, UpdateRecipientsRequest updateRecipientsRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateRecipientsRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, UpdateRecipientsRequest updateRecipientsRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (updateRecipientsRequest.Recipients == null)
-                throw new ArgumentNullException(nameof(updateRecipientsRequest.Recipients), "Property is required for class UpdateRecipientsRequest.");
-
             writer.WritePropertyName("recipients");
             JsonSerializer.Serialize(writer, updateRecipientsRequest.Recipients, jsonSerializerOptions);
         }

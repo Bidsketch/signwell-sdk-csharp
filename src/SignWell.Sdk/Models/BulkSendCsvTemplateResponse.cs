@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="BulkSendCsvTemplateResponse" />
     /// </summary>
-    public class BulkSendCsvTemplateResponseJsonConverter : JsonConverter<BulkSendCsvTemplateResponse>
+    public partial class BulkSendCsvTemplateResponseJsonConverter : JsonConverter<BulkSendCsvTemplateResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BulkSendCsvTemplateResponseJsonConverter" /> class.
+        /// </summary>
+        public BulkSendCsvTemplateResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="BulkSendCsvTemplateResponse" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!data.IsSet)
-                throw new ArgumentException("Property is required for class BulkSendCsvTemplateResponse.", nameof(data));
+                throw new JsonException("Property is required for class BulkSendCsvTemplateResponse: data.");
 
             if (data.IsSet && data.Value == null)
-                throw new ArgumentNullException(nameof(data), "Property is not nullable for class BulkSendCsvTemplateResponse.");
+                throw new JsonException("Property is not nullable for class BulkSendCsvTemplateResponse: data.");
 
             return new BulkSendCsvTemplateResponse(data.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendCsvTemplateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, BulkSendCsvTemplateResponse bulkSendCsvTemplateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="bulkSendCsvTemplateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, BulkSendCsvTemplateResponse bulkSendCsvTemplateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (bulkSendCsvTemplateResponse.Data == null)
-                throw new ArgumentNullException(nameof(bulkSendCsvTemplateResponse.Data), "Property is required for class BulkSendCsvTemplateResponse.");
-
             writer.WritePropertyName("data");
             JsonSerializer.Serialize(writer, bulkSendCsvTemplateResponse.Data, jsonSerializerOptions);
         }

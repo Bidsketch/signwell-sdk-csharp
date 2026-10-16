@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="CompletedPdfResponse" /> class.
         /// </summary>
         /// <param name="completedPdfUrlResponse"></param>
-        public CompletedPdfResponse(CompletedPdfUrlResponse completedPdfUrlResponse)
+        internal CompletedPdfResponse(CompletedPdfUrlResponse completedPdfUrlResponse)
         {
             CompletedPdfUrlResponse = completedPdfUrlResponse;
             OnCreated();
@@ -45,7 +45,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="CompletedPdfResponse" /> class.
         /// </summary>
         /// <param name="systemIOStream"></param>
-        public CompletedPdfResponse(System.IO.Stream systemIOStream)
+        internal CompletedPdfResponse(System.IO.Stream systemIOStream)
         {
             SystemIOStream = systemIOStream;
             OnCreated();
@@ -97,8 +97,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CompletedPdfResponse" />
     /// </summary>
-    public class CompletedPdfResponseJsonConverter : JsonConverter<CompletedPdfResponse>
+    public partial class CompletedPdfResponseJsonConverter : JsonConverter<CompletedPdfResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompletedPdfResponseJsonConverter" /> class.
+        /// </summary>
+        public CompletedPdfResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CompletedPdfResponse" />
         /// </summary>
@@ -155,7 +165,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="completedPdfResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CompletedPdfResponse completedPdfResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -170,7 +179,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="completedPdfResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CompletedPdfResponse completedPdfResponse, JsonSerializerOptions jsonSerializerOptions)
         {
 

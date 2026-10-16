@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="string"></param>
-        internal DocumentResponseFieldsInnerInnerValue(string @string)
+        public DocumentResponseFieldsInnerInnerValue(string @string)
         {
             String = @string;
             OnCreated();
@@ -45,7 +45,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="bool"></param>
-        internal DocumentResponseFieldsInnerInnerValue(bool @bool)
+        public DocumentResponseFieldsInnerInnerValue(bool @bool)
         {
             Bool = @bool;
             OnCreated();
@@ -55,7 +55,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerValue" /> class.
         /// </summary>
         /// <param name="decimal"></param>
-        internal DocumentResponseFieldsInnerInnerValue(decimal @decimal)
+        public DocumentResponseFieldsInnerInnerValue(decimal @decimal)
         {
             Decimal = @decimal;
             OnCreated();
@@ -111,8 +111,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseFieldsInnerInnerValue" />
     /// </summary>
-    public class DocumentResponseFieldsInnerInnerValueJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerValue>
+    public partial class DocumentResponseFieldsInnerInnerValueJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerValue>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerValueJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseFieldsInnerInnerValueJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseFieldsInnerInnerValue" />
         /// </summary>
@@ -121,96 +131,41 @@ namespace SignWell.Sdk.Models
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override DocumentResponseFieldsInnerInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
+public override DocumentResponseFieldsInnerInnerValue Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (utf8JsonReader.TokenType == JsonTokenType.String)
+        return new DocumentResponseFieldsInnerInnerValue(utf8JsonReader.GetString()!);
+    if (utf8JsonReader.TokenType == JsonTokenType.True || utf8JsonReader.TokenType == JsonTokenType.False)
+        return new DocumentResponseFieldsInnerInnerValue(utf8JsonReader.GetBoolean());
+    if (utf8JsonReader.TokenType == JsonTokenType.Number && utf8JsonReader.TryGetDecimal(out var number))
+        return new DocumentResponseFieldsInnerInnerValue(number);
+    throw new JsonException();
+}
 
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            string? varString = default;
-            bool? varBool = default;
-            decimal? varDecimal = default;
-
-            Utf8JsonReader utf8JsonReaderOneOf = utf8JsonReader;
-            while (utf8JsonReaderOneOf.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReaderOneOf.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReaderOneOf.CurrentDepth)
-                    break;
-
-                if (utf8JsonReaderOneOf.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReaderOneOf.CurrentDepth - 1)
-                {
-                    Utf8JsonReader utf8JsonReaderString = utf8JsonReader;
-                    ClientUtils.TryDeserialize<string?>(ref utf8JsonReaderString, jsonSerializerOptions, out varString);
-
-                    Utf8JsonReader utf8JsonReaderBool = utf8JsonReader;
-                    ClientUtils.TryDeserialize<bool?>(ref utf8JsonReaderBool, jsonSerializerOptions, out varBool);
-
-                    Utf8JsonReader utf8JsonReaderDecimal = utf8JsonReader;
-                    ClientUtils.TryDeserialize<decimal?>(ref utf8JsonReaderDecimal, jsonSerializerOptions, out varDecimal);
-                }
-            }
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (varString != null)
-                return new DocumentResponseFieldsInnerInnerValue(varString);
-
-            if (varBool != null)
-                return new DocumentResponseFieldsInnerInnerValue(varBool.Value);
-
-            if (varDecimal != null)
-                return new DocumentResponseFieldsInnerInnerValue(varDecimal.Value);
-
-            throw new JsonException();
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="DocumentResponseFieldsInnerInnerValue" />
+/// <summary>
+/// Serializes a <see cref="DocumentResponseFieldsInnerInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerValue documentResponseFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
+public override void Write(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerValue documentResponseFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
+{
+    if (documentResponseFieldsInnerInnerValue.String is not null)
+        writer.WriteStringValue(documentResponseFieldsInnerInnerValue.String);
+    else if (documentResponseFieldsInnerInnerValue.Bool.HasValue)
+        writer.WriteBooleanValue(documentResponseFieldsInnerInnerValue.Bool.Value);
+    else if (documentResponseFieldsInnerInnerValue.Decimal.HasValue)
+        writer.WriteNumberValue(documentResponseFieldsInnerInnerValue.Decimal.Value);
+    else
+        writer.WriteNullValue();
+}
 
-            WriteProperties(writer, documentResponseFieldsInnerInnerValue, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="DocumentResponseFieldsInnerInnerValue" />
+/// <summary>
+/// Serializes the properties of <see cref="DocumentResponseFieldsInnerInnerValue" />
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerValue"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerValue documentResponseFieldsInnerInnerValue, JsonSerializerOptions jsonSerializerOptions)
         {
 

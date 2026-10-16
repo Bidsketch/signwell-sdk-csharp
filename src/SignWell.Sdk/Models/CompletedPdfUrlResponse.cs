@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="CompletedPdfUrlResponse" />
     /// </summary>
-    public class CompletedPdfUrlResponseJsonConverter : JsonConverter<CompletedPdfUrlResponse>
+    public partial class CompletedPdfUrlResponseJsonConverter : JsonConverter<CompletedPdfUrlResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompletedPdfUrlResponseJsonConverter" /> class.
+        /// </summary>
+        public CompletedPdfUrlResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="CompletedPdfUrlResponse" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!fileUrl.IsSet)
-                throw new ArgumentException("Property is required for class CompletedPdfUrlResponse.", nameof(fileUrl));
+                throw new JsonException("Property is required for class CompletedPdfUrlResponse: file_url.");
 
             if (fileUrl.IsSet && fileUrl.Value == null)
-                throw new ArgumentNullException(nameof(fileUrl), "Property is not nullable for class CompletedPdfUrlResponse.");
+                throw new JsonException("Property is not nullable for class CompletedPdfUrlResponse: file_url.");
 
             return new CompletedPdfUrlResponse(fileUrl.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="completedPdfUrlResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, CompletedPdfUrlResponse completedPdfUrlResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="completedPdfUrlResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CompletedPdfUrlResponse completedPdfUrlResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (completedPdfUrlResponse.FileUrl == null)
-                throw new ArgumentNullException(nameof(completedPdfUrlResponse.FileUrl), "Property is required for class CompletedPdfUrlResponse.");
-
             writer.WriteString("file_url", completedPdfUrlResponse.FileUrl);
         }
     }

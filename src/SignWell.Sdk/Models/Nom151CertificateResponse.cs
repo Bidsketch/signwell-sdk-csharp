@@ -84,8 +84,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="Nom151CertificateResponse" />
     /// </summary>
-    public class Nom151CertificateResponseJsonConverter : JsonConverter<Nom151CertificateResponse>
+    public partial class Nom151CertificateResponseJsonConverter : JsonConverter<Nom151CertificateResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Nom151CertificateResponseJsonConverter" /> class.
+        /// </summary>
+        public Nom151CertificateResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="Nom151CertificateResponse" />
         /// </summary>
@@ -130,10 +140,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!nom151.IsSet)
-                throw new ArgumentException("Property is required for class Nom151CertificateResponse.", nameof(nom151));
+                throw new JsonException("Property is required for class Nom151CertificateResponse: nom151.");
 
             if (nom151.IsSet && nom151.Value == null)
-                throw new ArgumentNullException(nameof(nom151), "Property is not nullable for class Nom151CertificateResponse.");
+                throw new JsonException("Property is not nullable for class Nom151CertificateResponse: nom151.");
 
             return new Nom151CertificateResponse(nom151.Value!);
         }
@@ -144,7 +154,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151CertificateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, Nom151CertificateResponse nom151CertificateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -159,12 +168,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="nom151CertificateResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, Nom151CertificateResponse nom151CertificateResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (nom151CertificateResponse.Nom151 == null)
-                throw new ArgumentNullException(nameof(nom151CertificateResponse.Nom151), "Property is required for class Nom151CertificateResponse.");
-
             writer.WritePropertyName("nom151");
             JsonSerializer.Serialize(writer, nom151CertificateResponse.Nom151, jsonSerializerOptions);
         }

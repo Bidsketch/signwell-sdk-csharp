@@ -143,8 +143,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentListResponse" />
     /// </summary>
-    public class DocumentListResponseJsonConverter : JsonConverter<DocumentListResponse>
+    public partial class DocumentListResponseJsonConverter : JsonConverter<DocumentListResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentListResponseJsonConverter" /> class.
+        /// </summary>
+        public DocumentListResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentListResponse" />
         /// </summary>
@@ -209,28 +219,28 @@ namespace SignWell.Sdk.Models
             }
 
             if (!documents.IsSet)
-                throw new ArgumentException("Property is required for class DocumentListResponse.", nameof(documents));
+                throw new JsonException("Property is required for class DocumentListResponse: documents.");
 
             if (!currentPage.IsSet)
-                throw new ArgumentException("Property is required for class DocumentListResponse.", nameof(currentPage));
+                throw new JsonException("Property is required for class DocumentListResponse: current_page.");
 
             if (!totalCount.IsSet)
-                throw new ArgumentException("Property is required for class DocumentListResponse.", nameof(totalCount));
+                throw new JsonException("Property is required for class DocumentListResponse: total_count.");
 
             if (!totalPages.IsSet)
-                throw new ArgumentException("Property is required for class DocumentListResponse.", nameof(totalPages));
+                throw new JsonException("Property is required for class DocumentListResponse: total_pages.");
 
             if (documents.IsSet && documents.Value == null)
-                throw new ArgumentNullException(nameof(documents), "Property is not nullable for class DocumentListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentListResponse: documents.");
 
             if (currentPage.IsSet && currentPage.Value == null)
-                throw new ArgumentNullException(nameof(currentPage), "Property is not nullable for class DocumentListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentListResponse: current_page.");
 
             if (totalCount.IsSet && totalCount.Value == null)
-                throw new ArgumentNullException(nameof(totalCount), "Property is not nullable for class DocumentListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentListResponse: total_count.");
 
             if (totalPages.IsSet && totalPages.Value == null)
-                throw new ArgumentNullException(nameof(totalPages), "Property is not nullable for class DocumentListResponse.");
+                throw new JsonException("Property is not nullable for class DocumentListResponse: total_pages.");
 
             return new DocumentListResponse(documents.Value!, currentPage.Value!.Value!, totalCount.Value!.Value!, totalPages.Value!.Value!, nextPage, previousPage);
         }
@@ -241,7 +251,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentListResponse documentListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -256,12 +265,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentListResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentListResponse documentListResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentListResponse.Documents == null)
-                throw new ArgumentNullException(nameof(documentListResponse.Documents), "Property is required for class DocumentListResponse.");
-
             writer.WritePropertyName("documents");
             JsonSerializer.Serialize(writer, documentListResponse.Documents, jsonSerializerOptions);
             writer.WriteNumber("current_page", documentListResponse.CurrentPage);

@@ -59,7 +59,7 @@ namespace SignWell.Sdk.Test.Raw
         {
             var response = await _instance.GetMeAsync();
             var model = response.Ok();
-            Assert.IsType<MeResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.MeResponse>(model);
         }
     }
 }

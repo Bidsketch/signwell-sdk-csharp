@@ -27,9 +27,9 @@ using SignWell.Sdk.Client;
 namespace SignWell.Sdk.Models
 {
     /// <summary>
-    /// Format of the file to be downloaded. Supported formats are &#39;pdf&#39; and &#39;zip&#39;.
+    /// Format of the file to be downloaded. Supported formats are &#39;pdf&#39; and &#39;zip&#39;. &#x60;zip&#x60; is unavailable on a 21 CFR Part 11 document, whose completed PDF, E-Signature page and audit page stay together as one record.
     /// </summary>
-    /// <value>Format of the file to be downloaded. Supported formats are &#39;pdf&#39; and &#39;zip&#39;.</value>
+    /// <value>Format of the file to be downloaded. Supported formats are &#39;pdf&#39; and &#39;zip&#39;. &#x60;zip&#x60; is unavailable on a 21 CFR Part 11 document, whose completed PDF, E-Signature page and audit page stay together as one record.</value>
     public enum FileFormat
     {
         /// <summary>
@@ -69,7 +69,7 @@ namespace SignWell.Sdk.Models
             if (value.Equals("unknown_default_open_api"))
                 return FileFormat.UnknownDefaultOpenApi;
 
-            throw new NotImplementedException($"Could not convert value to type FileFormat: '{value}'");
+            return FileFormat.UnknownDefaultOpenApi;
         }
 
         /// <summary>
@@ -165,6 +165,9 @@ namespace SignWell.Sdk.Models
         /// <returns></returns>
         public override FileFormat? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+
             string? rawValue = reader.GetString();
 
             FileFormat? result = rawValue == null
@@ -185,7 +188,10 @@ namespace SignWell.Sdk.Models
         /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, FileFormat? fileFormat, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(fileFormat.HasValue ? FileFormatValueConverter.ToJsonValue(fileFormat.Value).ToString() : "null");
+            if (fileFormat.HasValue)
+                writer.WriteStringValue(FileFormatValueConverter.ToJsonValue(fileFormat.Value).ToString());
+            else
+                writer.WriteNullValue();
         }
     }
 }

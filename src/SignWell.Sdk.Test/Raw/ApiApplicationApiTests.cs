@@ -70,7 +70,7 @@ namespace SignWell.Sdk.Test.Raw
             Guid id = default!;
             var response = await _instance.GetApiApplicationAsync(id);
             var model = response.Ok();
-            Assert.IsType<ApiApplicationResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.ApiApplicationResponse>(model);
         }
     }
 }

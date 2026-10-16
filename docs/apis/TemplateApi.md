@@ -5,10 +5,10 @@ All URIs are relative to *https://www.signwell.com*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**CreateTemplate**](TemplateApi.md#createtemplate) | **POST** /api/v1/document_templates | Create Template |
-| [**DeleteTemplate**](TemplateApi.md#deletetemplate) | **DELETE** /api/v1/document_templates/{id} | Delete Template |
-| [**GetTemplate**](TemplateApi.md#gettemplate) | **GET** /api/v1/document_templates/{id} | Get Template |
+| [**DeleteTemplate**](TemplateApi.md#deletetemplate) | **DELETE** /api/v1/document_templates/{id}/ | Delete Template |
+| [**GetTemplate**](TemplateApi.md#gettemplate) | **GET** /api/v1/document_templates/{id}/ | Get Template |
 | [**ListTemplates**](TemplateApi.md#listtemplates) | **GET** /api/v1/document_templates | List Templates |
-| [**UpdateTemplate**](TemplateApi.md#updatetemplate) | **PUT** /api/v1/document_templates/{id} | Update Template |
+| [**UpdateTemplate**](TemplateApi.md#updatetemplate) | **PUT** /api/v1/document_templates/{id}/ | Update Template |
 
 <a id="createtemplate"></a>
 # **CreateTemplate**

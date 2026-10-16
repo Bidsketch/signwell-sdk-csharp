@@ -4,7 +4,7 @@ All URIs are relative to *https://www.signwell.com*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
-| [**GetNom151Certificate**](RegionalApi.md#getnom151certificate) | **GET** /api/v1/documents/{id}/nom151_certificate | MX – NOM-151 Certificate |
+| [**GetNom151Certificate**](RegionalApi.md#getnom151certificate) | **GET** /api/v1/documents/{id}/nom151_certificate/ | MX – NOM-151 Certificate |
 
 <a id="getnom151certificate"></a>
 # **GetNom151Certificate**

@@ -208,6 +208,15 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
+        /// Test the property 'ConditionalRules'
+        /// </summary>
+        [Fact]
+        public void ConditionalRulesTest()
+        {
+            // TODO unit test for the property 'ConditionalRules'
+        }
+
+        /// <summary>
         /// Test the property 'Metadata'
         /// </summary>
         [Fact]

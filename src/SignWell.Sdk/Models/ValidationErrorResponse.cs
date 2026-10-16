@@ -85,8 +85,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ValidationErrorResponse" />
     /// </summary>
-    public class ValidationErrorResponseJsonConverter : JsonConverter<ValidationErrorResponse>
+    public partial class ValidationErrorResponseJsonConverter : JsonConverter<ValidationErrorResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidationErrorResponseJsonConverter" /> class.
+        /// </summary>
+        public ValidationErrorResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ValidationErrorResponse" />
         /// </summary>
@@ -131,10 +141,10 @@ namespace SignWell.Sdk.Models
             }
 
             if (!errors.IsSet)
-                throw new ArgumentException("Property is required for class ValidationErrorResponse.", nameof(errors));
+                throw new JsonException("Property is required for class ValidationErrorResponse: errors.");
 
             if (errors.IsSet && errors.Value == null)
-                throw new ArgumentNullException(nameof(errors), "Property is not nullable for class ValidationErrorResponse.");
+                throw new JsonException("Property is not nullable for class ValidationErrorResponse: errors.");
 
             return new ValidationErrorResponse(errors.Value!);
         }
@@ -145,7 +155,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="validationErrorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ValidationErrorResponse validationErrorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -160,12 +169,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="validationErrorResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ValidationErrorResponse validationErrorResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (validationErrorResponse.Errors == null)
-                throw new ArgumentNullException(nameof(validationErrorResponse.Errors), "Property is required for class ValidationErrorResponse.");
-
             writer.WritePropertyName("errors");
             JsonSerializer.Serialize(writer, validationErrorResponse.Errors, jsonSerializerOptions);
         }

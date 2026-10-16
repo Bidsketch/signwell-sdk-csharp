@@ -109,8 +109,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="LabelInfo" />
     /// </summary>
-    public class LabelInfoJsonConverter : JsonConverter<LabelInfo>
+    public partial class LabelInfoJsonConverter : JsonConverter<LabelInfo>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LabelInfoJsonConverter" /> class.
+        /// </summary>
+        public LabelInfoJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="LabelInfo" />
         /// </summary>
@@ -158,12 +168,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class LabelInfo.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class LabelInfo.");
-
             return new LabelInfo(id, name);
         }
 
@@ -173,7 +177,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, LabelInfo labelInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -188,11 +191,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="labelInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, LabelInfo labelInfo, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (labelInfo.IdOption.IsSet && labelInfo.Id == null)
+                throw new JsonException("Cannot write null property LabelInfo.Id to non-nullable JSON property 'id'.");
+
             if (labelInfo.NameOption.IsSet && labelInfo.Name == null)
-                throw new ArgumentNullException(nameof(labelInfo.Name), "Property is required for class LabelInfo.");
+                throw new JsonException("Cannot write null property LabelInfo.Name to non-nullable JSON property 'name'.");
 
             if (labelInfo.IdOption.IsSet)
                 writer.WriteString("id", labelInfo.IdOption.Value!.Value);

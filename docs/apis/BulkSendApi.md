@@ -5,11 +5,11 @@ All URIs are relative to *https://www.signwell.com*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**CreateBulkSend**](BulkSendApi.md#createbulksend) | **POST** /api/v1/bulk_sends | Create Bulk Send |
-| [**GetBulkSend**](BulkSendApi.md#getbulksend) | **GET** /api/v1/bulk_sends/{id} | Get Bulk Send |
-| [**GetBulkSendCsvTemplate**](BulkSendApi.md#getbulksendcsvtemplate) | **GET** /api/v1/bulk_sends/csv_template | Get Bulk Send CSV Template |
-| [**GetBulkSendDocuments**](BulkSendApi.md#getbulksenddocuments) | **GET** /api/v1/bulk_sends/{id}/documents | Get Bulk Send Documents |
+| [**GetBulkSend**](BulkSendApi.md#getbulksend) | **GET** /api/v1/bulk_sends/{id}/ | Get Bulk Send |
+| [**GetBulkSendCsvTemplate**](BulkSendApi.md#getbulksendcsvtemplate) | **GET** /api/v1/bulk_sends/csv_template/ | Get Bulk Send CSV Template |
+| [**GetBulkSendDocuments**](BulkSendApi.md#getbulksenddocuments) | **GET** /api/v1/bulk_sends/{id}/documents/ | Get Bulk Send Documents |
 | [**ListBulkSends**](BulkSendApi.md#listbulksends) | **GET** /api/v1/bulk_sends | List Bulk Sendings |
-| [**ValidateBulkSendCsv**](BulkSendApi.md#validatebulksendcsv) | **POST** /api/v1/bulk_sends/validate_csv | Validate Bulk Send CSV |
+| [**ValidateBulkSendCsv**](BulkSendApi.md#validatebulksendcsv) | **POST** /api/v1/bulk_sends/validate_csv/ | Validate Bulk Send CSV |
 
 <a id="createbulksend"></a>
 # **CreateBulkSend**
@@ -44,8 +44,8 @@ Creates a bulk send, and it validates the CSV file before creating the bulk send
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | successful |  -  |
-| **422** | unprocessable entity |  -  |
 | **401** | unauthorized |  -  |
+| **422** | unprocessable entity |  -  |
 | **429** | rate limit exceeded |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -244,8 +244,8 @@ Validates a Bulk Send CSV file before creating the Bulk Send. It will check the 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | successful |  -  |
-| **422** | unprocessable entity |  -  |
 | **401** | unauthorized |  -  |
+| **422** | unprocessable entity |  -  |
 | **429** | rate limit exceeded |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)

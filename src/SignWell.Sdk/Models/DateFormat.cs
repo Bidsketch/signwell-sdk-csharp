@@ -93,7 +93,7 @@ namespace SignWell.Sdk.Models
             if (value.Equals("unknown_default_open_api"))
                 return DateFormat.UnknownDefaultOpenApi;
 
-            throw new NotImplementedException($"Could not convert value to type DateFormat: '{value}'");
+            return DateFormat.UnknownDefaultOpenApi;
         }
 
         /// <summary>
@@ -207,6 +207,9 @@ namespace SignWell.Sdk.Models
         /// <returns></returns>
         public override DateFormat? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+
             string? rawValue = reader.GetString();
 
             DateFormat? result = rawValue == null
@@ -227,7 +230,10 @@ namespace SignWell.Sdk.Models
         /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, DateFormat? dateFormat, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(dateFormat.HasValue ? DateFormatValueConverter.ToJsonValue(dateFormat.Value).ToString() : "null");
+            if (dateFormat.HasValue)
+                writer.WriteStringValue(DateFormatValueConverter.ToJsonValue(dateFormat.Value).ToString());
+            else
+                writer.WriteNullValue();
         }
     }
 }

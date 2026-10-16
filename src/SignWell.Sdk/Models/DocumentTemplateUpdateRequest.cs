@@ -35,8 +35,8 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="DocumentTemplateUpdateRequest" /> class.
         /// </summary>
         /// <param name="name">The name of the template.</param>
-        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</param>
-        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</param>
+        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
+        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
         /// <param name="draft">Whether the template can still be updated before it is ready for usage. If set to &#x60;false&#x60; the template is marked as &#x60;Available&#x60; and it will be ready for use. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="expiresIn">Number of days before the signature request expires. Defaults to the account expiration setting or template expiration (if the document is created from a template).</param>
         /// <param name="reminders">Whether to send signing reminders to recipients. Reminders are sent on day 3, day 6, and day 10 if set to &#x60;true&#x60;. Defaults to &#x60;true&#x60;. (default to true)</param>
@@ -44,13 +44,14 @@ namespace SignWell.Sdk.Models
         /// <param name="apiApplicationId">Unique identifier for API Application settings to use. API Applications are optional and mainly used when isolating OAuth apps or for more control over embedded API settings</param>
         /// <param name="redirectUrl">A URL that recipients are redirected to after successfully signing a document.</param>
         /// <param name="allowDecline">Whether to allow recipients the option to decline signing a document. If multiple signers are involved in a document, any single recipient can cancel the entire document signing process by declining to sign. (default to true)</param>
-        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. (default to true)</param>
+        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422. (default to true)</param>
         /// <param name="declineRedirectUrl">A URL that recipients are redirected to if the document is declined.</param>
+        /// <param name="conditionalRules">Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</param>
         /// <param name="metadata">Optional key-value data that can be associated with the document. If set, will be available every time the document data is returned.</param>
         /// <param name="labels">Labels can be used to organize documents in a way that can make it easy to find using the document search in SignWell. A document can have multiple labels. Updating labels on a document will replace any existing labels for that document.</param>
         /// <param name="checkboxGroups">Checkbox fields that are placed on a document can be grouped with selection requirements. At least 2 checkbox fields in an array of fields must be assigned to the same recipient.</param>
         [JsonConstructor]
-        public DocumentTemplateUpdateRequest(Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<bool?> draft = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<Dictionary<string, string>?> metadata = default, Option<List<LabelRequest>?> labels = default, Option<List<TemplateCheckboxGroupsInner>?> checkboxGroups = default)
+        public DocumentTemplateUpdateRequest(Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<bool?> draft = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<List<ConditionalRuleRequest>?> conditionalRules = default, Option<Dictionary<string, string>?> metadata = default, Option<List<LabelRequest>?> labels = default, Option<List<TemplateCheckboxGroupsInner>?> checkboxGroups = default)
         {
             NameOption = name;
             SubjectOption = subject;
@@ -64,6 +65,7 @@ namespace SignWell.Sdk.Models
             AllowDeclineOption = allowDecline;
             AllowReassignOption = allowReassign;
             DeclineRedirectUrlOption = declineRedirectUrl;
+            ConditionalRulesOption = conditionalRules;
             MetadataOption = metadata;
             LabelsOption = labels;
             CheckboxGroupsOption = checkboxGroups;
@@ -94,9 +96,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> SubjectOption { get; private set; }
 
         /// <summary>
-        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).
+        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</value>
+        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("subject")]
         public string? Subject { get { return this.SubjectOption.Value; } set { this.SubjectOption = new Option<string?>(value); } }
 
@@ -108,9 +110,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> MessageOption { get; private set; }
 
         /// <summary>
-        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).
+        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</value>
+        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("message")]
         public string? Message { get { return this.MessageOption.Value; } set { this.MessageOption = new Option<string?>(value); } }
 
@@ -220,9 +222,9 @@ namespace SignWell.Sdk.Models
         public Option<bool?> AllowReassignOption { get; private set; }
 
         /// <summary>
-        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.
+        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.
         /// </summary>
-        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.</value>
+        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.</value>
         [JsonPropertyName("allow_reassign")]
         public bool? AllowReassign { get { return this.AllowReassignOption.Value; } set { this.AllowReassignOption = new Option<bool?>(value); } }
 
@@ -239,6 +241,20 @@ namespace SignWell.Sdk.Models
         /// <value>A URL that recipients are redirected to if the document is declined.</value>
         [JsonPropertyName("decline_redirect_url")]
         public string? DeclineRedirectUrl { get { return this.DeclineRedirectUrlOption.Value; } set { this.DeclineRedirectUrlOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ConditionalRules
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalRuleRequest>?> ConditionalRulesOption { get; private set; }
+
+        /// <summary>
+        /// Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.
+        /// </summary>
+        /// <value>Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</value>
+        [JsonPropertyName("conditional_rules")]
+        public List<ConditionalRuleRequest>? ConditionalRules { get { return this.ConditionalRulesOption.Value; } set { this.ConditionalRulesOption = new Option<List<ConditionalRuleRequest>?>(value); } }
 
         /// <summary>
         /// Used to track the state of Metadata
@@ -308,6 +324,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  AllowDecline: ").Append(AllowDecline).Append("\n");
             sb.Append("  AllowReassign: ").Append(AllowReassign).Append("\n");
             sb.Append("  DeclineRedirectUrl: ").Append(DeclineRedirectUrl).Append("\n");
+            sb.Append("  ConditionalRules: ").Append(ConditionalRules).Append("\n");
             sb.Append("  Metadata: ").Append(Metadata).Append("\n");
             sb.Append("  Labels: ").Append(Labels).Append("\n");
             sb.Append("  CheckboxGroups: ").Append(CheckboxGroups).Append("\n");
@@ -336,8 +353,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentTemplateUpdateRequest" />
     /// </summary>
-    public class DocumentTemplateUpdateRequestJsonConverter : JsonConverter<DocumentTemplateUpdateRequest>
+    public partial class DocumentTemplateUpdateRequestJsonConverter : JsonConverter<DocumentTemplateUpdateRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentTemplateUpdateRequestJsonConverter" /> class.
+        /// </summary>
+        public DocumentTemplateUpdateRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentTemplateUpdateRequest" />
         /// </summary>
@@ -367,6 +394,7 @@ namespace SignWell.Sdk.Models
             Option<bool?> allowDecline = default;
             Option<bool?> allowReassign = default;
             Option<string?> declineRedirectUrl = default;
+            Option<List<ConditionalRuleRequest>?> conditionalRules = default;
             Option<Dictionary<string, string>?> metadata = default;
             Option<List<LabelRequest>?> labels = default;
             Option<List<TemplateCheckboxGroupsInner>?> checkboxGroups = default;
@@ -422,6 +450,9 @@ namespace SignWell.Sdk.Models
                         case "decline_redirect_url":
                             declineRedirectUrl = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "conditional_rules":
+                            conditionalRules = new Option<List<ConditionalRuleRequest>?>(JsonSerializer.Deserialize<List<ConditionalRuleRequest>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         case "metadata":
                             metadata = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -437,52 +468,7 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (draft.IsSet && draft.Value == null)
-                throw new ArgumentNullException(nameof(draft), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (expiresIn.IsSet && expiresIn.Value == null)
-                throw new ArgumentNullException(nameof(expiresIn), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (reminders.IsSet && reminders.Value == null)
-                throw new ArgumentNullException(nameof(reminders), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (apiApplicationId.IsSet && apiApplicationId.Value == null)
-                throw new ArgumentNullException(nameof(apiApplicationId), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (redirectUrl.IsSet && redirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(redirectUrl), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (allowDecline.IsSet && allowDecline.Value == null)
-                throw new ArgumentNullException(nameof(allowDecline), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (allowReassign.IsSet && allowReassign.Value == null)
-                throw new ArgumentNullException(nameof(allowReassign), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (declineRedirectUrl.IsSet && declineRedirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(declineRedirectUrl), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (metadata.IsSet && metadata.Value == null)
-                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            if (checkboxGroups.IsSet && checkboxGroups.Value == null)
-                throw new ArgumentNullException(nameof(checkboxGroups), "Property is not nullable for class DocumentTemplateUpdateRequest.");
-
-            return new DocumentTemplateUpdateRequest(name, subject, message, draft, expiresIn, reminders, applySigningOrder, apiApplicationId, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, metadata, labels, checkboxGroups);
+            return new DocumentTemplateUpdateRequest(name, subject, message, draft, expiresIn, reminders, applySigningOrder, apiApplicationId, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, conditionalRules, metadata, labels, checkboxGroups);
         }
 
         /// <summary>
@@ -491,7 +477,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateUpdateRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentTemplateUpdateRequest documentTemplateUpdateRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -506,32 +491,55 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentTemplateUpdateRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentTemplateUpdateRequest documentTemplateUpdateRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             if (documentTemplateUpdateRequest.NameOption.IsSet && documentTemplateUpdateRequest.Name == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.Name), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Name to non-nullable JSON property 'name'.");
 
             if (documentTemplateUpdateRequest.SubjectOption.IsSet && documentTemplateUpdateRequest.Subject == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.Subject), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Subject to non-nullable JSON property 'subject'.");
 
             if (documentTemplateUpdateRequest.MessageOption.IsSet && documentTemplateUpdateRequest.Message == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.Message), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Message to non-nullable JSON property 'message'.");
+
+            if (documentTemplateUpdateRequest.DraftOption.IsSet && documentTemplateUpdateRequest.Draft == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Draft to non-nullable JSON property 'draft'.");
+
+            if (documentTemplateUpdateRequest.ExpiresInOption.IsSet && documentTemplateUpdateRequest.ExpiresIn == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.ExpiresIn to non-nullable JSON property 'expires_in'.");
+
+            if (documentTemplateUpdateRequest.RemindersOption.IsSet && documentTemplateUpdateRequest.Reminders == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Reminders to non-nullable JSON property 'reminders'.");
+
+            if (documentTemplateUpdateRequest.ApplySigningOrderOption.IsSet && documentTemplateUpdateRequest.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
+
+            if (documentTemplateUpdateRequest.ApiApplicationIdOption.IsSet && documentTemplateUpdateRequest.ApiApplicationId == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.ApiApplicationId to non-nullable JSON property 'api_application_id'.");
 
             if (documentTemplateUpdateRequest.RedirectUrlOption.IsSet && documentTemplateUpdateRequest.RedirectUrl == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.RedirectUrl), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.RedirectUrl to non-nullable JSON property 'redirect_url'.");
+
+            if (documentTemplateUpdateRequest.AllowDeclineOption.IsSet && documentTemplateUpdateRequest.AllowDecline == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.AllowDecline to non-nullable JSON property 'allow_decline'.");
+
+            if (documentTemplateUpdateRequest.AllowReassignOption.IsSet && documentTemplateUpdateRequest.AllowReassign == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.AllowReassign to non-nullable JSON property 'allow_reassign'.");
 
             if (documentTemplateUpdateRequest.DeclineRedirectUrlOption.IsSet && documentTemplateUpdateRequest.DeclineRedirectUrl == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.DeclineRedirectUrl), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.DeclineRedirectUrl to non-nullable JSON property 'decline_redirect_url'.");
+
+            if (documentTemplateUpdateRequest.ConditionalRulesOption.IsSet && documentTemplateUpdateRequest.ConditionalRules == null)
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.ConditionalRules to non-nullable JSON property 'conditional_rules'.");
 
             if (documentTemplateUpdateRequest.MetadataOption.IsSet && documentTemplateUpdateRequest.Metadata == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.Metadata), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Metadata to non-nullable JSON property 'metadata'.");
 
             if (documentTemplateUpdateRequest.LabelsOption.IsSet && documentTemplateUpdateRequest.Labels == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.Labels), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.Labels to non-nullable JSON property 'labels'.");
 
             if (documentTemplateUpdateRequest.CheckboxGroupsOption.IsSet && documentTemplateUpdateRequest.CheckboxGroups == null)
-                throw new ArgumentNullException(nameof(documentTemplateUpdateRequest.CheckboxGroups), "Property is required for class DocumentTemplateUpdateRequest.");
+                throw new JsonException("Cannot write null property DocumentTemplateUpdateRequest.CheckboxGroups to non-nullable JSON property 'checkbox_groups'.");
 
             if (documentTemplateUpdateRequest.NameOption.IsSet)
                 writer.WriteString("name", documentTemplateUpdateRequest.Name);
@@ -569,6 +577,11 @@ namespace SignWell.Sdk.Models
             if (documentTemplateUpdateRequest.DeclineRedirectUrlOption.IsSet)
                 writer.WriteString("decline_redirect_url", documentTemplateUpdateRequest.DeclineRedirectUrl);
 
+            if (documentTemplateUpdateRequest.ConditionalRulesOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_rules");
+                JsonSerializer.Serialize(writer, documentTemplateUpdateRequest.ConditionalRules, jsonSerializerOptions);
+            }
             if (documentTemplateUpdateRequest.MetadataOption.IsSet)
             {
                 writer.WritePropertyName("metadata");

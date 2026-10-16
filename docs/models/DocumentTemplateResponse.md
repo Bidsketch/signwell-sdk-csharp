@@ -34,6 +34,7 @@ Name | Type | Description | Notes
 **AllowReassign** | **bool** |  | [optional] 
 **Labels** | [**List&lt;LabelInfo&gt;**](LabelInfo.md) |  | [optional] 
 **CheckboxGroups** | [**List&lt;CheckboxGroupInfo&gt;**](CheckboxGroupInfo.md) |  | [optional] 
+**ConditionalRules** | [**List&lt;ConditionalRuleInfo&gt;**](ConditionalRuleInfo.md) |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

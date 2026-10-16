@@ -64,21 +64,21 @@ namespace SignWell.Sdk.Test.Model
         }
 
         /// <summary>
-        /// Test the property 'Email'
-        /// </summary>
-        [Fact]
-        public void EmailTest()
-        {
-            // TODO unit test for the property 'Email'
-        }
-
-        /// <summary>
         /// Test the property 'Name'
         /// </summary>
         [Fact]
         public void NameTest()
         {
             // TODO unit test for the property 'Name'
+        }
+
+        /// <summary>
+        /// Test the property 'Email'
+        /// </summary>
+        [Fact]
+        public void EmailTest()
+        {
+            // TODO unit test for the property 'Email'
         }
 
         /// <summary>
@@ -97,6 +97,15 @@ namespace SignWell.Sdk.Test.Model
         public void PasscodeTest()
         {
             // TODO unit test for the property 'Passcode'
+        }
+
+        /// <summary>
+        /// Test the property 'PasscodeDelivery'
+        /// </summary>
+        [Fact]
+        public void PasscodeDeliveryTest()
+        {
+            // TODO unit test for the property 'PasscodeDelivery'
         }
 
         /// <summary>
@@ -133,6 +142,42 @@ namespace SignWell.Sdk.Test.Model
         public void SendEmailDelayTest()
         {
             // TODO unit test for the property 'SendEmailDelay'
+        }
+
+        /// <summary>
+        /// Test the property 'DeliveryMethod'
+        /// </summary>
+        [Fact]
+        public void DeliveryMethodTest()
+        {
+            // TODO unit test for the property 'DeliveryMethod'
+        }
+
+        /// <summary>
+        /// Test the property 'PhoneNumber'
+        /// </summary>
+        [Fact]
+        public void PhoneNumberTest()
+        {
+            // TODO unit test for the property 'PhoneNumber'
+        }
+
+        /// <summary>
+        /// Test the property 'SendSms'
+        /// </summary>
+        [Fact]
+        public void SendSmsTest()
+        {
+            // TODO unit test for the property 'SendSms'
+        }
+
+        /// <summary>
+        /// Test the property 'SendSmsDelay'
+        /// </summary>
+        [Fact]
+        public void SendSmsDelayTest()
+        {
+            // TODO unit test for the property 'SendSmsDelay'
         }
     }
 }

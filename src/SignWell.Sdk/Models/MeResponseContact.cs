@@ -198,8 +198,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="MeResponseContact" />
     /// </summary>
-    public class MeResponseContactJsonConverter : JsonConverter<MeResponseContact>
+    public partial class MeResponseContactJsonConverter : JsonConverter<MeResponseContact>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeResponseContactJsonConverter" /> class.
+        /// </summary>
+        public MeResponseContactJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="MeResponseContact" />
         /// </summary>
@@ -276,28 +286,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseContact.", nameof(id));
+                throw new JsonException("Property is required for class MeResponseContact: id.");
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseContact.", nameof(email));
+                throw new JsonException("Property is required for class MeResponseContact: email.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseContact.", nameof(name));
+                throw new JsonException("Property is required for class MeResponseContact: name.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class MeResponseContact.");
+                throw new JsonException("Property is not nullable for class MeResponseContact: id.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class MeResponseContact.");
+                throw new JsonException("Property is not nullable for class MeResponseContact: email.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class MeResponseContact.");
-
-            if (initials.IsSet && initials.Value == null)
-                throw new ArgumentNullException(nameof(initials), "Property is not nullable for class MeResponseContact.");
-
-            if (archived.IsSet && archived.Value == null)
-                throw new ArgumentNullException(nameof(archived), "Property is not nullable for class MeResponseContact.");
+                throw new JsonException("Property is not nullable for class MeResponseContact: name.");
 
             return new MeResponseContact(id.Value!.Value!, email.Value!, name.Value!, companyName, phoneNumber, altPhoneNumber, website, initials, archived);
         }
@@ -308,7 +312,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseContact"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, MeResponseContact meResponseContact, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -323,17 +326,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseContact"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, MeResponseContact meResponseContact, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (meResponseContact.Email == null)
-                throw new ArgumentNullException(nameof(meResponseContact.Email), "Property is required for class MeResponseContact.");
-
-            if (meResponseContact.Name == null)
-                throw new ArgumentNullException(nameof(meResponseContact.Name), "Property is required for class MeResponseContact.");
-
             if (meResponseContact.InitialsOption.IsSet && meResponseContact.Initials == null)
-                throw new ArgumentNullException(nameof(meResponseContact.Initials), "Property is required for class MeResponseContact.");
+                throw new JsonException("Cannot write null property MeResponseContact.Initials to non-nullable JSON property 'initials'.");
+
+            if (meResponseContact.ArchivedOption.IsSet && meResponseContact.Archived == null)
+                throw new JsonException("Cannot write null property MeResponseContact.Archived to non-nullable JSON property 'archived'.");
 
             writer.WriteString("id", meResponseContact.Id);
 

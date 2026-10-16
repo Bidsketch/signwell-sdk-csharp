@@ -39,9 +39,10 @@ namespace SignWell.Sdk.Models
         /// <param name="email">Updated email address for the recipient.</param>
         /// <param name="subject">Updated email subject for the signature request that this recipient will see.</param>
         /// <param name="message">Updated email message for the signature request that this recipient will see.</param>
-        /// <param name="passcode">Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document.</param>
+        /// <param name="passcode">Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.</param>
+        /// <param name="passcodeDelivery">passcodeDelivery</param>
         [JsonConstructor]
-        public UpdateRecipientsMapInner(string id, string name, string email, Option<string?> subject = default, Option<string?> message = default, Option<string?> passcode = default)
+        public UpdateRecipientsMapInner(string id, string name, string email, Option<string?> subject = default, Option<string?> message = default, Option<string?> passcode = default, Option<PasscodeDelivery?> passcodeDelivery = default)
         {
             Id = id;
             Name = name;
@@ -49,6 +50,7 @@ namespace SignWell.Sdk.Models
             SubjectOption = subject;
             MessageOption = message;
             PasscodeOption = passcode;
+            PasscodeDeliveryOption = passcodeDelivery;
             OnCreated();
         }
 
@@ -112,11 +114,24 @@ namespace SignWell.Sdk.Models
         public Option<string?> PasscodeOption { get; private set; }
 
         /// <summary>
-        /// Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document.
+        /// Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.
         /// </summary>
-        /// <value>Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document.</value>
+        /// <value>Updated passcode for the recipient. If set, the signer will be required to enter the passcode before viewing and completing the document. On a 21 CFR Part 11 document SignWell generates the passcode, so a sender-defined passcode returns a 422.</value>
         [JsonPropertyName("passcode")]
         public string? Passcode { get { return this.PasscodeOption.Value; } set { this.PasscodeOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of PasscodeDelivery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<PasscodeDelivery?> PasscodeDeliveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PasscodeDelivery
+        /// </summary>
+        [JsonPropertyName("passcode_delivery")]
+        public PasscodeDelivery? PasscodeDelivery { get { return this.PasscodeDeliveryOption.Value; } set { this.PasscodeDeliveryOption = new Option<PasscodeDelivery?>(value); } }
 
         /// <summary>
         /// Gets or Sets additional properties
@@ -138,6 +153,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  Message: ").Append(Message).Append("\n");
             sb.Append("  Passcode: ").Append(Passcode).Append("\n");
+            sb.Append("  PasscodeDelivery: ").Append(PasscodeDelivery).Append("\n");
             sb.Append("  AdditionalProperties: ").Append(AdditionalProperties).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -157,8 +173,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="UpdateRecipientsMapInner" />
     /// </summary>
-    public class UpdateRecipientsMapInnerJsonConverter : JsonConverter<UpdateRecipientsMapInner>
+    public partial class UpdateRecipientsMapInnerJsonConverter : JsonConverter<UpdateRecipientsMapInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateRecipientsMapInnerJsonConverter" /> class.
+        /// </summary>
+        public UpdateRecipientsMapInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="UpdateRecipientsMapInner" />
         /// </summary>
@@ -182,6 +208,7 @@ namespace SignWell.Sdk.Models
             Option<string?> subject = default;
             Option<string?> message = default;
             Option<string?> passcode = default;
+            Option<PasscodeDelivery?> passcodeDelivery = default;
 
             while (utf8JsonReader.Read())
             {
@@ -216,6 +243,9 @@ namespace SignWell.Sdk.Models
                         case "passcode":
                             passcode = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "passcode_delivery":
+                            passcodeDelivery = new Option<PasscodeDelivery?>(JsonSerializer.Deserialize<PasscodeDelivery>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -223,33 +253,24 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class UpdateRecipientsMapInner.", nameof(id));
+                throw new JsonException("Property is required for class UpdateRecipientsMapInner: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class UpdateRecipientsMapInner.", nameof(name));
+                throw new JsonException("Property is required for class UpdateRecipientsMapInner: name.");
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class UpdateRecipientsMapInner.", nameof(email));
+                throw new JsonException("Property is required for class UpdateRecipientsMapInner: email.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class UpdateRecipientsMapInner.");
+                throw new JsonException("Property is not nullable for class UpdateRecipientsMapInner: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class UpdateRecipientsMapInner.");
+                throw new JsonException("Property is not nullable for class UpdateRecipientsMapInner: name.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class UpdateRecipientsMapInner.");
+                throw new JsonException("Property is not nullable for class UpdateRecipientsMapInner: email.");
 
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class UpdateRecipientsMapInner.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class UpdateRecipientsMapInner.");
-
-            if (passcode.IsSet && passcode.Value == null)
-                throw new ArgumentNullException(nameof(passcode), "Property is not nullable for class UpdateRecipientsMapInner.");
-
-            return new UpdateRecipientsMapInner(id.Value!, name.Value!, email.Value!, subject, message, passcode);
+            return new UpdateRecipientsMapInner(id.Value!, name.Value!, email.Value!, subject, message, passcode, passcodeDelivery);
         }
 
         /// <summary>
@@ -258,7 +279,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateRecipientsMapInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, UpdateRecipientsMapInner updateRecipientsMapInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -273,26 +293,19 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateRecipientsMapInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, UpdateRecipientsMapInner updateRecipientsMapInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (updateRecipientsMapInner.Id == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Id), "Property is required for class UpdateRecipientsMapInner.");
-
-            if (updateRecipientsMapInner.Name == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Name), "Property is required for class UpdateRecipientsMapInner.");
-
-            if (updateRecipientsMapInner.Email == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Email), "Property is required for class UpdateRecipientsMapInner.");
-
             if (updateRecipientsMapInner.SubjectOption.IsSet && updateRecipientsMapInner.Subject == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Subject), "Property is required for class UpdateRecipientsMapInner.");
+                throw new JsonException("Cannot write null property UpdateRecipientsMapInner.Subject to non-nullable JSON property 'subject'.");
 
             if (updateRecipientsMapInner.MessageOption.IsSet && updateRecipientsMapInner.Message == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Message), "Property is required for class UpdateRecipientsMapInner.");
+                throw new JsonException("Cannot write null property UpdateRecipientsMapInner.Message to non-nullable JSON property 'message'.");
 
             if (updateRecipientsMapInner.PasscodeOption.IsSet && updateRecipientsMapInner.Passcode == null)
-                throw new ArgumentNullException(nameof(updateRecipientsMapInner.Passcode), "Property is required for class UpdateRecipientsMapInner.");
+                throw new JsonException("Cannot write null property UpdateRecipientsMapInner.Passcode to non-nullable JSON property 'passcode'.");
+
+            if (updateRecipientsMapInner.PasscodeDeliveryOption.IsSet && updateRecipientsMapInner.PasscodeDelivery == null)
+                throw new JsonException("Cannot write null property UpdateRecipientsMapInner.PasscodeDelivery to non-nullable JSON property 'passcode_delivery'.");
 
             writer.WriteString("id", updateRecipientsMapInner.Id);
 
@@ -308,6 +321,12 @@ namespace SignWell.Sdk.Models
 
             if (updateRecipientsMapInner.PasscodeOption.IsSet)
                 writer.WriteString("passcode", updateRecipientsMapInner.Passcode);
+
+            if (updateRecipientsMapInner.PasscodeDeliveryOption.IsSet)
+            {
+                writer.WritePropertyName("passcode_delivery");
+                JsonSerializer.Serialize(writer, updateRecipientsMapInner.PasscodeDelivery, jsonSerializerOptions);
+            }
         }
     }
 }

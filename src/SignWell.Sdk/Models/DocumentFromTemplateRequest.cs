@@ -36,11 +36,12 @@ namespace SignWell.Sdk.Models
         /// </summary>
         /// <param name="recipients">Document recipients are people that must complete and/or sign a document. Recipients of the document must be assigned to a placeholder of the template. Recipients will inherit all placeholder fields and settings.</param>
         /// <param name="testMode">Set to &#x60;true&#x60; to enable Test Mode. Documents created with Test Mode do not count towards API billing and are not legally binding. Defaults to &#x60;false&#x60; (default to false)</param>
+        /// <param name="sendSmsTestPreviewEmail">Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="templateId">Use when you have to create a document from a single template. Either :template_id or :template_ids must be present in the request, not both.</param>
         /// <param name="templateIds">Use when you have to create a document from multiple templates. Either :template_id or :template_ids must be present in the request, not both.</param>
         /// <param name="name">The name of the document.</param>
-        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</param>
-        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</param>
+        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
+        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
         /// <param name="excludePlaceholders">Exclude one or more template placeholders when creating a document from a template. Any excluded placeholders (and their associated recipients and fields) will not be included on the created document. Values must match placeholder names on the template. You can&#39;t exclude all placeholders (at least one recipient must remain).</param>
         /// <param name="draft">Whether the document can still be updated before sending a signature request. If set to &#x60;false&#x60; the document is sent for signing as part of this request. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="withSignaturePage">When set to &#x60;true&#x60; the document will have a signature page added to the end, and all signers will be required to add their signature on that page. (default to false)</param>
@@ -50,14 +51,17 @@ namespace SignWell.Sdk.Models
         /// <param name="apiApplicationId">Unique identifier for API Application settings to use. API Applications are optional and mainly used when isolating OAuth apps or for more control over embedded API settings</param>
         /// <param name="embeddedSigning">When set to &#x60;true&#x60; it enables embedded signing in your website/web application. Embedded functionality works with an iFrame and email authentication is disabled. :embedded_signinig defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="embeddedSigningNotifications">On embedding signing, document owners (and CC&#39;d contacts) do not get a notification email when documents have been completed. Setting this param to &#x60;true&#x60; will send out those final completed notifications. Default is &#x60;false&#x60; (default to false)</param>
+        /// <param name="embedded">embedded</param>
         /// <param name="textTags">An alternative way (if you can’t use the recommended way) of placing fields in specific locations of your document by using special text tags. Useful when changing the content of your files changes the location of fields. See API documentation for “Text Tags” for details. Defaults to false. (default to false)</param>
         /// <param name="customRequesterName">Sets the custom requester name for the document. When set, this is the name used for all email communications, signing notifications, and in the audit file.</param>
         /// <param name="customRequesterEmail">Sets the custom requester email for the document. When set, this is the email used for all email communications, signing notifications, and in the audit file.</param>
         /// <param name="redirectUrl">A URL that recipients are redirected to after successfully signing a document.</param>
         /// <param name="allowDecline">Whether to allow recipients the option to decline signing a document. If multiple signers are involved in a document, any single recipient can cancel the entire document signing process by declining to sign. (default to true)</param>
-        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. (default to true)</param>
+        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422. (default to true)</param>
         /// <param name="declineRedirectUrl">A URL that recipients are redirected to if the document is declined.</param>
         /// <param name="language">Sets the language for all recipients on the document and updates all recipient side interactions including the document email and the document itself. Accepted languages: English, Français, Español, Deutsch, Polski, Português, Dansk, Nederlands, Italiano, Русский, Svenska, العربية, Ελληνικά, Türkçe, Slovenčina. Defaults to English. Language should be sent in ISO 639-1 format: en, fr, es, de, pl, pt, da, nl, it, ru, sv, ar, el, tr, sk.</param>
+        /// <param name="conditionalRules">Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</param>
+        /// <param name="conditionalRulesMode">When creating a document from a template, controls how the conditional_rules in the request reconcile with the template&#39;s inherited rules: &#x60;replace&#x60; (drop inherited, use the body&#39;s rules), &#x60;append&#x60; (keep inherited, add the body&#39;s rules), or &#x60;none&#x60; (clear all rules). Required when sending conditional_rules that should not simply inherit.</param>
         /// <param name="metadata">Optional key-value data that can be associated with the document. If set, will be available every time the document data is returned.</param>
         /// <param name="templateFields">Fields of your template(s) that you can prepopulate with values. Signature and Initials fields cannot be signed through the API.</param>
         /// <param name="files">files</param>
@@ -67,10 +71,11 @@ namespace SignWell.Sdk.Models
         /// <param name="labels">Labels can be used to organize documents in a way that can make it easy to find using the document search in SignWell. A document can have multiple labels. Updating labels on a document will replace any existing labels for that document.</param>
         /// <param name="checkboxGroups">Checkbox fields that are placed on a document can be grouped with selection requirements. At least 2 checkbox fields in an array of fields must be assigned to the same recipient.</param>
         [JsonConstructor]
-        public DocumentFromTemplateRequest(List<TemplateRecipientsInner> recipients, Option<bool?> testMode = default, Option<Guid?> templateId = default, Option<List<Guid>?> templateIds = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<List<string>?> excludePlaceholders = default, Option<bool?> draft = default, Option<bool?> withSignaturePage = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<bool?> embeddedSigning = default, Option<bool?> embeddedSigningNotifications = default, Option<bool?> textTags = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<Dictionary<string, string>?> metadata = default, Option<List<TemplateFieldValuesInner>?> templateFields = default, Option<List<AdditionalFilesInner>?> files = default, Option<List<List<AdditionalFieldsInnerInner>>?> fields = default, Option<List<AttachmentRequestsInner>?> attachmentRequests = default, Option<List<CopiedContactsInner>?> copiedContacts = default, Option<List<LabelRequest>?> labels = default, Option<List<CheckboxGroupsInner>?> checkboxGroups = default)
+        public DocumentFromTemplateRequest(List<TemplateRecipientsInner> recipients, Option<bool?> testMode = default, Option<bool?> sendSmsTestPreviewEmail = default, Option<Guid?> templateId = default, Option<List<Guid>?> templateIds = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<List<string>?> excludePlaceholders = default, Option<bool?> draft = default, Option<bool?> withSignaturePage = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<bool?> embeddedSigning = default, Option<bool?> embeddedSigningNotifications = default, Option<EmbeddedRequest?> embedded = default, Option<bool?> textTags = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<string?> language = default, Option<List<ConditionalRuleRequest>?> conditionalRules = default, Option<ConditionalRulesModeEnum?> conditionalRulesMode = default, Option<Dictionary<string, string>?> metadata = default, Option<List<TemplateFieldValuesInner>?> templateFields = default, Option<List<AdditionalFilesInner>?> files = default, Option<List<List<AdditionalFieldsInnerInner>>?> fields = default, Option<List<AttachmentRequestsInner>?> attachmentRequests = default, Option<List<CopiedContactsInner>?> copiedContacts = default, Option<List<LabelRequest>?> labels = default, Option<List<CheckboxGroupsInner>?> checkboxGroups = default)
         {
             Recipients = recipients;
             TestModeOption = testMode;
+            SendSmsTestPreviewEmailOption = sendSmsTestPreviewEmail;
             TemplateIdOption = templateId;
             TemplateIdsOption = templateIds;
             NameOption = name;
@@ -85,6 +90,7 @@ namespace SignWell.Sdk.Models
             ApiApplicationIdOption = apiApplicationId;
             EmbeddedSigningOption = embeddedSigning;
             EmbeddedSigningNotificationsOption = embeddedSigningNotifications;
+            EmbeddedOption = embedded;
             TextTagsOption = textTags;
             CustomRequesterNameOption = customRequesterName;
             CustomRequesterEmailOption = customRequesterEmail;
@@ -93,6 +99,8 @@ namespace SignWell.Sdk.Models
             AllowReassignOption = allowReassign;
             DeclineRedirectUrlOption = declineRedirectUrl;
             LanguageOption = language;
+            ConditionalRulesOption = conditionalRules;
+            ConditionalRulesModeOption = conditionalRulesMode;
             MetadataOption = metadata;
             TemplateFieldsOption = templateFields;
             FilesOption = files;
@@ -105,6 +113,115 @@ namespace SignWell.Sdk.Models
         }
 
         partial void OnCreated();
+
+        /// <summary>
+        /// When creating a document from a template, controls how the conditional_rules in the request reconcile with the template&#39;s inherited rules: &#x60;replace&#x60; (drop inherited, use the body&#39;s rules), &#x60;append&#x60; (keep inherited, add the body&#39;s rules), or &#x60;none&#x60; (clear all rules). Required when sending conditional_rules that should not simply inherit.
+        /// </summary>
+        /// <value>When creating a document from a template, controls how the conditional_rules in the request reconcile with the template&#39;s inherited rules: &#x60;replace&#x60; (drop inherited, use the body&#39;s rules), &#x60;append&#x60; (keep inherited, add the body&#39;s rules), or &#x60;none&#x60; (clear all rules). Required when sending conditional_rules that should not simply inherit.</value>
+        public enum ConditionalRulesModeEnum
+        {
+            /// <summary>
+            /// Enum Replace for value: replace
+            /// </summary>
+            Replace = 1,
+
+            /// <summary>
+            /// Enum Append for value: append
+            /// </summary>
+            Append = 2,
+
+            /// <summary>
+            /// Enum None for value: none
+            /// </summary>
+            None = 3,
+
+            /// <summary>
+            /// Enum UnknownDefaultOpenApi for value: unknown_default_open_api
+            /// </summary>
+            UnknownDefaultOpenApi = 4
+        }
+
+        /// <summary>
+        /// Returns a <see cref="ConditionalRulesModeEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static ConditionalRulesModeEnum ConditionalRulesModeEnumFromString(string value)
+        {
+            if (value.Equals("replace"))
+                return ConditionalRulesModeEnum.Replace;
+
+            if (value.Equals("append"))
+                return ConditionalRulesModeEnum.Append;
+
+            if (value.Equals("none"))
+                return ConditionalRulesModeEnum.None;
+
+            if (value.Equals("unknown_default_open_api"))
+                return ConditionalRulesModeEnum.UnknownDefaultOpenApi;
+
+            return ConditionalRulesModeEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="ConditionalRulesModeEnum"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static ConditionalRulesModeEnum? ConditionalRulesModeEnumFromStringOrDefault(string value)
+        {
+            if (value.Equals("replace"))
+                return ConditionalRulesModeEnum.Replace;
+
+            if (value.Equals("append"))
+                return ConditionalRulesModeEnum.Append;
+
+            if (value.Equals("none"))
+                return ConditionalRulesModeEnum.None;
+
+            if (value.Equals("unknown_default_open_api"))
+                return ConditionalRulesModeEnum.UnknownDefaultOpenApi;
+
+            return ConditionalRulesModeEnum.UnknownDefaultOpenApi;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="ConditionalRulesModeEnum"/> to the json value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static string ConditionalRulesModeEnumToJsonValue(ConditionalRulesModeEnum? value)
+        {
+            if (value == ConditionalRulesModeEnum.Replace)
+                return "replace";
+
+            if (value == ConditionalRulesModeEnum.Append)
+                return "append";
+
+            if (value == ConditionalRulesModeEnum.None)
+                return "none";
+
+            if (value == ConditionalRulesModeEnum.UnknownDefaultOpenApi)
+                return "unknown_default_open_api";
+
+            throw new NotImplementedException($"Value could not be handled: '{value}'");
+        }
+
+        /// <summary>
+        /// Used to track the state of ConditionalRulesMode
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<ConditionalRulesModeEnum?> ConditionalRulesModeOption { get; private set; }
+
+        /// <summary>
+        /// When creating a document from a template, controls how the conditional_rules in the request reconcile with the template&#39;s inherited rules: &#x60;replace&#x60; (drop inherited, use the body&#39;s rules), &#x60;append&#x60; (keep inherited, add the body&#39;s rules), or &#x60;none&#x60; (clear all rules). Required when sending conditional_rules that should not simply inherit.
+        /// </summary>
+        /// <value>When creating a document from a template, controls how the conditional_rules in the request reconcile with the template&#39;s inherited rules: &#x60;replace&#x60; (drop inherited, use the body&#39;s rules), &#x60;append&#x60; (keep inherited, add the body&#39;s rules), or &#x60;none&#x60; (clear all rules). Required when sending conditional_rules that should not simply inherit.</value>
+        [JsonPropertyName("conditional_rules_mode")]
+        public ConditionalRulesModeEnum? ConditionalRulesMode { get { return this.ConditionalRulesModeOption.Value; } set { this.ConditionalRulesModeOption = new Option<ConditionalRulesModeEnum?>(value); } }
 
         /// <summary>
         /// Document recipients are people that must complete and/or sign a document. Recipients of the document must be assigned to a placeholder of the template. Recipients will inherit all placeholder fields and settings.
@@ -126,6 +243,20 @@ namespace SignWell.Sdk.Models
         /// <value>Set to &#x60;true&#x60; to enable Test Mode. Documents created with Test Mode do not count towards API billing and are not legally binding. Defaults to &#x60;false&#x60;</value>
         [JsonPropertyName("test_mode")]
         public bool? TestMode { get { return this.TestModeOption.Value; } set { this.TestModeOption = new Option<bool?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of SendSmsTestPreviewEmail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> SendSmsTestPreviewEmailOption { get; private set; }
+
+        /// <summary>
+        /// Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;.
+        /// </summary>
+        /// <value>Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;.</value>
+        [JsonPropertyName("send_sms_test_preview_email")]
+        public bool? SendSmsTestPreviewEmail { get { return this.SendSmsTestPreviewEmailOption.Value; } set { this.SendSmsTestPreviewEmailOption = new Option<bool?>(value); } }
 
         /// <summary>
         /// Used to track the state of TemplateId
@@ -177,9 +308,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> SubjectOption { get; private set; }
 
         /// <summary>
-        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).
+        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</value>
+        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("subject")]
         public string? Subject { get { return this.SubjectOption.Value; } set { this.SubjectOption = new Option<string?>(value); } }
 
@@ -191,9 +322,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> MessageOption { get; private set; }
 
         /// <summary>
-        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).
+        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</value>
+        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("message")]
         public string? Message { get { return this.MessageOption.Value; } set { this.MessageOption = new Option<string?>(value); } }
 
@@ -324,6 +455,19 @@ namespace SignWell.Sdk.Models
         public bool? EmbeddedSigningNotifications { get { return this.EmbeddedSigningNotificationsOption.Value; } set { this.EmbeddedSigningNotificationsOption = new Option<bool?>(value); } }
 
         /// <summary>
+        /// Used to track the state of Embedded
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<EmbeddedRequest?> EmbeddedOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Embedded
+        /// </summary>
+        [JsonPropertyName("embedded")]
+        public EmbeddedRequest? Embedded { get { return this.EmbeddedOption.Value; } set { this.EmbeddedOption = new Option<EmbeddedRequest?>(value); } }
+
+        /// <summary>
         /// Used to track the state of TextTags
         /// </summary>
         [JsonIgnore]
@@ -401,9 +545,9 @@ namespace SignWell.Sdk.Models
         public Option<bool?> AllowReassignOption { get; private set; }
 
         /// <summary>
-        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.
+        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.
         /// </summary>
-        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.</value>
+        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.</value>
         [JsonPropertyName("allow_reassign")]
         public bool? AllowReassign { get { return this.AllowReassignOption.Value; } set { this.AllowReassignOption = new Option<bool?>(value); } }
 
@@ -434,6 +578,20 @@ namespace SignWell.Sdk.Models
         /// <value>Sets the language for all recipients on the document and updates all recipient side interactions including the document email and the document itself. Accepted languages: English, Français, Español, Deutsch, Polski, Português, Dansk, Nederlands, Italiano, Русский, Svenska, العربية, Ελληνικά, Türkçe, Slovenčina. Defaults to English. Language should be sent in ISO 639-1 format: en, fr, es, de, pl, pt, da, nl, it, ru, sv, ar, el, tr, sk.</value>
         [JsonPropertyName("language")]
         public string? Language { get { return this.LanguageOption.Value; } set { this.LanguageOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ConditionalRules
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalRuleRequest>?> ConditionalRulesOption { get; private set; }
+
+        /// <summary>
+        /// Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.
+        /// </summary>
+        /// <value>Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</value>
+        [JsonPropertyName("conditional_rules")]
+        public List<ConditionalRuleRequest>? ConditionalRules { get { return this.ConditionalRulesOption.Value; } set { this.ConditionalRulesOption = new Option<List<ConditionalRuleRequest>?>(value); } }
 
         /// <summary>
         /// Used to track the state of Metadata
@@ -562,6 +720,7 @@ namespace SignWell.Sdk.Models
             sb.Append("class DocumentFromTemplateRequest {\n");
             sb.Append("  Recipients: ").Append(Recipients).Append("\n");
             sb.Append("  TestMode: ").Append(TestMode).Append("\n");
+            sb.Append("  SendSmsTestPreviewEmail: ").Append(SendSmsTestPreviewEmail).Append("\n");
             sb.Append("  TemplateId: ").Append(TemplateId).Append("\n");
             sb.Append("  TemplateIds: ").Append(TemplateIds).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
@@ -576,6 +735,7 @@ namespace SignWell.Sdk.Models
             sb.Append("  ApiApplicationId: ").Append(ApiApplicationId).Append("\n");
             sb.Append("  EmbeddedSigning: ").Append(EmbeddedSigning).Append("\n");
             sb.Append("  EmbeddedSigningNotifications: ").Append(EmbeddedSigningNotifications).Append("\n");
+            sb.Append("  Embedded: ").Append(Embedded).Append("\n");
             sb.Append("  TextTags: ").Append(TextTags).Append("\n");
             sb.Append("  CustomRequesterName: ").Append(CustomRequesterName).Append("\n");
             sb.Append("  CustomRequesterEmail: ").Append(CustomRequesterEmail).Append("\n");
@@ -584,6 +744,8 @@ namespace SignWell.Sdk.Models
             sb.Append("  AllowReassign: ").Append(AllowReassign).Append("\n");
             sb.Append("  DeclineRedirectUrl: ").Append(DeclineRedirectUrl).Append("\n");
             sb.Append("  Language: ").Append(Language).Append("\n");
+            sb.Append("  ConditionalRules: ").Append(ConditionalRules).Append("\n");
+            sb.Append("  ConditionalRulesMode: ").Append(ConditionalRulesMode).Append("\n");
             sb.Append("  Metadata: ").Append(Metadata).Append("\n");
             sb.Append("  TemplateFields: ").Append(TemplateFields).Append("\n");
             sb.Append("  Files: ").Append(Files).Append("\n");
@@ -617,8 +779,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentFromTemplateRequest" />
     /// </summary>
-    public class DocumentFromTemplateRequestJsonConverter : JsonConverter<DocumentFromTemplateRequest>
+    public partial class DocumentFromTemplateRequestJsonConverter : JsonConverter<DocumentFromTemplateRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentFromTemplateRequestJsonConverter" /> class.
+        /// </summary>
+        public DocumentFromTemplateRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentFromTemplateRequest" />
         /// </summary>
@@ -638,6 +810,7 @@ namespace SignWell.Sdk.Models
 
             Option<List<TemplateRecipientsInner>?> recipients = default;
             Option<bool?> testMode = default;
+            Option<bool?> sendSmsTestPreviewEmail = default;
             Option<Guid?> templateId = default;
             Option<List<Guid>?> templateIds = default;
             Option<string?> name = default;
@@ -652,6 +825,7 @@ namespace SignWell.Sdk.Models
             Option<Guid?> apiApplicationId = default;
             Option<bool?> embeddedSigning = default;
             Option<bool?> embeddedSigningNotifications = default;
+            Option<EmbeddedRequest?> embedded = default;
             Option<bool?> textTags = default;
             Option<string?> customRequesterName = default;
             Option<string?> customRequesterEmail = default;
@@ -660,6 +834,8 @@ namespace SignWell.Sdk.Models
             Option<bool?> allowReassign = default;
             Option<string?> declineRedirectUrl = default;
             Option<string?> language = default;
+            Option<List<ConditionalRuleRequest>?> conditionalRules = default;
+            Option<DocumentFromTemplateRequest.ConditionalRulesModeEnum?> conditionalRulesMode = default;
             Option<Dictionary<string, string>?> metadata = default;
             Option<List<TemplateFieldValuesInner>?> templateFields = default;
             Option<List<AdditionalFilesInner>?> files = default;
@@ -689,6 +865,9 @@ namespace SignWell.Sdk.Models
                             break;
                         case "test_mode":
                             testMode = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "send_sms_test_preview_email":
+                            sendSmsTestPreviewEmail = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "template_id":
                             templateId = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
@@ -732,6 +911,9 @@ namespace SignWell.Sdk.Models
                         case "embedded_signing_notifications":
                             embeddedSigningNotifications = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
+                        case "embedded":
+                            embedded = new Option<EmbeddedRequest?>(JsonSerializer.Deserialize<EmbeddedRequest>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         case "text_tags":
                             textTags = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
@@ -755,6 +937,19 @@ namespace SignWell.Sdk.Models
                             break;
                         case "language":
                             language = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "conditional_rules":
+                            conditionalRules = new Option<List<ConditionalRuleRequest>?>(JsonSerializer.Deserialize<List<ConditionalRuleRequest>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "conditional_rules_mode":
+                            string? conditionalRulesModeRawValue = utf8JsonReader.GetString();
+                            if (conditionalRulesModeRawValue != null)
+                            {
+                                DocumentFromTemplateRequest.ConditionalRulesModeEnum? conditionalRulesModeValue = DocumentFromTemplateRequest.ConditionalRulesModeEnumFromStringOrDefault(conditionalRulesModeRawValue);
+                                if (conditionalRulesModeValue == null)
+                                    throw new JsonException();
+                                conditionalRulesMode = new Option<DocumentFromTemplateRequest.ConditionalRulesModeEnum?>(conditionalRulesModeValue);
+                            }
                             break;
                         case "metadata":
                             metadata = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -787,105 +982,12 @@ namespace SignWell.Sdk.Models
             }
 
             if (!recipients.IsSet)
-                throw new ArgumentException("Property is required for class DocumentFromTemplateRequest.", nameof(recipients));
+                throw new JsonException("Property is required for class DocumentFromTemplateRequest: recipients.");
 
             if (recipients.IsSet && recipients.Value == null)
-                throw new ArgumentNullException(nameof(recipients), "Property is not nullable for class DocumentFromTemplateRequest.");
+                throw new JsonException("Property is not nullable for class DocumentFromTemplateRequest: recipients.");
 
-            if (testMode.IsSet && testMode.Value == null)
-                throw new ArgumentNullException(nameof(testMode), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (templateId.IsSet && templateId.Value == null)
-                throw new ArgumentNullException(nameof(templateId), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (templateIds.IsSet && templateIds.Value == null)
-                throw new ArgumentNullException(nameof(templateIds), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (excludePlaceholders.IsSet && excludePlaceholders.Value == null)
-                throw new ArgumentNullException(nameof(excludePlaceholders), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (draft.IsSet && draft.Value == null)
-                throw new ArgumentNullException(nameof(draft), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (withSignaturePage.IsSet && withSignaturePage.Value == null)
-                throw new ArgumentNullException(nameof(withSignaturePage), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (expiresIn.IsSet && expiresIn.Value == null)
-                throw new ArgumentNullException(nameof(expiresIn), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (reminders.IsSet && reminders.Value == null)
-                throw new ArgumentNullException(nameof(reminders), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (apiApplicationId.IsSet && apiApplicationId.Value == null)
-                throw new ArgumentNullException(nameof(apiApplicationId), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (embeddedSigning.IsSet && embeddedSigning.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigning), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (embeddedSigningNotifications.IsSet && embeddedSigningNotifications.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigningNotifications), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (textTags.IsSet && textTags.Value == null)
-                throw new ArgumentNullException(nameof(textTags), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (customRequesterName.IsSet && customRequesterName.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterName), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (customRequesterEmail.IsSet && customRequesterEmail.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterEmail), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (redirectUrl.IsSet && redirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(redirectUrl), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (allowDecline.IsSet && allowDecline.Value == null)
-                throw new ArgumentNullException(nameof(allowDecline), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (allowReassign.IsSet && allowReassign.Value == null)
-                throw new ArgumentNullException(nameof(allowReassign), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (declineRedirectUrl.IsSet && declineRedirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(declineRedirectUrl), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (language.IsSet && language.Value == null)
-                throw new ArgumentNullException(nameof(language), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (metadata.IsSet && metadata.Value == null)
-                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (templateFields.IsSet && templateFields.Value == null)
-                throw new ArgumentNullException(nameof(templateFields), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (files.IsSet && files.Value == null)
-                throw new ArgumentNullException(nameof(files), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (fields.IsSet && fields.Value == null)
-                throw new ArgumentNullException(nameof(fields), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (attachmentRequests.IsSet && attachmentRequests.Value == null)
-                throw new ArgumentNullException(nameof(attachmentRequests), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (copiedContacts.IsSet && copiedContacts.Value == null)
-                throw new ArgumentNullException(nameof(copiedContacts), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            if (checkboxGroups.IsSet && checkboxGroups.Value == null)
-                throw new ArgumentNullException(nameof(checkboxGroups), "Property is not nullable for class DocumentFromTemplateRequest.");
-
-            return new DocumentFromTemplateRequest(recipients.Value!, testMode, templateId, templateIds, name, subject, message, excludePlaceholders, draft, withSignaturePage, expiresIn, reminders, applySigningOrder, apiApplicationId, embeddedSigning, embeddedSigningNotifications, textTags, customRequesterName, customRequesterEmail, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, language, metadata, templateFields, files, fields, attachmentRequests, copiedContacts, labels, checkboxGroups);
+            return new DocumentFromTemplateRequest(recipients.Value!, testMode, sendSmsTestPreviewEmail, templateId, templateIds, name, subject, message, excludePlaceholders, draft, withSignaturePage, expiresIn, reminders, applySigningOrder, apiApplicationId, embeddedSigning, embeddedSigningNotifications, embedded, textTags, customRequesterName, customRequesterEmail, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, language, conditionalRules, conditionalRulesMode, metadata, templateFields, files, fields, attachmentRequests, copiedContacts, labels, checkboxGroups);
         }
 
         /// <summary>
@@ -894,7 +996,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentFromTemplateRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentFromTemplateRequest documentFromTemplateRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -909,70 +1010,120 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentFromTemplateRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentFromTemplateRequest documentFromTemplateRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentFromTemplateRequest.Recipients == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Recipients), "Property is required for class DocumentFromTemplateRequest.");
+            if (documentFromTemplateRequest.TestModeOption.IsSet && documentFromTemplateRequest.TestMode == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.TestMode to non-nullable JSON property 'test_mode'.");
+
+            if (documentFromTemplateRequest.SendSmsTestPreviewEmailOption.IsSet && documentFromTemplateRequest.SendSmsTestPreviewEmail == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.SendSmsTestPreviewEmail to non-nullable JSON property 'send_sms_test_preview_email'.");
+
+            if (documentFromTemplateRequest.TemplateIdOption.IsSet && documentFromTemplateRequest.TemplateId == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.TemplateId to non-nullable JSON property 'template_id'.");
 
             if (documentFromTemplateRequest.TemplateIdsOption.IsSet && documentFromTemplateRequest.TemplateIds == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.TemplateIds), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.TemplateIds to non-nullable JSON property 'template_ids'.");
 
             if (documentFromTemplateRequest.NameOption.IsSet && documentFromTemplateRequest.Name == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Name), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Name to non-nullable JSON property 'name'.");
 
             if (documentFromTemplateRequest.SubjectOption.IsSet && documentFromTemplateRequest.Subject == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Subject), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Subject to non-nullable JSON property 'subject'.");
 
             if (documentFromTemplateRequest.MessageOption.IsSet && documentFromTemplateRequest.Message == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Message), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Message to non-nullable JSON property 'message'.");
 
             if (documentFromTemplateRequest.ExcludePlaceholdersOption.IsSet && documentFromTemplateRequest.ExcludePlaceholders == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.ExcludePlaceholders), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ExcludePlaceholders to non-nullable JSON property 'exclude_placeholders'.");
+
+            if (documentFromTemplateRequest.DraftOption.IsSet && documentFromTemplateRequest.Draft == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Draft to non-nullable JSON property 'draft'.");
+
+            if (documentFromTemplateRequest.WithSignaturePageOption.IsSet && documentFromTemplateRequest.WithSignaturePage == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.WithSignaturePage to non-nullable JSON property 'with_signature_page'.");
+
+            if (documentFromTemplateRequest.ExpiresInOption.IsSet && documentFromTemplateRequest.ExpiresIn == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ExpiresIn to non-nullable JSON property 'expires_in'.");
+
+            if (documentFromTemplateRequest.RemindersOption.IsSet && documentFromTemplateRequest.Reminders == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Reminders to non-nullable JSON property 'reminders'.");
+
+            if (documentFromTemplateRequest.ApplySigningOrderOption.IsSet && documentFromTemplateRequest.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
+
+            if (documentFromTemplateRequest.ApiApplicationIdOption.IsSet && documentFromTemplateRequest.ApiApplicationId == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ApiApplicationId to non-nullable JSON property 'api_application_id'.");
+
+            if (documentFromTemplateRequest.EmbeddedSigningOption.IsSet && documentFromTemplateRequest.EmbeddedSigning == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.EmbeddedSigning to non-nullable JSON property 'embedded_signing'.");
+
+            if (documentFromTemplateRequest.EmbeddedSigningNotificationsOption.IsSet && documentFromTemplateRequest.EmbeddedSigningNotifications == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.EmbeddedSigningNotifications to non-nullable JSON property 'embedded_signing_notifications'.");
+
+            if (documentFromTemplateRequest.EmbeddedOption.IsSet && documentFromTemplateRequest.Embedded == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Embedded to non-nullable JSON property 'embedded'.");
+
+            if (documentFromTemplateRequest.TextTagsOption.IsSet && documentFromTemplateRequest.TextTags == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.TextTags to non-nullable JSON property 'text_tags'.");
 
             if (documentFromTemplateRequest.CustomRequesterNameOption.IsSet && documentFromTemplateRequest.CustomRequesterName == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.CustomRequesterName), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.CustomRequesterName to non-nullable JSON property 'custom_requester_name'.");
 
             if (documentFromTemplateRequest.CustomRequesterEmailOption.IsSet && documentFromTemplateRequest.CustomRequesterEmail == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.CustomRequesterEmail), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.CustomRequesterEmail to non-nullable JSON property 'custom_requester_email'.");
 
             if (documentFromTemplateRequest.RedirectUrlOption.IsSet && documentFromTemplateRequest.RedirectUrl == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.RedirectUrl), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.RedirectUrl to non-nullable JSON property 'redirect_url'.");
+
+            if (documentFromTemplateRequest.AllowDeclineOption.IsSet && documentFromTemplateRequest.AllowDecline == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.AllowDecline to non-nullable JSON property 'allow_decline'.");
+
+            if (documentFromTemplateRequest.AllowReassignOption.IsSet && documentFromTemplateRequest.AllowReassign == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.AllowReassign to non-nullable JSON property 'allow_reassign'.");
 
             if (documentFromTemplateRequest.DeclineRedirectUrlOption.IsSet && documentFromTemplateRequest.DeclineRedirectUrl == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.DeclineRedirectUrl), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.DeclineRedirectUrl to non-nullable JSON property 'decline_redirect_url'.");
 
             if (documentFromTemplateRequest.LanguageOption.IsSet && documentFromTemplateRequest.Language == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Language), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Language to non-nullable JSON property 'language'.");
+
+            if (documentFromTemplateRequest.ConditionalRulesOption.IsSet && documentFromTemplateRequest.ConditionalRules == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ConditionalRules to non-nullable JSON property 'conditional_rules'.");
+
+            if (documentFromTemplateRequest.ConditionalRulesModeOption.IsSet && documentFromTemplateRequest.ConditionalRulesMode == null)
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.ConditionalRulesMode to non-nullable JSON property 'conditional_rules_mode'.");
 
             if (documentFromTemplateRequest.MetadataOption.IsSet && documentFromTemplateRequest.Metadata == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Metadata), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Metadata to non-nullable JSON property 'metadata'.");
 
             if (documentFromTemplateRequest.TemplateFieldsOption.IsSet && documentFromTemplateRequest.TemplateFields == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.TemplateFields), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.TemplateFields to non-nullable JSON property 'template_fields'.");
 
             if (documentFromTemplateRequest.FilesOption.IsSet && documentFromTemplateRequest.Files == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Files), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Files to non-nullable JSON property 'files'.");
 
             if (documentFromTemplateRequest.FieldsOption.IsSet && documentFromTemplateRequest.Fields == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Fields), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Fields to non-nullable JSON property 'fields'.");
 
             if (documentFromTemplateRequest.AttachmentRequestsOption.IsSet && documentFromTemplateRequest.AttachmentRequests == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.AttachmentRequests), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.AttachmentRequests to non-nullable JSON property 'attachment_requests'.");
 
             if (documentFromTemplateRequest.CopiedContactsOption.IsSet && documentFromTemplateRequest.CopiedContacts == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.CopiedContacts), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.CopiedContacts to non-nullable JSON property 'copied_contacts'.");
 
             if (documentFromTemplateRequest.LabelsOption.IsSet && documentFromTemplateRequest.Labels == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.Labels), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.Labels to non-nullable JSON property 'labels'.");
 
             if (documentFromTemplateRequest.CheckboxGroupsOption.IsSet && documentFromTemplateRequest.CheckboxGroups == null)
-                throw new ArgumentNullException(nameof(documentFromTemplateRequest.CheckboxGroups), "Property is required for class DocumentFromTemplateRequest.");
+                throw new JsonException("Cannot write null property DocumentFromTemplateRequest.CheckboxGroups to non-nullable JSON property 'checkbox_groups'.");
 
             writer.WritePropertyName("recipients");
             JsonSerializer.Serialize(writer, documentFromTemplateRequest.Recipients, jsonSerializerOptions);
             if (documentFromTemplateRequest.TestModeOption.IsSet)
                 writer.WriteBoolean("test_mode", documentFromTemplateRequest.TestModeOption.Value!.Value);
+
+            if (documentFromTemplateRequest.SendSmsTestPreviewEmailOption.IsSet)
+                writer.WriteBoolean("send_sms_test_preview_email", documentFromTemplateRequest.SendSmsTestPreviewEmailOption.Value!.Value);
 
             if (documentFromTemplateRequest.TemplateIdOption.IsSet)
                 writer.WriteString("template_id", documentFromTemplateRequest.TemplateIdOption.Value!.Value);
@@ -1020,6 +1171,11 @@ namespace SignWell.Sdk.Models
             if (documentFromTemplateRequest.EmbeddedSigningNotificationsOption.IsSet)
                 writer.WriteBoolean("embedded_signing_notifications", documentFromTemplateRequest.EmbeddedSigningNotificationsOption.Value!.Value);
 
+            if (documentFromTemplateRequest.EmbeddedOption.IsSet)
+            {
+                writer.WritePropertyName("embedded");
+                JsonSerializer.Serialize(writer, documentFromTemplateRequest.Embedded, jsonSerializerOptions);
+            }
             if (documentFromTemplateRequest.TextTagsOption.IsSet)
                 writer.WriteBoolean("text_tags", documentFromTemplateRequest.TextTagsOption.Value!.Value);
 
@@ -1044,6 +1200,21 @@ namespace SignWell.Sdk.Models
             if (documentFromTemplateRequest.LanguageOption.IsSet)
                 writer.WriteString("language", documentFromTemplateRequest.Language);
 
+            if (documentFromTemplateRequest.ConditionalRulesOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_rules");
+                JsonSerializer.Serialize(writer, documentFromTemplateRequest.ConditionalRules, jsonSerializerOptions);
+            }
+            if (documentFromTemplateRequest.ConditionalRulesModeOption.IsSet)
+            {
+                if (documentFromTemplateRequest.ConditionalRulesModeOption.Value.HasValue)
+                {
+                    var conditionalRulesModeRawValue = DocumentFromTemplateRequest.ConditionalRulesModeEnumToJsonValue(documentFromTemplateRequest.ConditionalRulesModeOption.Value.Value);
+                    writer.WriteString("conditional_rules_mode", conditionalRulesModeRawValue);
+                }
+                else
+                    writer.WriteNull("conditional_rules_mode");
+            }
             if (documentFromTemplateRequest.MetadataOption.IsSet)
             {
                 writer.WritePropertyName("metadata");

@@ -94,8 +94,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateFieldValuesInner" />
     /// </summary>
-    public class TemplateFieldValuesInnerJsonConverter : JsonConverter<TemplateFieldValuesInner>
+    public partial class TemplateFieldValuesInnerJsonConverter : JsonConverter<TemplateFieldValuesInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateFieldValuesInnerJsonConverter" /> class.
+        /// </summary>
+        public TemplateFieldValuesInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateFieldValuesInner" />
         /// </summary>
@@ -144,16 +154,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!apiId.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldValuesInner.", nameof(apiId));
+                throw new JsonException("Property is required for class TemplateFieldValuesInner: api_id.");
 
             if (!value.IsSet)
-                throw new ArgumentException("Property is required for class TemplateFieldValuesInner.", nameof(value));
+                throw new JsonException("Property is required for class TemplateFieldValuesInner: value.");
 
             if (apiId.IsSet && apiId.Value == null)
-                throw new ArgumentNullException(nameof(apiId), "Property is not nullable for class TemplateFieldValuesInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldValuesInner: api_id.");
 
             if (value.IsSet && value.Value == null)
-                throw new ArgumentNullException(nameof(value), "Property is not nullable for class TemplateFieldValuesInner.");
+                throw new JsonException("Property is not nullable for class TemplateFieldValuesInner: value.");
 
             return new TemplateFieldValuesInner(apiId.Value!, value.Value!);
         }
@@ -164,7 +174,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateFieldValuesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, TemplateFieldValuesInner templateFieldValuesInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -179,15 +188,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateFieldValuesInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateFieldValuesInner templateFieldValuesInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (templateFieldValuesInner.ApiId == null)
-                throw new ArgumentNullException(nameof(templateFieldValuesInner.ApiId), "Property is required for class TemplateFieldValuesInner.");
-
-            if (templateFieldValuesInner.Value == null)
-                throw new ArgumentNullException(nameof(templateFieldValuesInner.Value), "Property is required for class TemplateFieldValuesInner.");
-
             writer.WriteString("api_id", templateFieldValuesInner.ApiId);
 
             writer.WritePropertyName("value");

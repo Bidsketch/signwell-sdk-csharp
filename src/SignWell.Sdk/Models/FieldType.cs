@@ -173,7 +173,7 @@ namespace SignWell.Sdk.Models
             if (value.Equals("unknown_default_open_api"))
                 return FieldType.UnknownDefaultOpenApi;
 
-            throw new NotImplementedException($"Could not convert value to type FieldType: '{value}'");
+            return FieldType.UnknownDefaultOpenApi;
         }
 
         /// <summary>
@@ -347,6 +347,9 @@ namespace SignWell.Sdk.Models
         /// <returns></returns>
         public override FieldType? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+
             string? rawValue = reader.GetString();
 
             FieldType? result = rawValue == null
@@ -367,7 +370,10 @@ namespace SignWell.Sdk.Models
         /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, FieldType? fieldType, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(fieldType.HasValue ? FieldTypeValueConverter.ToJsonValue(fieldType.Value).ToString() : "null");
+            if (fieldType.HasValue)
+                writer.WriteStringValue(FieldTypeValueConverter.ToJsonValue(fieldType.Value).ToString());
+            else
+                writer.WriteNullValue();
         }
     }
 }

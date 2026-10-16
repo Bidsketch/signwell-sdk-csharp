@@ -39,7 +39,7 @@ namespace SignWell.Sdk.Models
         /// <param name="email">email</param>
         /// <param name="hasGoogleRegistration">hasGoogleRegistration</param>
         [JsonConstructor]
-        public AccountInfoResponseActiveUsersInner(Guid id, string name, string email, Option<bool?> hasGoogleRegistration = default)
+        public AccountInfoResponseActiveUsersInner(string id, string name, string email, Option<bool?> hasGoogleRegistration = default)
         {
             Id = id;
             Name = name;
@@ -54,7 +54,7 @@ namespace SignWell.Sdk.Models
         /// Gets or Sets Id
         /// </summary>
         [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
@@ -118,8 +118,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AccountInfoResponseActiveUsersInner" />
     /// </summary>
-    public class AccountInfoResponseActiveUsersInnerJsonConverter : JsonConverter<AccountInfoResponseActiveUsersInner>
+    public partial class AccountInfoResponseActiveUsersInnerJsonConverter : JsonConverter<AccountInfoResponseActiveUsersInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountInfoResponseActiveUsersInnerJsonConverter" /> class.
+        /// </summary>
+        public AccountInfoResponseActiveUsersInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AccountInfoResponseActiveUsersInner" />
         /// </summary>
@@ -137,7 +147,7 @@ namespace SignWell.Sdk.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<Guid?> id = default;
+            Option<string?> id = default;
             Option<string?> name = default;
             Option<string?> email = default;
             Option<bool?> hasGoogleRegistration = default;
@@ -158,7 +168,7 @@ namespace SignWell.Sdk.Models
                     switch (localVarJsonPropertyName)
                     {
                         case "id":
-                            id = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
+                            id = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
@@ -176,27 +186,24 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponseActiveUsersInner.", nameof(id));
+                throw new JsonException("Property is required for class AccountInfoResponseActiveUsersInner: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponseActiveUsersInner.", nameof(name));
+                throw new JsonException("Property is required for class AccountInfoResponseActiveUsersInner: name.");
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponseActiveUsersInner.", nameof(email));
+                throw new JsonException("Property is required for class AccountInfoResponseActiveUsersInner: email.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class AccountInfoResponseActiveUsersInner.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponseActiveUsersInner: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class AccountInfoResponseActiveUsersInner.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponseActiveUsersInner: name.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class AccountInfoResponseActiveUsersInner.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponseActiveUsersInner: email.");
 
-            if (hasGoogleRegistration.IsSet && hasGoogleRegistration.Value == null)
-                throw new ArgumentNullException(nameof(hasGoogleRegistration), "Property is not nullable for class AccountInfoResponseActiveUsersInner.");
-
-            return new AccountInfoResponseActiveUsersInner(id.Value!.Value!, name.Value!, email.Value!, hasGoogleRegistration);
+            return new AccountInfoResponseActiveUsersInner(id.Value!, name.Value!, email.Value!, hasGoogleRegistration);
         }
 
         /// <summary>
@@ -205,7 +212,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponseActiveUsersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, AccountInfoResponseActiveUsersInner accountInfoResponseActiveUsersInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -220,14 +226,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponseActiveUsersInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AccountInfoResponseActiveUsersInner accountInfoResponseActiveUsersInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (accountInfoResponseActiveUsersInner.Name == null)
-                throw new ArgumentNullException(nameof(accountInfoResponseActiveUsersInner.Name), "Property is required for class AccountInfoResponseActiveUsersInner.");
-
-            if (accountInfoResponseActiveUsersInner.Email == null)
-                throw new ArgumentNullException(nameof(accountInfoResponseActiveUsersInner.Email), "Property is required for class AccountInfoResponseActiveUsersInner.");
+            if (accountInfoResponseActiveUsersInner.HasGoogleRegistrationOption.IsSet && accountInfoResponseActiveUsersInner.HasGoogleRegistration == null)
+                throw new JsonException("Cannot write null property AccountInfoResponseActiveUsersInner.HasGoogleRegistration to non-nullable JSON property 'has_google_registration'.");
 
             writer.WriteString("id", accountInfoResponseActiveUsersInner.Id);
 

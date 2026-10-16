@@ -35,7 +35,7 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="ReminderRecipientsInner" /> class.
         /// </summary>
         /// <param name="name">Recipient&#39;s name (required if multiple recipients share the same email).</param>
-        /// <param name="email">Recipient&#39;s email address.</param>
+        /// <param name="email">Recipient&#39;s email address. Used to match the recipient to remind; not required for SMS-only recipients, who can be identified by name instead.</param>
         [JsonConstructor]
         public ReminderRecipientsInner(Option<string?> name = default, Option<string?> email = default)
         {
@@ -68,9 +68,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> EmailOption { get; private set; }
 
         /// <summary>
-        /// Recipient&#39;s email address.
+        /// Recipient&#39;s email address. Used to match the recipient to remind; not required for SMS-only recipients, who can be identified by name instead.
         /// </summary>
-        /// <value>Recipient&#39;s email address.</value>
+        /// <value>Recipient&#39;s email address. Used to match the recipient to remind; not required for SMS-only recipients, who can be identified by name instead.</value>
         [JsonPropertyName("email")]
         public string? Email { get { return this.EmailOption.Value; } set { this.EmailOption = new Option<string?>(value); } }
 
@@ -109,8 +109,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="ReminderRecipientsInner" />
     /// </summary>
-    public class ReminderRecipientsInnerJsonConverter : JsonConverter<ReminderRecipientsInner>
+    public partial class ReminderRecipientsInnerJsonConverter : JsonConverter<ReminderRecipientsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReminderRecipientsInnerJsonConverter" /> class.
+        /// </summary>
+        public ReminderRecipientsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="ReminderRecipientsInner" />
         /// </summary>
@@ -158,12 +168,6 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class ReminderRecipientsInner.");
-
-            if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class ReminderRecipientsInner.");
-
             return new ReminderRecipientsInner(name, email);
         }
 
@@ -173,7 +177,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="reminderRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, ReminderRecipientsInner reminderRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -188,14 +191,13 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="reminderRecipientsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ReminderRecipientsInner reminderRecipientsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             if (reminderRecipientsInner.NameOption.IsSet && reminderRecipientsInner.Name == null)
-                throw new ArgumentNullException(nameof(reminderRecipientsInner.Name), "Property is required for class ReminderRecipientsInner.");
+                throw new JsonException("Cannot write null property ReminderRecipientsInner.Name to non-nullable JSON property 'name'.");
 
             if (reminderRecipientsInner.EmailOption.IsSet && reminderRecipientsInner.Email == null)
-                throw new ArgumentNullException(nameof(reminderRecipientsInner.Email), "Property is required for class ReminderRecipientsInner.");
+                throw new JsonException("Cannot write null property ReminderRecipientsInner.Email to non-nullable JSON property 'email'.");
 
             if (reminderRecipientsInner.NameOption.IsSet)
                 writer.WriteString("name", reminderRecipientsInner.Name);

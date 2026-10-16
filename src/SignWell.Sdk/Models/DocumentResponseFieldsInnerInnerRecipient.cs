@@ -93,8 +93,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="DocumentResponseFieldsInnerInnerRecipient" />
     /// </summary>
-    public class DocumentResponseFieldsInnerInnerRecipientJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerRecipient>
+    public partial class DocumentResponseFieldsInnerInnerRecipientJsonConverter : JsonConverter<DocumentResponseFieldsInnerInnerRecipient>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentResponseFieldsInnerInnerRecipientJsonConverter" /> class.
+        /// </summary>
+        public DocumentResponseFieldsInnerInnerRecipientJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="DocumentResponseFieldsInnerInnerRecipient" />
         /// </summary>
@@ -143,16 +153,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseFieldsInnerInnerRecipient.", nameof(email));
+                throw new JsonException("Property is required for class DocumentResponseFieldsInnerInnerRecipient: email.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DocumentResponseFieldsInnerInnerRecipient.", nameof(name));
+                throw new JsonException("Property is required for class DocumentResponseFieldsInnerInnerRecipient: name.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class DocumentResponseFieldsInnerInnerRecipient.");
+                throw new JsonException("Property is not nullable for class DocumentResponseFieldsInnerInnerRecipient: email.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DocumentResponseFieldsInnerInnerRecipient.");
+                throw new JsonException("Property is not nullable for class DocumentResponseFieldsInnerInnerRecipient: name.");
 
             return new DocumentResponseFieldsInnerInnerRecipient(email.Value!, name.Value!);
         }
@@ -163,7 +173,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerRecipient"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerRecipient documentResponseFieldsInnerInnerRecipient, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -178,15 +187,8 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="documentResponseFieldsInnerInnerRecipient"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, DocumentResponseFieldsInnerInnerRecipient documentResponseFieldsInnerInnerRecipient, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (documentResponseFieldsInnerInnerRecipient.Email == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInnerRecipient.Email), "Property is required for class DocumentResponseFieldsInnerInnerRecipient.");
-
-            if (documentResponseFieldsInnerInnerRecipient.Name == null)
-                throw new ArgumentNullException(nameof(documentResponseFieldsInnerInnerRecipient.Name), "Property is required for class DocumentResponseFieldsInnerInnerRecipient.");
-
             writer.WriteString("email", documentResponseFieldsInnerInnerRecipient.Email);
 
             writer.WriteString("name", documentResponseFieldsInnerInnerRecipient.Name);

@@ -41,7 +41,7 @@ namespace SignWell.Sdk.Models
         /// <param name="firstName">firstName</param>
         /// <param name="preferences">preferences</param>
         [JsonConstructor]
-        public MeResponseUser(Guid id, string name, string email, Option<bool?> hasGoogleRegistration = default, Option<string?> firstName = default, Option<MeResponseUserPreferences?> preferences = default)
+        public MeResponseUser(string id, string name, string email, Option<bool?> hasGoogleRegistration = default, Option<string?> firstName = default, Option<MeResponseUserPreferences?> preferences = default)
         {
             Id = id;
             Name = name;
@@ -58,7 +58,7 @@ namespace SignWell.Sdk.Models
         /// Gets or Sets Id
         /// </summary>
         [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets Name
@@ -150,8 +150,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="MeResponseUser" />
     /// </summary>
-    public class MeResponseUserJsonConverter : JsonConverter<MeResponseUser>
+    public partial class MeResponseUserJsonConverter : JsonConverter<MeResponseUser>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeResponseUserJsonConverter" /> class.
+        /// </summary>
+        public MeResponseUserJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="MeResponseUser" />
         /// </summary>
@@ -169,7 +179,7 @@ namespace SignWell.Sdk.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<Guid?> id = default;
+            Option<string?> id = default;
             Option<string?> name = default;
             Option<string?> email = default;
             Option<bool?> hasGoogleRegistration = default;
@@ -192,7 +202,7 @@ namespace SignWell.Sdk.Models
                     switch (localVarJsonPropertyName)
                     {
                         case "id":
-                            id = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
+                            id = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
@@ -216,33 +226,24 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseUser.", nameof(id));
+                throw new JsonException("Property is required for class MeResponseUser: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseUser.", nameof(name));
+                throw new JsonException("Property is required for class MeResponseUser: name.");
 
             if (!email.IsSet)
-                throw new ArgumentException("Property is required for class MeResponseUser.", nameof(email));
+                throw new JsonException("Property is required for class MeResponseUser: email.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class MeResponseUser.");
+                throw new JsonException("Property is not nullable for class MeResponseUser: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class MeResponseUser.");
+                throw new JsonException("Property is not nullable for class MeResponseUser: name.");
 
             if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class MeResponseUser.");
+                throw new JsonException("Property is not nullable for class MeResponseUser: email.");
 
-            if (hasGoogleRegistration.IsSet && hasGoogleRegistration.Value == null)
-                throw new ArgumentNullException(nameof(hasGoogleRegistration), "Property is not nullable for class MeResponseUser.");
-
-            if (firstName.IsSet && firstName.Value == null)
-                throw new ArgumentNullException(nameof(firstName), "Property is not nullable for class MeResponseUser.");
-
-            if (preferences.IsSet && preferences.Value == null)
-                throw new ArgumentNullException(nameof(preferences), "Property is not nullable for class MeResponseUser.");
-
-            return new MeResponseUser(id.Value!.Value!, name.Value!, email.Value!, hasGoogleRegistration, firstName, preferences);
+            return new MeResponseUser(id.Value!, name.Value!, email.Value!, hasGoogleRegistration, firstName, preferences);
         }
 
         /// <summary>
@@ -251,7 +252,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseUser"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, MeResponseUser meResponseUser, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -266,20 +266,16 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="meResponseUser"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, MeResponseUser meResponseUser, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (meResponseUser.Name == null)
-                throw new ArgumentNullException(nameof(meResponseUser.Name), "Property is required for class MeResponseUser.");
-
-            if (meResponseUser.Email == null)
-                throw new ArgumentNullException(nameof(meResponseUser.Email), "Property is required for class MeResponseUser.");
+            if (meResponseUser.HasGoogleRegistrationOption.IsSet && meResponseUser.HasGoogleRegistration == null)
+                throw new JsonException("Cannot write null property MeResponseUser.HasGoogleRegistration to non-nullable JSON property 'has_google_registration'.");
 
             if (meResponseUser.FirstNameOption.IsSet && meResponseUser.FirstName == null)
-                throw new ArgumentNullException(nameof(meResponseUser.FirstName), "Property is required for class MeResponseUser.");
+                throw new JsonException("Cannot write null property MeResponseUser.FirstName to non-nullable JSON property 'first_name'.");
 
             if (meResponseUser.PreferencesOption.IsSet && meResponseUser.Preferences == null)
-                throw new ArgumentNullException(nameof(meResponseUser.Preferences), "Property is required for class MeResponseUser.");
+                throw new JsonException("Cannot write null property MeResponseUser.Preferences to non-nullable JSON property 'preferences'.");
 
             writer.WriteString("id", meResponseUser.Id);
 

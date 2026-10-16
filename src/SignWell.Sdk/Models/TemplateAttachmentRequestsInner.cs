@@ -112,8 +112,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="TemplateAttachmentRequestsInner" />
     /// </summary>
-    public class TemplateAttachmentRequestsInnerJsonConverter : JsonConverter<TemplateAttachmentRequestsInner>
+    public partial class TemplateAttachmentRequestsInnerJsonConverter : JsonConverter<TemplateAttachmentRequestsInner>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateAttachmentRequestsInnerJsonConverter" /> class.
+        /// </summary>
+        public TemplateAttachmentRequestsInnerJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="TemplateAttachmentRequestsInner" />
         /// </summary>
@@ -166,19 +176,16 @@ namespace SignWell.Sdk.Models
             }
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class TemplateAttachmentRequestsInner.", nameof(name));
+                throw new JsonException("Property is required for class TemplateAttachmentRequestsInner: name.");
 
             if (!placeholderId.IsSet)
-                throw new ArgumentException("Property is required for class TemplateAttachmentRequestsInner.", nameof(placeholderId));
+                throw new JsonException("Property is required for class TemplateAttachmentRequestsInner: placeholder_id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class TemplateAttachmentRequestsInner.");
+                throw new JsonException("Property is not nullable for class TemplateAttachmentRequestsInner: name.");
 
             if (placeholderId.IsSet && placeholderId.Value == null)
-                throw new ArgumentNullException(nameof(placeholderId), "Property is not nullable for class TemplateAttachmentRequestsInner.");
-
-            if (required.IsSet && required.Value == null)
-                throw new ArgumentNullException(nameof(required), "Property is not nullable for class TemplateAttachmentRequestsInner.");
+                throw new JsonException("Property is not nullable for class TemplateAttachmentRequestsInner: placeholder_id.");
 
             return new TemplateAttachmentRequestsInner(name.Value!, placeholderId.Value!, required);
         }
@@ -189,7 +196,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateAttachmentRequestsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, TemplateAttachmentRequestsInner templateAttachmentRequestsInner, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -204,14 +210,10 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="templateAttachmentRequestsInner"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, TemplateAttachmentRequestsInner templateAttachmentRequestsInner, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (templateAttachmentRequestsInner.Name == null)
-                throw new ArgumentNullException(nameof(templateAttachmentRequestsInner.Name), "Property is required for class TemplateAttachmentRequestsInner.");
-
-            if (templateAttachmentRequestsInner.PlaceholderId == null)
-                throw new ArgumentNullException(nameof(templateAttachmentRequestsInner.PlaceholderId), "Property is required for class TemplateAttachmentRequestsInner.");
+            if (templateAttachmentRequestsInner.RequiredOption.IsSet && templateAttachmentRequestsInner.Required == null)
+                throw new JsonException("Cannot write null property TemplateAttachmentRequestsInner.Required to non-nullable JSON property 'required'.");
 
             writer.WriteString("name", templateAttachmentRequestsInner.Name);
 

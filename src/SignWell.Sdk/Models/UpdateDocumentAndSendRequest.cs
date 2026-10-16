@@ -35,28 +35,32 @@ namespace SignWell.Sdk.Models
         /// Initializes a new instance of the <see cref="UpdateDocumentAndSendRequest" /> class.
         /// </summary>
         /// <param name="testMode">Set to &#x60;true&#x60; to enable Test Mode. Documents created with Test Mode do not count towards API billing and are not legally binding. Defaults to &#x60;false&#x60; (default to false)</param>
+        /// <param name="sendSmsTestPreviewEmail">Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="name">The name of the document.</param>
-        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</param>
-        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</param>
+        /// <param name="subject">Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
+        /// <param name="message">Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</param>
         /// <param name="expiresIn">Number of days before the signature request expires. Defaults to the account expiration setting or template expiration (if the document is created from a template).</param>
         /// <param name="reminders">Whether to send signing reminders to recipients. Reminders are sent on day 3, day 6, and day 10 if set to &#x60;true&#x60;. Defaults to &#x60;true&#x60;. (default to true)</param>
         /// <param name="applySigningOrder">When set to &#x60;true&#x60; recipients will sign one at a time in the order of the &#x60;recipients&#x60; collection of this request. (default to false)</param>
         /// <param name="apiApplicationId">Unique identifier for API Application settings to use. API Applications are optional and mainly used when isolating OAuth apps or for more control over embedded API settings</param>
         /// <param name="embeddedSigning">When set to &#x60;true&#x60; it enables embedded signing in your website/web application. Embedded functionality works with an iFrame and email authentication is disabled. :embedded_signinig defaults to &#x60;false&#x60;. (default to false)</param>
         /// <param name="embeddedSigningNotifications">On embedding signing, document owners (and CC&#39;d contacts) do not get a notification email when documents have been completed. Setting this param to &#x60;true&#x60; will send out those final completed notifications. Default is &#x60;false&#x60; (default to false)</param>
+        /// <param name="embedded">embedded</param>
         /// <param name="customRequesterName">Sets the custom requester name for the document. When set, this is the name used for all email communications, signing notifications, and in the audit file.</param>
         /// <param name="customRequesterEmail">Sets the custom requester email for the document. When set, this is the email used for all email communications, signing notifications, and in the audit file.</param>
         /// <param name="redirectUrl">A URL that recipients are redirected to after successfully signing a document.</param>
         /// <param name="allowDecline">Whether to allow recipients the option to decline signing a document. If multiple signers are involved in a document, any single recipient can cancel the entire document signing process by declining to sign. (default to true)</param>
-        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. (default to true)</param>
+        /// <param name="allowReassign">In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422. (default to true)</param>
         /// <param name="declineRedirectUrl">A URL that recipients are redirected to if the document is declined.</param>
+        /// <param name="conditionalRules">Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</param>
         /// <param name="metadata">Optional key-value data that can be associated with the document. If set, will be available every time the document data is returned.</param>
         /// <param name="labels">Labels can be used to organize documents in a way that can make it easy to find using the document search in SignWell. A document can have multiple labels. Updating labels on a document will replace any existing labels for that document.</param>
         /// <param name="checkboxGroups">Checkbox fields that are placed on a document can be grouped with selection requirements. At least 2 checkbox fields in an array of fields must be assigned to the same recipient.</param>
         [JsonConstructor]
-        public UpdateDocumentAndSendRequest(Option<bool?> testMode = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<bool?> embeddedSigning = default, Option<bool?> embeddedSigningNotifications = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<Dictionary<string, string>?> metadata = default, Option<List<LabelRequest>?> labels = default, Option<List<CheckboxGroupsInner>?> checkboxGroups = default)
+        public UpdateDocumentAndSendRequest(Option<bool?> testMode = default, Option<bool?> sendSmsTestPreviewEmail = default, Option<string?> name = default, Option<string?> subject = default, Option<string?> message = default, Option<int?> expiresIn = default, Option<bool?> reminders = default, Option<bool?> applySigningOrder = default, Option<Guid?> apiApplicationId = default, Option<bool?> embeddedSigning = default, Option<bool?> embeddedSigningNotifications = default, Option<EmbeddedRequest?> embedded = default, Option<string?> customRequesterName = default, Option<string?> customRequesterEmail = default, Option<string?> redirectUrl = default, Option<bool?> allowDecline = default, Option<bool?> allowReassign = default, Option<string?> declineRedirectUrl = default, Option<List<ConditionalRuleRequest>?> conditionalRules = default, Option<Dictionary<string, string>?> metadata = default, Option<List<LabelRequest>?> labels = default, Option<List<CheckboxGroupsInner>?> checkboxGroups = default)
         {
             TestModeOption = testMode;
+            SendSmsTestPreviewEmailOption = sendSmsTestPreviewEmail;
             NameOption = name;
             SubjectOption = subject;
             MessageOption = message;
@@ -66,12 +70,14 @@ namespace SignWell.Sdk.Models
             ApiApplicationIdOption = apiApplicationId;
             EmbeddedSigningOption = embeddedSigning;
             EmbeddedSigningNotificationsOption = embeddedSigningNotifications;
+            EmbeddedOption = embedded;
             CustomRequesterNameOption = customRequesterName;
             CustomRequesterEmailOption = customRequesterEmail;
             RedirectUrlOption = redirectUrl;
             AllowDeclineOption = allowDecline;
             AllowReassignOption = allowReassign;
             DeclineRedirectUrlOption = declineRedirectUrl;
+            ConditionalRulesOption = conditionalRules;
             MetadataOption = metadata;
             LabelsOption = labels;
             CheckboxGroupsOption = checkboxGroups;
@@ -95,6 +101,20 @@ namespace SignWell.Sdk.Models
         public bool? TestMode { get { return this.TestModeOption.Value; } set { this.TestModeOption = new Option<bool?>(value); } }
 
         /// <summary>
+        /// Used to track the state of SendSmsTestPreviewEmail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> SendSmsTestPreviewEmailOption { get; private set; }
+
+        /// <summary>
+        /// Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;.
+        /// </summary>
+        /// <value>Only applies when &#x60;test_mode&#x60; is &#x60;true&#x60;. When &#x60;true&#x60;, and the document has an SMS-only recipient, sends the document owner a test-mode preview email (with a masked phone number) instead of the regular SMS sender-copy email. No SMS is sent and no credits are used, in test mode or otherwise. Defaults to &#x60;false&#x60;.</value>
+        [JsonPropertyName("send_sms_test_preview_email")]
+        public bool? SendSmsTestPreviewEmail { get { return this.SendSmsTestPreviewEmailOption.Value; } set { this.SendSmsTestPreviewEmailOption = new Option<bool?>(value); } }
+
+        /// <summary>
         /// Used to track the state of Name
         /// </summary>
         [JsonIgnore]
@@ -116,9 +136,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> SubjectOption { get; private set; }
 
         /// <summary>
-        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).
+        /// Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template).</value>
+        /// <value>Email subject for the signature request that recipients will see. Defaults to the default system subject or a template subject (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("subject")]
         public string? Subject { get { return this.SubjectOption.Value; } set { this.SubjectOption = new Option<string?>(value); } }
 
@@ -130,9 +150,9 @@ namespace SignWell.Sdk.Models
         public Option<string?> MessageOption { get; private set; }
 
         /// <summary>
-        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).
+        /// Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.
         /// </summary>
-        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template).</value>
+        /// <value>Email message for the signature request that recipients will see. Defaults to the default system message or a template message (if the document is created from a template). Applies to email notifications only; SMS notifications always use fixed system templates.</value>
         [JsonPropertyName("message")]
         public string? Message { get { return this.MessageOption.Value; } set { this.MessageOption = new Option<string?>(value); } }
 
@@ -221,6 +241,19 @@ namespace SignWell.Sdk.Models
         public bool? EmbeddedSigningNotifications { get { return this.EmbeddedSigningNotificationsOption.Value; } set { this.EmbeddedSigningNotificationsOption = new Option<bool?>(value); } }
 
         /// <summary>
+        /// Used to track the state of Embedded
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<EmbeddedRequest?> EmbeddedOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets Embedded
+        /// </summary>
+        [JsonPropertyName("embedded")]
+        public EmbeddedRequest? Embedded { get { return this.EmbeddedOption.Value; } set { this.EmbeddedOption = new Option<EmbeddedRequest?>(value); } }
+
+        /// <summary>
         /// Used to track the state of CustomRequesterName
         /// </summary>
         [JsonIgnore]
@@ -284,9 +317,9 @@ namespace SignWell.Sdk.Models
         public Option<bool?> AllowReassignOption { get; private set; }
 
         /// <summary>
-        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.
+        /// In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.
         /// </summary>
-        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else.</value>
+        /// <value>In some cases a signer is not the right person to sign and may need to reassign their signing responsibilities to another person. This feature allows them to reassign the document to someone else. Unavailable on 21 CFR Part 11 documents: omit it and reassignment stays off, while sending &#x60;true&#x60; returns a 422.</value>
         [JsonPropertyName("allow_reassign")]
         public bool? AllowReassign { get { return this.AllowReassignOption.Value; } set { this.AllowReassignOption = new Option<bool?>(value); } }
 
@@ -303,6 +336,20 @@ namespace SignWell.Sdk.Models
         /// <value>A URL that recipients are redirected to if the document is declined.</value>
         [JsonPropertyName("decline_redirect_url")]
         public string? DeclineRedirectUrl { get { return this.DeclineRedirectUrlOption.Value; } set { this.DeclineRedirectUrlOption = new Option<string?>(value); } }
+
+        /// <summary>
+        /// Used to track the state of ConditionalRules
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<ConditionalRuleRequest>?> ConditionalRulesOption { get; private set; }
+
+        /// <summary>
+        /// Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.
+        /// </summary>
+        /// <value>Conditional logic rules that show, hide, or require fields based on what a signer does to other fields. Every identifier is a field api_id. At most 10 rules per document or template.</value>
+        [JsonPropertyName("conditional_rules")]
+        public List<ConditionalRuleRequest>? ConditionalRules { get { return this.ConditionalRulesOption.Value; } set { this.ConditionalRulesOption = new Option<List<ConditionalRuleRequest>?>(value); } }
 
         /// <summary>
         /// Used to track the state of Metadata
@@ -361,6 +408,7 @@ namespace SignWell.Sdk.Models
             StringBuilder sb = new StringBuilder();
             sb.Append("class UpdateDocumentAndSendRequest {\n");
             sb.Append("  TestMode: ").Append(TestMode).Append("\n");
+            sb.Append("  SendSmsTestPreviewEmail: ").Append(SendSmsTestPreviewEmail).Append("\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
             sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  Message: ").Append(Message).Append("\n");
@@ -370,12 +418,14 @@ namespace SignWell.Sdk.Models
             sb.Append("  ApiApplicationId: ").Append(ApiApplicationId).Append("\n");
             sb.Append("  EmbeddedSigning: ").Append(EmbeddedSigning).Append("\n");
             sb.Append("  EmbeddedSigningNotifications: ").Append(EmbeddedSigningNotifications).Append("\n");
+            sb.Append("  Embedded: ").Append(Embedded).Append("\n");
             sb.Append("  CustomRequesterName: ").Append(CustomRequesterName).Append("\n");
             sb.Append("  CustomRequesterEmail: ").Append(CustomRequesterEmail).Append("\n");
             sb.Append("  RedirectUrl: ").Append(RedirectUrl).Append("\n");
             sb.Append("  AllowDecline: ").Append(AllowDecline).Append("\n");
             sb.Append("  AllowReassign: ").Append(AllowReassign).Append("\n");
             sb.Append("  DeclineRedirectUrl: ").Append(DeclineRedirectUrl).Append("\n");
+            sb.Append("  ConditionalRules: ").Append(ConditionalRules).Append("\n");
             sb.Append("  Metadata: ").Append(Metadata).Append("\n");
             sb.Append("  Labels: ").Append(Labels).Append("\n");
             sb.Append("  CheckboxGroups: ").Append(CheckboxGroups).Append("\n");
@@ -404,8 +454,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="UpdateDocumentAndSendRequest" />
     /// </summary>
-    public class UpdateDocumentAndSendRequestJsonConverter : JsonConverter<UpdateDocumentAndSendRequest>
+    public partial class UpdateDocumentAndSendRequestJsonConverter : JsonConverter<UpdateDocumentAndSendRequest>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UpdateDocumentAndSendRequestJsonConverter" /> class.
+        /// </summary>
+        public UpdateDocumentAndSendRequestJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="UpdateDocumentAndSendRequest" />
         /// </summary>
@@ -424,6 +484,7 @@ namespace SignWell.Sdk.Models
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> testMode = default;
+            Option<bool?> sendSmsTestPreviewEmail = default;
             Option<string?> name = default;
             Option<string?> subject = default;
             Option<string?> message = default;
@@ -433,12 +494,14 @@ namespace SignWell.Sdk.Models
             Option<Guid?> apiApplicationId = default;
             Option<bool?> embeddedSigning = default;
             Option<bool?> embeddedSigningNotifications = default;
+            Option<EmbeddedRequest?> embedded = default;
             Option<string?> customRequesterName = default;
             Option<string?> customRequesterEmail = default;
             Option<string?> redirectUrl = default;
             Option<bool?> allowDecline = default;
             Option<bool?> allowReassign = default;
             Option<string?> declineRedirectUrl = default;
+            Option<List<ConditionalRuleRequest>?> conditionalRules = default;
             Option<Dictionary<string, string>?> metadata = default;
             Option<List<LabelRequest>?> labels = default;
             Option<List<CheckboxGroupsInner>?> checkboxGroups = default;
@@ -460,6 +523,9 @@ namespace SignWell.Sdk.Models
                     {
                         case "test_mode":
                             testMode = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "send_sms_test_preview_email":
+                            sendSmsTestPreviewEmail = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
@@ -488,6 +554,9 @@ namespace SignWell.Sdk.Models
                         case "embedded_signing_notifications":
                             embeddedSigningNotifications = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
+                        case "embedded":
+                            embedded = new Option<EmbeddedRequest?>(JsonSerializer.Deserialize<EmbeddedRequest>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         case "custom_requester_name":
                             customRequesterName = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
@@ -506,6 +575,9 @@ namespace SignWell.Sdk.Models
                         case "decline_redirect_url":
                             declineRedirectUrl = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "conditional_rules":
+                            conditionalRules = new Option<List<ConditionalRuleRequest>?>(JsonSerializer.Deserialize<List<ConditionalRuleRequest>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         case "metadata":
                             metadata = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -521,64 +593,7 @@ namespace SignWell.Sdk.Models
                 }
             }
 
-            if (testMode.IsSet && testMode.Value == null)
-                throw new ArgumentNullException(nameof(testMode), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (subject.IsSet && subject.Value == null)
-                throw new ArgumentNullException(nameof(subject), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (message.IsSet && message.Value == null)
-                throw new ArgumentNullException(nameof(message), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (expiresIn.IsSet && expiresIn.Value == null)
-                throw new ArgumentNullException(nameof(expiresIn), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (reminders.IsSet && reminders.Value == null)
-                throw new ArgumentNullException(nameof(reminders), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (applySigningOrder.IsSet && applySigningOrder.Value == null)
-                throw new ArgumentNullException(nameof(applySigningOrder), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (apiApplicationId.IsSet && apiApplicationId.Value == null)
-                throw new ArgumentNullException(nameof(apiApplicationId), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (embeddedSigning.IsSet && embeddedSigning.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigning), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (embeddedSigningNotifications.IsSet && embeddedSigningNotifications.Value == null)
-                throw new ArgumentNullException(nameof(embeddedSigningNotifications), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (customRequesterName.IsSet && customRequesterName.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterName), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (customRequesterEmail.IsSet && customRequesterEmail.Value == null)
-                throw new ArgumentNullException(nameof(customRequesterEmail), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (redirectUrl.IsSet && redirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(redirectUrl), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (allowDecline.IsSet && allowDecline.Value == null)
-                throw new ArgumentNullException(nameof(allowDecline), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (allowReassign.IsSet && allowReassign.Value == null)
-                throw new ArgumentNullException(nameof(allowReassign), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (declineRedirectUrl.IsSet && declineRedirectUrl.Value == null)
-                throw new ArgumentNullException(nameof(declineRedirectUrl), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (metadata.IsSet && metadata.Value == null)
-                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            if (checkboxGroups.IsSet && checkboxGroups.Value == null)
-                throw new ArgumentNullException(nameof(checkboxGroups), "Property is not nullable for class UpdateDocumentAndSendRequest.");
-
-            return new UpdateDocumentAndSendRequest(testMode, name, subject, message, expiresIn, reminders, applySigningOrder, apiApplicationId, embeddedSigning, embeddedSigningNotifications, customRequesterName, customRequesterEmail, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, metadata, labels, checkboxGroups);
+            return new UpdateDocumentAndSendRequest(testMode, sendSmsTestPreviewEmail, name, subject, message, expiresIn, reminders, applySigningOrder, apiApplicationId, embeddedSigning, embeddedSigningNotifications, embedded, customRequesterName, customRequesterEmail, redirectUrl, allowDecline, allowReassign, declineRedirectUrl, conditionalRules, metadata, labels, checkboxGroups);
         }
 
         /// <summary>
@@ -587,7 +602,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateDocumentAndSendRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, UpdateDocumentAndSendRequest updateDocumentAndSendRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -602,41 +616,79 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="updateDocumentAndSendRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, UpdateDocumentAndSendRequest updateDocumentAndSendRequest, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (updateDocumentAndSendRequest.TestModeOption.IsSet && updateDocumentAndSendRequest.TestMode == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.TestMode to non-nullable JSON property 'test_mode'.");
+
+            if (updateDocumentAndSendRequest.SendSmsTestPreviewEmailOption.IsSet && updateDocumentAndSendRequest.SendSmsTestPreviewEmail == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.SendSmsTestPreviewEmail to non-nullable JSON property 'send_sms_test_preview_email'.");
+
             if (updateDocumentAndSendRequest.NameOption.IsSet && updateDocumentAndSendRequest.Name == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.Name), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Name to non-nullable JSON property 'name'.");
 
             if (updateDocumentAndSendRequest.SubjectOption.IsSet && updateDocumentAndSendRequest.Subject == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.Subject), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Subject to non-nullable JSON property 'subject'.");
 
             if (updateDocumentAndSendRequest.MessageOption.IsSet && updateDocumentAndSendRequest.Message == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.Message), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Message to non-nullable JSON property 'message'.");
+
+            if (updateDocumentAndSendRequest.ExpiresInOption.IsSet && updateDocumentAndSendRequest.ExpiresIn == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.ExpiresIn to non-nullable JSON property 'expires_in'.");
+
+            if (updateDocumentAndSendRequest.RemindersOption.IsSet && updateDocumentAndSendRequest.Reminders == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Reminders to non-nullable JSON property 'reminders'.");
+
+            if (updateDocumentAndSendRequest.ApplySigningOrderOption.IsSet && updateDocumentAndSendRequest.ApplySigningOrder == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.ApplySigningOrder to non-nullable JSON property 'apply_signing_order'.");
+
+            if (updateDocumentAndSendRequest.ApiApplicationIdOption.IsSet && updateDocumentAndSendRequest.ApiApplicationId == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.ApiApplicationId to non-nullable JSON property 'api_application_id'.");
+
+            if (updateDocumentAndSendRequest.EmbeddedSigningOption.IsSet && updateDocumentAndSendRequest.EmbeddedSigning == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.EmbeddedSigning to non-nullable JSON property 'embedded_signing'.");
+
+            if (updateDocumentAndSendRequest.EmbeddedSigningNotificationsOption.IsSet && updateDocumentAndSendRequest.EmbeddedSigningNotifications == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.EmbeddedSigningNotifications to non-nullable JSON property 'embedded_signing_notifications'.");
+
+            if (updateDocumentAndSendRequest.EmbeddedOption.IsSet && updateDocumentAndSendRequest.Embedded == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Embedded to non-nullable JSON property 'embedded'.");
 
             if (updateDocumentAndSendRequest.CustomRequesterNameOption.IsSet && updateDocumentAndSendRequest.CustomRequesterName == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.CustomRequesterName), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.CustomRequesterName to non-nullable JSON property 'custom_requester_name'.");
 
             if (updateDocumentAndSendRequest.CustomRequesterEmailOption.IsSet && updateDocumentAndSendRequest.CustomRequesterEmail == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.CustomRequesterEmail), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.CustomRequesterEmail to non-nullable JSON property 'custom_requester_email'.");
 
             if (updateDocumentAndSendRequest.RedirectUrlOption.IsSet && updateDocumentAndSendRequest.RedirectUrl == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.RedirectUrl), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.RedirectUrl to non-nullable JSON property 'redirect_url'.");
+
+            if (updateDocumentAndSendRequest.AllowDeclineOption.IsSet && updateDocumentAndSendRequest.AllowDecline == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.AllowDecline to non-nullable JSON property 'allow_decline'.");
+
+            if (updateDocumentAndSendRequest.AllowReassignOption.IsSet && updateDocumentAndSendRequest.AllowReassign == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.AllowReassign to non-nullable JSON property 'allow_reassign'.");
 
             if (updateDocumentAndSendRequest.DeclineRedirectUrlOption.IsSet && updateDocumentAndSendRequest.DeclineRedirectUrl == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.DeclineRedirectUrl), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.DeclineRedirectUrl to non-nullable JSON property 'decline_redirect_url'.");
+
+            if (updateDocumentAndSendRequest.ConditionalRulesOption.IsSet && updateDocumentAndSendRequest.ConditionalRules == null)
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.ConditionalRules to non-nullable JSON property 'conditional_rules'.");
 
             if (updateDocumentAndSendRequest.MetadataOption.IsSet && updateDocumentAndSendRequest.Metadata == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.Metadata), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Metadata to non-nullable JSON property 'metadata'.");
 
             if (updateDocumentAndSendRequest.LabelsOption.IsSet && updateDocumentAndSendRequest.Labels == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.Labels), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.Labels to non-nullable JSON property 'labels'.");
 
             if (updateDocumentAndSendRequest.CheckboxGroupsOption.IsSet && updateDocumentAndSendRequest.CheckboxGroups == null)
-                throw new ArgumentNullException(nameof(updateDocumentAndSendRequest.CheckboxGroups), "Property is required for class UpdateDocumentAndSendRequest.");
+                throw new JsonException("Cannot write null property UpdateDocumentAndSendRequest.CheckboxGroups to non-nullable JSON property 'checkbox_groups'.");
 
             if (updateDocumentAndSendRequest.TestModeOption.IsSet)
                 writer.WriteBoolean("test_mode", updateDocumentAndSendRequest.TestModeOption.Value!.Value);
+
+            if (updateDocumentAndSendRequest.SendSmsTestPreviewEmailOption.IsSet)
+                writer.WriteBoolean("send_sms_test_preview_email", updateDocumentAndSendRequest.SendSmsTestPreviewEmailOption.Value!.Value);
 
             if (updateDocumentAndSendRequest.NameOption.IsSet)
                 writer.WriteString("name", updateDocumentAndSendRequest.Name);
@@ -665,6 +717,11 @@ namespace SignWell.Sdk.Models
             if (updateDocumentAndSendRequest.EmbeddedSigningNotificationsOption.IsSet)
                 writer.WriteBoolean("embedded_signing_notifications", updateDocumentAndSendRequest.EmbeddedSigningNotificationsOption.Value!.Value);
 
+            if (updateDocumentAndSendRequest.EmbeddedOption.IsSet)
+            {
+                writer.WritePropertyName("embedded");
+                JsonSerializer.Serialize(writer, updateDocumentAndSendRequest.Embedded, jsonSerializerOptions);
+            }
             if (updateDocumentAndSendRequest.CustomRequesterNameOption.IsSet)
                 writer.WriteString("custom_requester_name", updateDocumentAndSendRequest.CustomRequesterName);
 
@@ -683,6 +740,11 @@ namespace SignWell.Sdk.Models
             if (updateDocumentAndSendRequest.DeclineRedirectUrlOption.IsSet)
                 writer.WriteString("decline_redirect_url", updateDocumentAndSendRequest.DeclineRedirectUrl);
 
+            if (updateDocumentAndSendRequest.ConditionalRulesOption.IsSet)
+            {
+                writer.WritePropertyName("conditional_rules");
+                JsonSerializer.Serialize(writer, updateDocumentAndSendRequest.ConditionalRules, jsonSerializerOptions);
+            }
             if (updateDocumentAndSendRequest.MetadataOption.IsSet)
             {
                 writer.WritePropertyName("metadata");

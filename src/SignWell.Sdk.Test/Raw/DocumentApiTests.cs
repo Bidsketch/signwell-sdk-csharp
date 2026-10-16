@@ -60,7 +60,7 @@ namespace SignWell.Sdk.Test.Raw
             DocumentRequest documentRequest = default!;
             var response = await _instance.CreateDocumentAsync(documentRequest);
             var model = response.Created();
-            Assert.IsType<DocumentResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentResponse>(model);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SignWell.Sdk.Test.Raw
             DocumentFromTemplateRequest documentFromTemplateRequest = default!;
             var response = await _instance.CreateDocumentFromTemplateAsync(documentFromTemplateRequest);
             var model = response.Created();
-            Assert.IsType<DocumentFromTemplateResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentFromTemplateResponse>(model);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<FileFormat> fileFormat = default!;
             var response = await _instance.GetCompletedPdfAsync(id, urlOnly, auditPage, fileFormat);
             var model = response.Ok();
-            Assert.IsType<CompletedPdfResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.CompletedPdfResponse>(model);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SignWell.Sdk.Test.Raw
             Guid id = default!;
             var response = await _instance.GetDocumentAsync(id);
             var model = response.Ok();
-            Assert.IsType<DocumentResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentResponse>(model);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SignWell.Sdk.Test.Raw
             Client.Option<string> query = default!;
             var response = await _instance.ListDocumentsAsync(page, limit, query);
             var model = response.Ok();
-            Assert.IsType<DocumentListResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentListResponse>(model);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SignWell.Sdk.Test.Raw
             UpdateDocumentAndSendRequest updateDocumentAndSendRequest = default!;
             var response = await _instance.SendDocumentAsync(id, updateDocumentAndSendRequest);
             var model = response.Created();
-            Assert.IsType<DocumentResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentResponse>(model);
         }
 
         /// <summary>
@@ -151,6 +151,19 @@ namespace SignWell.Sdk.Test.Raw
         }
 
         /// <summary>
+        /// Test UpdateAuthentication
+        /// </summary>
+        [Fact(Skip = "not implemented")]
+        public async Task UpdateAuthenticationAsyncTest()
+        {
+            Guid id = default!;
+            UpdateAuthenticationRequest updateAuthenticationRequest = default!;
+            var response = await _instance.UpdateAuthenticationAsync(id, updateAuthenticationRequest);
+            var model = response.Ok();
+            Assert.IsType<SignWell.Sdk.Models.DocumentResponse>(model);
+        }
+
+        /// <summary>
         /// Test UpdateRecipients
         /// </summary>
         [Fact(Skip = "not implemented")]
@@ -160,7 +173,7 @@ namespace SignWell.Sdk.Test.Raw
             UpdateRecipientsRequest updateRecipientsRequest = default!;
             var response = await _instance.UpdateRecipientsAsync(id, updateRecipientsRequest);
             var model = response.Ok();
-            Assert.IsType<DocumentResponse>(model);
+            Assert.IsType<SignWell.Sdk.Models.DocumentResponse>(model);
         }
     }
 }

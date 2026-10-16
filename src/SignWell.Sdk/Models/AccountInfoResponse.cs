@@ -198,8 +198,18 @@ namespace SignWell.Sdk.Models
     /// <summary>
     /// A Json converter for type <see cref="AccountInfoResponse" />
     /// </summary>
-    public class AccountInfoResponseJsonConverter : JsonConverter<AccountInfoResponse>
+    public partial class AccountInfoResponseJsonConverter : JsonConverter<AccountInfoResponse>
     {
+        partial void OnCreated();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountInfoResponseJsonConverter" /> class.
+        /// </summary>
+        public AccountInfoResponseJsonConverter()
+        {
+            OnCreated();
+        }
+
         /// <summary>
         /// Deserializes json to <see cref="AccountInfoResponse" />
         /// </summary>
@@ -276,40 +286,22 @@ namespace SignWell.Sdk.Models
             }
 
             if (!id.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponse.", nameof(id));
+                throw new JsonException("Property is required for class AccountInfoResponse: id.");
 
             if (!name.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponse.", nameof(name));
+                throw new JsonException("Property is required for class AccountInfoResponse: name.");
 
             if (!planTier.IsSet)
-                throw new ArgumentException("Property is required for class AccountInfoResponse.", nameof(planTier));
+                throw new JsonException("Property is required for class AccountInfoResponse: plan_tier.");
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class AccountInfoResponse.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponse: id.");
 
             if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class AccountInfoResponse.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponse: name.");
 
             if (planTier.IsSet && planTier.Value == null)
-                throw new ArgumentNullException(nameof(planTier), "Property is not nullable for class AccountInfoResponse.");
-
-            if (activeTemplates.IsSet && activeTemplates.Value == null)
-                throw new ArgumentNullException(nameof(activeTemplates), "Property is not nullable for class AccountInfoResponse.");
-
-            if (canCreateTemplate.IsSet && canCreateTemplate.Value == null)
-                throw new ArgumentNullException(nameof(canCreateTemplate), "Property is not nullable for class AccountInfoResponse.");
-
-            if (canCreateTrackingDocument.IsSet && canCreateTrackingDocument.Value == null)
-                throw new ArgumentNullException(nameof(canCreateTrackingDocument), "Property is not nullable for class AccountInfoResponse.");
-
-            if (canCreateCompletionDocument.IsSet && canCreateCompletionDocument.Value == null)
-                throw new ArgumentNullException(nameof(canCreateCompletionDocument), "Property is not nullable for class AccountInfoResponse.");
-
-            if (activeUsers.IsSet && activeUsers.Value == null)
-                throw new ArgumentNullException(nameof(activeUsers), "Property is not nullable for class AccountInfoResponse.");
-
-            if (preferences.IsSet && preferences.Value == null)
-                throw new ArgumentNullException(nameof(preferences), "Property is not nullable for class AccountInfoResponse.");
+                throw new JsonException("Property is not nullable for class AccountInfoResponse: plan_tier.");
 
             return new AccountInfoResponse(id.Value!.Value!, name.Value!, planTier.Value!, activeTemplates, canCreateTemplate, canCreateTrackingDocument, canCreateCompletionDocument, activeUsers, preferences);
         }
@@ -320,7 +312,6 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public override void Write(Utf8JsonWriter writer, AccountInfoResponse accountInfoResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
@@ -335,20 +326,25 @@ namespace SignWell.Sdk.Models
         /// <param name="writer"></param>
         /// <param name="accountInfoResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, AccountInfoResponse accountInfoResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (accountInfoResponse.Name == null)
-                throw new ArgumentNullException(nameof(accountInfoResponse.Name), "Property is required for class AccountInfoResponse.");
+            if (accountInfoResponse.ActiveTemplatesOption.IsSet && accountInfoResponse.ActiveTemplates == null)
+                throw new JsonException("Cannot write null property AccountInfoResponse.ActiveTemplates to non-nullable JSON property 'active_templates'.");
 
-            if (accountInfoResponse.PlanTier == null)
-                throw new ArgumentNullException(nameof(accountInfoResponse.PlanTier), "Property is required for class AccountInfoResponse.");
+            if (accountInfoResponse.CanCreateTemplateOption.IsSet && accountInfoResponse.CanCreateTemplate == null)
+                throw new JsonException("Cannot write null property AccountInfoResponse.CanCreateTemplate to non-nullable JSON property 'can_create_template'.");
+
+            if (accountInfoResponse.CanCreateTrackingDocumentOption.IsSet && accountInfoResponse.CanCreateTrackingDocument == null)
+                throw new JsonException("Cannot write null property AccountInfoResponse.CanCreateTrackingDocument to non-nullable JSON property 'can_create_tracking_document'.");
+
+            if (accountInfoResponse.CanCreateCompletionDocumentOption.IsSet && accountInfoResponse.CanCreateCompletionDocument == null)
+                throw new JsonException("Cannot write null property AccountInfoResponse.CanCreateCompletionDocument to non-nullable JSON property 'can_create_completion_document'.");
 
             if (accountInfoResponse.ActiveUsersOption.IsSet && accountInfoResponse.ActiveUsers == null)
-                throw new ArgumentNullException(nameof(accountInfoResponse.ActiveUsers), "Property is required for class AccountInfoResponse.");
+                throw new JsonException("Cannot write null property AccountInfoResponse.ActiveUsers to non-nullable JSON property 'active_users'.");
 
             if (accountInfoResponse.PreferencesOption.IsSet && accountInfoResponse.Preferences == null)
-                throw new ArgumentNullException(nameof(accountInfoResponse.Preferences), "Property is required for class AccountInfoResponse.");
+                throw new JsonException("Cannot write null property AccountInfoResponse.Preferences to non-nullable JSON property 'preferences'.");
 
             writer.WriteString("id", accountInfoResponse.Id);
 
